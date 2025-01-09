@@ -19,11 +19,11 @@ const optimizeImage = async (file: File): Promise<File> => {
     img.onload = () => {
       URL.revokeObjectURL(url);
       
-      // Check if optimization is needed
-      if (img.width <= MAX_IMAGE_SIZE && img.height <= MAX_IMAGE_SIZE) {
-        resolve(file);
-        return;
-      }
+      // // Check if optimization is needed
+      // if (img.width <= MAX_IMAGE_SIZE && img.height <= MAX_IMAGE_SIZE) {
+      //   resolve(file);
+      //   return;
+      // }
 
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
@@ -32,13 +32,13 @@ const optimizeImage = async (file: File): Promise<File> => {
       let width = img.width;
       let height = img.height;
       
-      if (width > height && width > MAX_IMAGE_SIZE) {
-        height = Math.round((height * MAX_IMAGE_SIZE) / width);
-        width = MAX_IMAGE_SIZE;
-      } else if (height > MAX_IMAGE_SIZE) {
-        width = Math.round((width * MAX_IMAGE_SIZE) / height);
-        height = MAX_IMAGE_SIZE;
-      }
+      // if (width > height && width > MAX_IMAGE_SIZE) {
+      //   height = Math.round((height * MAX_IMAGE_SIZE) / width);
+      //   width = MAX_IMAGE_SIZE;
+      // } else if (height > MAX_IMAGE_SIZE) {
+      //   width = Math.round((width * MAX_IMAGE_SIZE) / height);
+      //   height = MAX_IMAGE_SIZE;
+      // }
 
       canvas.width = width;
       canvas.height = height;

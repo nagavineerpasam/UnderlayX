@@ -3,8 +3,10 @@
 import { EditorTools } from './EditorTools';
 import { Canvas } from './Canvas';
 import { useEditor } from '@/hooks/useEditor';
-import { Loader2, RotateCcw, Download, Upload } from 'lucide-react';
+import { Loader2, RotateCcw, Download, Upload, ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { BackgroundUpload } from './BackgroundUpload';
+import { ForegroundControls } from './ForegroundControls';
 
 export function ImageEditor() {
   const { 
@@ -25,24 +27,25 @@ export function ImageEditor() {
     return false;
   };
 
-  const DownloadButton = () => (
+  // Add this helper component for responsive buttons
+  const ActionButton = ({ icon: Icon, label, ...props }) => (
     <button
+      {...props}
+      className="px-3 lg:px-4 py-2.5 bg-gray-900 hover:bg-gray-800 dark:bg-white/5 dark:hover:bg-white/10 text-white rounded-lg transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2 h-[42px]"
+    >
+      <Icon className="w-4 h-4" />
+      <span className="hidden lg:inline">{label}</span>
+    </button>
+  );
+
+  // Update the DownloadButton component
+  const DownloadButton = () => (
+    <ActionButton
+      icon={Download}
+      label="Download"
       onClick={downloadImage}
       disabled={!isImageReady || isDownloading}
-      className="flex-1 px-2 py-1.5 lg:px-4 lg:py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors font-medium disabled:opacity-50 text-xs lg:text-sm flex items-center justify-center gap-2"
-    >
-      {isDownloading ? (
-        <>
-          {/* <Loader2 className="h-3 w-3 lg:h-4 lg:w-4 animate-spin" /> */}
-          <span>Download</span>
-        </>
-      ) : (
-        <>
-          <Download className="h-3 w-3 lg:h-4 lg:h-4" />
-          <span>Download</span>
-        </>
-      )}
-    </button>
+    />
   );
 
   return (
@@ -57,18 +60,39 @@ export function ImageEditor() {
           {/* Only show buttons when image is ready */}
           {image.original && (
             <div className={cn(
-              "flex gap-3 mt-4",
+              "flex flex-col gap-4",
               !isImageReady && "opacity-50 pointer-events-none"
             )}>
-              <button
-                onClick={() => resetEditor(false)}
-                disabled={!isImageReady || isDownloading}
-                className="flex-1 px-2 py-1.5 lg:px-4 lg:py-2.5 bg-gray-900 hover:bg-gray-800 dark:bg-white/5 dark:hover:bg-white/10 text-white rounded-lg transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                <RotateCcw className="w-4 h-4" />
-                <span>Reset</span>
-              </button>
-              <DownloadButton />
+              {isImageReady && (
+                <>
+                  {/* Mobile Layout Controls */}
+                  <div className="flex gap-2 w-full overflow-hidden">
+                    <div className="flex-1">
+                      <label
+                        htmlFor="background-upload"
+                        className="px-3 py-2.5 bg-gray-900 hover:bg-gray-800 dark:bg-white/5 dark:hover:bg-white/10 text-white rounded-lg transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2 h-[42px] cursor-pointer"
+                      >
+                        <ImageIcon className="w-4 h-4" />
+                      </label>
+                    </div>
+                    <div className="flex-1">
+                      <DownloadButton />
+                    </div>
+                    <ActionButton
+                      icon={RotateCcw}
+                      label="Reset"
+                      onClick={() => resetEditor(false)}
+                      disabled={!isImageReady || isDownloading}
+                      className="flex-1"
+                    />
+                  </div>
+
+                  {/* Foreground Controls in a separate row */}
+                  <div className="bg-white/50 dark:bg-black/20 rounded-lg p-4">
+                    <ForegroundControls />
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>
@@ -94,18 +118,35 @@ export function ImageEditor() {
             {/* Only show buttons when image is ready */}
             {image.original && (
               <div className={cn(
-                "flex gap-3 py-2",
+                "flex flex-col gap-4",
                 !isImageReady && "opacity-50 pointer-events-none"
               )}>
-                <button
-                  onClick={() => resetEditor(false)}
-                  disabled={!isImageReady || isDownloading}
-                  className="flex-1 px-2 py-1.5 lg:px-4 lg:py-2.5 bg-gray-900 hover:bg-gray-800 dark:bg-white/5 dark:hover:bg-white/10 text-white rounded-lg transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2"
-                >
-                  <RotateCcw className="w-4 h-4" />
-                  <span>Reset</span>
-                </button>
-                <DownloadButton />
+                {isImageReady && (
+                  <>
+                    {/* Desktop Layout Controls */}
+                    <div className="hidden lg:flex gap-3">
+                      <div className="flex-1">
+                        <BackgroundUpload />
+                      </div>
+                      <div className="flex-1">
+                        <DownloadButton />
+                      </div>
+                      <button
+                        onClick={() => resetEditor(false)}
+                        disabled={!isImageReady || isDownloading}
+                        className="px-4 py-2.5 bg-gray-900 hover:bg-gray-800 dark:bg-white/5 dark:hover:bg-white/10 text-white rounded-lg transition-colors font-medium disabled:opacity-50 flex items-center justify-center gap-2 h-[42px] w-[100px]"
+                      >
+                        <RotateCcw className="w-4 h-4" />
+                        <span>Reset</span>
+                      </button>
+                    </div>
+
+                    {/* Foreground Controls in a separate row */}
+                    <div className="bg-white/50 dark:bg-black/20 rounded-lg p-4">
+                      <ForegroundControls />
+                    </div>
+                  </>
+                )}
               </div>
             )}
           </div>

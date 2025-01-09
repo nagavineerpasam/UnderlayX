@@ -53,6 +53,7 @@ interface EditorState {
     original: string | null;
     background: string | null;
     foreground: string | null;
+    customBackground: string | null; // Add this
   };
   textSets: TextSet[];
   isProcessing: boolean;
@@ -64,6 +65,10 @@ interface EditorState {
   originalFileName: string | null;
   processingMessage: string;
   loadedFonts: Set<string>;
+  foregroundPosition: {
+    x: number;
+    y: number;
+  };
 }
 
 interface EditorActions {
@@ -81,6 +86,8 @@ interface EditorActions {
   setExportQuality: (quality: 'high' | 'medium' | 'low') => void;
   updateImageEnhancements: (enhancements: ImageEnhancements) => void;
   setProcessingMessage: (message: string) => void;
+  setCustomBackground: (file: File) => Promise<void>; // Add this
+  updateForegroundPosition: (position: { x: number; y: number }) => void;
 }
 
 export const useEditor = create<EditorState & EditorActions>((set, get) => ({
@@ -88,6 +95,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     original: null,
     background: null,
     foreground: null,
+    customBackground: null
   },
   textSets: [],
   isProcessing: false,
@@ -108,6 +116,10 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   originalFileName: null,
   processingMessage: '',
   loadedFonts: new Set(),
+  foregroundPosition: {
+    x: 0,
+    y: 0
+  },
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
   addTextSet: () => set((state) => ({
@@ -304,7 +316,6 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
   },
 
   downloadImage: async () => {
-    // Start loading state immediately
     set({ 
       isDownloading: true,
       processingMessage: 'Preparing your masterpiece...'
@@ -325,19 +336,23 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      // Load the original background image at full quality
+      // Use the active background (custom or original)
+      const activeBackground = image.customBackground || image.original;
+      
+      // Load the background image
       const bgImg = new Image();
       bgImg.crossOrigin = "anonymous";
       await new Promise((resolve, reject) => {
         bgImg.onload = resolve;
         bgImg.onerror = reject;
-        bgImg.src = image.original!; // Use original image instead of background
+        bgImg.src = activeBackground!;
       });
 
       // Maintain original dimensions
       canvas.width = bgImg.width;
       canvas.height = bgImg.height;
 
+      // Apply enhancements
       ctx.filter = `
         brightness(${imageEnhancements.brightness}%)
         contrast(${imageEnhancements.contrast}%)
@@ -345,6 +360,7 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         opacity(${100 - imageEnhancements.fade}%)
       `;
 
+      // Draw background
       ctx.drawImage(bgImg, 0, 0);
 
       shapeSets.forEach(shapeSet => {
@@ -426,7 +442,16 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
         fgImg.src = image.foreground!;
       });
       
-      ctx.drawImage(fgImg, 0, 0, canvas.width, canvas.height);
+      // Before drawing foreground, apply the position offset
+      const { foregroundPosition } = get();
+      ctx.filter = 'none';
+      ctx.drawImage(
+        fgImg, 
+        foregroundPosition.x,
+        foregroundPosition.y,
+        canvas.width, 
+        canvas.height
+      );
 
       // Always use maximum quality (1.0) regardless of exportQuality setting for PNG
       const blobPromise = new Promise<void>((resolve, reject) => {
@@ -510,9 +535,36 @@ export const useEditor = create<EditorState & EditorActions>((set, get) => ({
     image: clearImage ? {
       original: null,
       background: null,
-      foreground: null
-    } : state.image
+      foreground: null,
+      customBackground: null
+    } : {
+      ...state.image,
+      customBackground: null,
+      background: state.image.original // Reset to original background
+    },
+    foregroundPosition: { x: 0, y: 0 }
   })),
   setExportQuality: (quality) => set({ exportQuality: quality }),
-  updateImageEnhancements: (enhancements) => set({ imageEnhancements: enhancements })
+  updateImageEnhancements: (enhancements) => set({ imageEnhancements: enhancements }),
+  setCustomBackground: async (file: File) => {
+    try {
+      const currentState = get();
+      // Check if URL exists before revoking
+      if (currentState.image.customBackground) {
+        URL.revokeObjectURL(currentState.image.customBackground);
+      }
+      
+      const url = URL.createObjectURL(file);
+      set(state => ({
+        image: {
+          ...state.image,
+          customBackground: url,
+          background: url
+        }
+      }));
+    } catch (error) {
+      console.error('Error setting custom background:', error);
+    }
+  },
+  updateForegroundPosition: (position) => set({ foregroundPosition: position }),
 }));

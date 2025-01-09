@@ -5,7 +5,7 @@ import { useEditor } from '@/hooks/useEditor';
 import { SHAPES } from '@/constants/shapes';
 
 export function CanvasPreview() {
-  const { image, textSets, shapeSets, imageEnhancements } = useEditor();
+  const { image, textSets, shapeSets, imageEnhancements, foregroundPosition } = useEditor();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
   const fgImageRef = useRef<HTMLImageElement | null>(null);
@@ -136,10 +136,16 @@ export function CanvasPreview() {
       if (fgImageRef.current) {
         ctx.filter = 'none'; // Reset filter before drawing foreground
         ctx.globalAlpha = 1; // Reset opacity
-        ctx.drawImage(fgImageRef.current, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(
+          fgImageRef.current,
+          foregroundPosition.x, // Use from props instead of get()
+          foregroundPosition.y, // Use from props instead of get()
+          canvas.width,
+          canvas.height
+        );
       }
     });
-  }, [textSets, shapeSets, filterString]);
+  }, [textSets, shapeSets, filterString, foregroundPosition]); // Add foregroundPosition to dependencies
 
   // Cleanup animation frame on unmount
   useEffect(() => {
@@ -151,11 +157,12 @@ export function CanvasPreview() {
   }, []);
 
   useEffect(() => {
-    if (!image.background) return;
+    const activeBackground = image.customBackground || image.background;
+    if (!activeBackground) return;
 
     // Load background image
     const bgImg = new Image();
-    bgImg.src = image.background;
+    bgImg.src = activeBackground;
     bgImg.onload = () => {
       bgImageRef.current = bgImg;
       render();
@@ -170,7 +177,7 @@ export function CanvasPreview() {
         render();
       };
     }
-  }, [image.background, image.foreground]);
+  }, [image.background, image.customBackground, image.foreground]);
 
   useEffect(() => {
     // Load all fonts used in text sets
@@ -190,7 +197,7 @@ export function CanvasPreview() {
   // Re-render on text or shape changes
   useEffect(() => {
     render();
-  }, [textSets, shapeSets, imageEnhancements]);
+  }, [textSets, shapeSets, imageEnhancements, foregroundPosition]); // Add foregroundPosition to dependencies
 
   return (
     <canvas

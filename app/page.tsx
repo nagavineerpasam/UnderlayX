@@ -42,176 +42,176 @@ export default function Home() {
           willChange: 'transform'  // Hint to browser about upcoming transforms
         }}
       >
-        {/* Ad Banner */}
-        <div className="w-full bg-black/30 border-b border-gray-800">
-          <a 
-            href="https://visualcovermaker.com" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="block py-3 text-center text-gray-300 hover:text-white transition-colors duration-300"
-          >
-            Turn plain images into beautiful song covers with customizable overlays. Check out <b>VC Maker!</b>
-          </a>
+        
+
+        {/* Hero Section - Single Viewport */}
+        <div className="min-h-screen flex flex-col">
+          {/* Brand Header */}
+          <div className="pt-8 pb-4">
+            <h2 className="text-3xl font-bold text-center text-white">
+              UnderlayX
+            </h2>
+          </div>
+
+          {/* Main Hero Content */}
+          <div className="flex-grow flex items-center">
+            <div className="container mx-auto px-4">
+              <div className="grid md:grid-cols-2 gap-8 items-center">
+                {/* Left side - Text content */}
+                <motion.div 
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="text-left"
+                >
+                  <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
+                    Transform Your <span className="text-purple-500">Images</span> Instantly
+                  </h1>
+                  <p className="text-lg md:text-xl text-gray-300 mb-8">
+                    Add professional text behind objects, create stunning glow effects, and place shapes behind your images - all in one click.
+                  </p>
+                  <Link 
+                    href="/custom-editor" 
+                    onClick={() => setIsLoading(true)}
+                    className="inline-flex items-center gap-2 px-8 py-4 bg-white hover:bg-gray-100 disabled:bg-gray-200 text-black rounded-lg text-xl font-semibold transition-all hover:scale-105"
+                  >
+                    {isLoading ? (
+                      <>
+                        <span className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
+                        Loading...
+                      </>
+                    ) : (
+                      "Try It Now - It's Free"
+                    )}
+                  </Link>
+
+                  {/* Product Hunt Badges */}
+                  <div className="hidden sm:flex flex-col sm:flex-row gap-4 mt-8">
+                    <a 
+                      href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="w-full sm:w-auto"
+                    >
+                      <img 
+                        src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=44" 
+                        alt="UnderlayX - Product Hunt" 
+                        className="w-full max-w-[250px] h-auto mx-auto"
+                      />
+                    </a>
+                    <a 
+                      href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-underlayx" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="w-full sm:w-auto"
+                    >
+                      <img 
+                        src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=739682&theme=light&period=daily" 
+                        alt="UnderlayX - Product Hunt" 
+                        className="w-full max-w-[250px] h-auto mx-auto"
+                      />
+                    </a>
+                    <a 
+                      href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="w-full sm:w-auto"
+                    >
+                      <img 
+                        src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=164" 
+                        alt="UnderlayX - Product Hunt" 
+                        className="w-full max-w-[250px] h-auto mx-auto"
+                      />
+                    </a>
+                  </div>
+                </motion.div>
+
+                {/* Right side - Interactive Preview */}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="relative aspect-video rounded-xl overflow-hidden"
+                >
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="relative w-full h-full">
+                      <Image
+                        src="/journey.png"
+                        alt="UnderlayX Demo"
+                        fill
+                        className="object-cover"
+                        priority
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 via-transparent to-blue-500/20 mix-blend-overlay" />
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Feature Highlights Section */}
+        <div className="py-16">
+          <div className="container mx-auto px-4">
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-3xl md:text-4xl font-bold text-white text-center mb-12"
+            >
+              Everything You Need In One Place
+            </motion.h2>
+
+            {/* Feature Grid - Three columns */}
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                {
+                  title: "Text Behind Objects",
+                  image: "/ride.png",
+                  description: "AI-powered text placement behind any object"
+                },
+                {
+                  title: "Glowing Effects",
+                  image: "/star.png",
+                  description: "Add stunning glow effects to your designs"
+                },
+                {
+                  title: "Shape Underlays",
+                  image: "/pose.png",
+                  description: "Place custom shapes behind your objects"
+                }
+              ].map((feature, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.2 }}
+                  className="group relative rounded-xl overflow-hidden"
+                >
+                  <div className="aspect-square relative">
+                    <Image
+                      src={feature.image}
+                      alt={feature.title}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
+                      <div className="absolute bottom-0 p-6">
+                        <h3 className="text-xl font-bold text-white mb-2">{feature.title}</h3>
+                        <p className="text-gray-200">{feature.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* First Viewport Section */}
         <div className="min-h-screen flex flex-col justify-center">
           <div className="container mx-auto px-4 py-6 md:py-12">
-            {/* Hero Section */}
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, ease: "easeOut", reducedMotion: "user" }}
-              className="text-center max-w-4xl mx-auto mb-16 md:mb-24"
-            >
-              <h1 className="text-5xl md:text-7xl font-bold text-white mb-8">
-                UnderlayX
-              </h1>
-              <p className="text-lg md:text-xl text-gray-300 mb-12">
-                The ultimate free tool to place text behind images, create glowing effects, and add shapes behind objects. Perfect for content creators, social media, and professional design. No login required - start creating now!
-              </p>
-              <Link 
-                href="/custom-editor" 
-                onClick={() => setIsLoading(true)}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-white hover:bg-gray-100 disabled:bg-gray-200 text-black rounded-lg text-xl font-semibold transition-all hover:scale-105"
-              >
-                {isLoading ? (
-                  <>
-                    <span className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></span>
-                    Loading...
-                  </>
-                ) : (
-                  "Create Now"
-                )}
-              </Link>
-
-              {/* Product Hunt Badges */}
-              <div className="hidden sm:flex flex-col sm:flex-row justify-center items-center gap-4 mt-8 px-4">
-                <a 
-                  href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="w-full sm:w-auto"
-                >
-                  <img 
-                    src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=44" 
-                    alt="UnderlayX - Product Hunt" 
-                    className="w-full max-w-[250px] h-auto mx-auto"
-                  />
-                </a>
-                <a 
-                  href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-underlayx" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="w-full sm:w-auto"
-                >
-                  <img 
-                    src="https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=739682&theme=light&period=daily" 
-                    alt="UnderlayX - Product Hunt" 
-                    className="w-full max-w-[250px] h-auto mx-auto"
-                  />
-                </a>
-                <a 
-                  href="https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="w-full sm:w-auto"
-                >
-                  <img 
-                    src="https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=164" 
-                    alt="UnderlayX - Product Hunt" 
-                    className="w-full max-w-[250px] h-auto mx-auto"
-                  />
-                </a>
-              </div>
-
-            </motion.div>
-
-            {/* Featured Images - First Row */}
-            <div className="px-2 md:px-0">
-              <motion.div 
-                style={{ y }}
-                className="flex flex-col md:flex-row gap-4 md:gap-6"
-              >
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, ease: "easeOut", reducedMotion: "user" }}
-                  className="w-full md:w-[70%] aspect-video relative overflow-hidden group"
-                >
-                  <div className="absolute inset-0 rounded-xl overflow-hidden">
-                    <Image
-                      src="/journey.png"
-                      alt="Landscape example"
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 70vw"
-                      priority
-                      loading="eager"
-                      quality={75}
-                    />
-                    {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="absolute bottom-0 p-6">
-                        <h3 className="text-white text-2xl font-bold">Transform Landscapes</h3>
-                        <p className="text-gray-200">Add depth to your scenic shots</p>
-                      </div>
-                    </div> */}
-                  </div>
-                </motion.div>
-                
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, ease: "easeOut", reducedMotion: "user", delay: 0.1 }}
-                  className="w-full md:w-[30%] aspect-[3/4] relative overflow-hidden group"
-                >
-                  <div className="absolute inset-0 rounded-xl overflow-hidden">
-                    <Image
-                      src="/star.png"
-                      alt="Portrait example"
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 30vw"
-                      priority
-                      loading="eager"
-                      quality={75}
-                    />
-                    {/* <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/60 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="absolute bottom-0 p-6">
-                        <h3 className="text-white text-xl font-bold">Perfect Portraits</h3>
-                        <p className="text-gray-200">Enhanced studio effects</p>
-                      </div>
-                    </div> */}
-                  </div>
-                </motion.div> 
-              </motion.div>
-            </div>
-
-            {/* Portrait Images Row */}
-            <div className="mt-4 md:mt-6 px-2 md:px-0">
-              <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                {['pose', 'joy', 'ride'].map((imageName, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, ease: "easeOut", reducedMotion: "user", delay: index * 0.1 }}
-                    className="w-full md:w-1/3 aspect-[3/4] relative overflow-hidden rounded-xl"
-                  >
-                    <Image
-                      src={`/${imageName}.png`}
-                      alt={`${imageName} example`}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      loading="lazy"
-                      quality={75}
-                    />
-                  </motion.div>
-                ))}
-              </div>
-            </div>
-
             {/* Features Grid Section - Adjusted spacing */}
             <div className="py-16 md:py-24">
               <div className="container mx-auto px-4">
