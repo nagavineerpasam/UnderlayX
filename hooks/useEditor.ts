@@ -67,6 +67,13 @@ interface BackgroundImage {
   rotation: number;
 }
 
+interface MovableObject {
+  url: string | null;
+  position: { x: number; y: number };
+  scale: number;
+  rotation: number;
+}
+
 interface EditorState {
   image: {
     original: string | null;
@@ -94,6 +101,8 @@ interface EditorState {
   backgroundImages: BackgroundImage[];
   backgroundColor: string | null;
   foregroundSize: number;  // Add this line
+  movableObject: MovableObject;
+  inpaintedBackground: string | null;
 }
 
 interface EditorActions {
@@ -126,6 +135,8 @@ interface EditorActions {
   updateBackgroundImage: (id: number, updates: Partial<BackgroundImage>) => void;
   setBackgroundColor: (color: string | null) => void;
   updateForegroundSize: (size: number) => void;  // Add this line
+  handleObjectSegmentation: (file: File) => Promise<void>;
+  updateMovableObject: (updates: Partial<MovableObject>) => void;
 }
 
 // Add helper functions outside of the store
@@ -198,6 +209,13 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   backgroundImages: [],
   backgroundColor: null,
   foregroundSize: 100,  // Default size is 100%
+  movableObject: {
+    url: null,
+    position: { x: 0, y: 0 },
+    scale: 100,
+    rotation: 0
+  },
+  inpaintedBackground: null,
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
   addTextSet: () => set((state) => ({
@@ -857,4 +875,59 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   },
   
   updateForegroundSize: (size) => set({ foregroundSize: size }),
+
+  handleObjectSegmentation: async (file: File) => {
+    try {
+      set({ 
+        isProcessing: true,
+        processingMessage: 'Analyzing image and preparing object for movement...'
+      });
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/segment-object', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) throw new Error('Failed to segment object');
+
+      const data = await response.json();
+      
+      // Use the original foreground image for movement, not the mask
+      const state = get();
+      if (!state.image.foreground) {
+        throw new Error('No foreground image available');
+      }
+
+      set(state => ({
+        movableObject: {
+          ...state.movableObject,
+          url: state.image.foreground  // Use the original foreground image
+        },
+        inpaintedBackground: data.inpainted,  // Only use the inpainted background
+        processingMessage: 'Ready! You can now move the object.'
+      }));
+
+    } catch (error) {
+      console.error('Error in object segmentation:', error);
+      set({ processingMessage: 'Failed to prepare object for movement.' });
+    } finally {
+      set({ isProcessing: false });
+      setTimeout(() => set({ processingMessage: '' }), 2000);
+    }
+  },
+
+  updateMovableObject: (updates) => {
+    set(state => {
+      const newState = {
+        movableObject: {
+          ...state.movableObject,
+          ...updates
+        }
+      };
+      return newState;
+    });
+  },
 }));

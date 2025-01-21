@@ -1,7 +1,7 @@
 'use client';
 
 import React, { JSX } from 'react';
-import { Type, Shapes, Plus, ImageIcon, Image, Copy, Images } from 'lucide-react';
+import { Type, Shapes, Plus, ImageIcon, Image, Copy, Images, Move } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { TextEditor } from './TextEditor';
@@ -12,8 +12,9 @@ import { ChangeBackgroundEditor } from './ChangeBackgroundEditor';
 import { CloneImageEditor } from './CloneImageEditor';
 import { useEditorPanel } from '@/contexts/EditorPanelContext';
 import { ImageEditor } from './ImageEditor';
+import { MoveObjectEditor } from './MoveObjectEditor';
 
-type TabType = 'text' | 'shapes' | 'remove-background' | 'change-background' | 'clone-image' | 'images' | null;
+type TabType = 'text' | 'shapes' | 'remove-background' | 'change-background' | 'clone-image' | 'images' | 'move-object' | null;
 
 interface SideNavigationProps {
   mobile?: boolean;
@@ -149,6 +150,13 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
     )
   );
 
+  // Add move object button
+  const moveObjectButton = renderTabButton(
+    'move-object',
+    <Move className={mobile ? "w-4 h-4" : "w-5 h-5"} />,
+    'Move Object'
+  );
+
   if (mobile) {
     return (
       <>
@@ -161,6 +169,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
             {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-4 h-4" />, 'Remove BG')}
             {showTextButton && renderTabButton('text', <Type className="w-4 h-4" />, 'Text')}
             {showShapesButton && renderTabButton('shapes', <Shapes className="w-4 h-4" />, 'Shapes')}
+            {moveObjectButton}
           </div>
         </div>
 
@@ -215,6 +224,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                     {activeTab === 'change-background' && <ChangeBackgroundEditor />}
                     {activeTab === 'clone-image' && <CloneImageEditor />}
                     {activeTab === 'images' && <ImageEditor />}
+                    {activeTab === 'move-object' && <MoveObjectEditor />}
                   </>
                 )}
               </div>
@@ -241,6 +251,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
           {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-5 h-5" />, 'Remove BG')}
           {showTextButton && renderTabButton('text', <Type className="w-5 h-5" />, 'Text')}
           {showShapesButton && renderTabButton('shapes', <Shapes className="w-5 h-5" />, 'Shapes')}
+          {moveObjectButton}
         </div>
 
         {/* Editor Content with border */}
@@ -279,6 +290,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                   {activeTab === 'change-background' && <ChangeBackgroundEditor />}
                   {activeTab === 'clone-image' && <CloneImageEditor />}
                   {activeTab === 'images' && <ImageEditor />}
+                  {activeTab === 'move-object' && <MoveObjectEditor />}
                 </>
               )}
             </div>

@@ -6,6 +6,17 @@ import { SHAPES } from '@/constants/shapes';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
+// Add this helper function
+const loadImage = (src: string): Promise<HTMLImageElement> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+};
+
 export function CanvasPreview() {
   const { 
     image, 
@@ -16,10 +27,16 @@ export function CanvasPreview() {
     foregroundPosition, 
     hasChangedBackground, 
     clonedForegrounds,
-    backgroundImages,  // Add this line
+    backgroundImages,
     backgroundColor,
-    foregroundSize
+    foregroundSize,
+    movableObject,     // Add this
+    inpaintedBackground // Add this
   } = useEditor();
+
+  // Remove get from destructuring and use useEditor() directly when needed
+  const editor = useEditor(); // Add this line to get access to the full store
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
   const fgImageRef = useRef<HTMLImageElement | null>(null);
@@ -66,7 +83,7 @@ export function CanvasPreview() {
     loadImages();
   }, [backgroundImages, loadBackgroundImage]);
 
-  const render = useCallback(() => {
+  const render = useCallback(async () => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
     if (!canvas || !ctx || !bgImageRef.current) return;
@@ -77,7 +94,7 @@ export function CanvasPreview() {
     }
 
     // Schedule next render
-    renderRequestRef.current = requestAnimationFrame(() => {
+    renderRequestRef.current = requestAnimationFrame(async () => {
       // Set canvas size to match background image
       canvas.width = bgImageRef.current!.width;
       canvas.height = bgImageRef.current!.height;
@@ -282,8 +299,54 @@ export function CanvasPreview() {
           ctx.restore();
         });
       }
+
+      // Replace get().inpaintedBackground with direct access
+      if (inpaintedBackground) {
+        const inpaintedImg = await loadImage(inpaintedBackground);
+        ctx.drawImage(inpaintedImg, 0, 0, canvas.width, canvas.height);
+      }
+
+      // Replace get().movableObject with direct access
+      if (movableObject.url) {
+        const objImg = await loadImage(movableObject.url);
+        
+        ctx.save();
+        
+        const scale = Math.min(
+          canvas.width / objImg.width,
+          canvas.height / objImg.height
+        );
+        
+        const newWidth = objImg.width * scale * (movableObject.scale / 100);
+        const newHeight = objImg.height * scale * (movableObject.scale / 100);
+        
+        const x = (canvas.width - newWidth) / 2;
+        const y = (canvas.height - newHeight) / 2;
+        
+        const offsetX = (canvas.width * movableObject.position.x) / 100;
+        const offsetY = (canvas.height * movableObject.position.y) / 100;
+
+        ctx.translate(x + offsetX + newWidth / 2, y + offsetY + newHeight / 2);
+        ctx.rotate((movableObject.rotation * Math.PI) / 180);
+        ctx.drawImage(objImg, -newWidth / 2, -newHeight / 2, newWidth, newHeight);
+        
+        ctx.restore();
+      }
     });
-  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds, backgroundImages, backgroundColor, foregroundSize]);
+  }, [
+    textSets, 
+    shapeSets, 
+    filterString, 
+    hasTransparentBackground, 
+    hasChangedBackground, 
+    foregroundPosition, 
+    clonedForegrounds, 
+    backgroundImages, 
+    backgroundColor, 
+    foregroundSize,
+    movableObject,
+    inpaintedBackground
+  ]);
 
   // Cleanup animation frame on unmount
   useEffect(() => {
@@ -345,6 +408,20 @@ export function CanvasPreview() {
     hasChangedBackground, 
     backgroundColor,
     foregroundSize  // Add foregroundSize here
+  ]);
+
+  // Add an effect specifically for movable object changes
+  useEffect(() => {
+    if (movableObject.url) {
+      render();
+    }
+  }, [
+    movableObject.url,
+    movableObject.position.x,
+    movableObject.position.y,
+    movableObject.scale,
+    movableObject.rotation,
+    render
   ]);
 
   return (
