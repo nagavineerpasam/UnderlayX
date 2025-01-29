@@ -38,7 +38,7 @@ export default function OverlayImagePage() {
             onClick={() => router.push('/custom-editor')}
             className="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xl font-semibold transition-all"
           >
-            Open the Editor
+            Create now
           </button>
           <p className={`${textColorMuted} text-sm`}>
             Start creating your own transformed images now

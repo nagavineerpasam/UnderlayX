@@ -1,9 +1,5 @@
 'use client';
 
-import { EditorLayout } from '@/components/EditorLayout';
-import { SideNavigation } from '@/components/SideNavigation';
-import { useEditor } from '@/hooks/useEditor';
-import { useEffect } from 'react';
 import { TransformationPage } from '@/components/TransformationPage';
 
 export default function TextBehindImagePage() {

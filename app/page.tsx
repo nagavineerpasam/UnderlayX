@@ -64,9 +64,9 @@ export default function Home() {
                       Loading...
                     </>
                   ) : user ? (
-                    "Open the app"
+                    "Create Now"
                   ) : (
-                    "Open the app"
+                    "Create Now"
                   )}
                 </Link>
               </div>
