@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 const features = [
   {
@@ -48,11 +49,26 @@ const features = [
   },
 ];
 
-export function FeatureShowcase() {
+interface FeatureShowcaseProps {
+  compact?: boolean;
+}
+
+export function FeatureShowcase({ compact = false }: FeatureShowcaseProps) {
   return (
-    <section className="py-8 px-4" aria-label="Feature examples">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <section 
+      className={cn(
+        "py-1", // Reduced padding
+        !compact && "py-8 px-4"
+      )} 
+      aria-label="Feature examples"
+    >
+      <div className={cn("mx-auto", !compact && "max-w-7xl")}>
+        <div className={cn(
+          "grid gap-2", // Reduced gap further
+          compact 
+            ? "grid-cols-3 max-h-[calc(100vh-280px)]" // Add max height constraint
+            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        )}>
           {features.map((feature, index) => (
             <ComparisonSlider
               key={index}
@@ -61,6 +77,7 @@ export function FeatureShowcase() {
               beforeAlt={feature.beforeAlt}
               afterAlt={feature.afterAlt}
               title={feature.title}
+              compact={compact}
             />
           ))}
         </div>
@@ -75,6 +92,7 @@ function ComparisonSlider({
   beforeAlt,
   afterAlt,
   title,
+  compact = false
 }) {
   const [isResizing, setIsResizing] = useState(false);
   const [position, setPosition] = useState(50);
@@ -116,10 +134,14 @@ function ComparisonSlider({
   }, [isResizing]);
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-1"> {/* Reduced spacing */}
       <div
         ref={containerRef}
-        className="relative aspect-[3/4] w-full rounded-2xl overflow-hidden cursor-col-resize select-none"
+        className={cn(
+          "relative w-full rounded-md overflow-hidden cursor-col-resize select-none", // Even smaller rounded corners
+          compact ? "aspect-[3/2]" // Changed aspect ratio to be wider than tall
+            : "aspect-[3/4]"
+        )}
         onMouseDown={(e) => {
           e.preventDefault();
           setIsResizing(true);
@@ -188,7 +210,13 @@ function ComparisonSlider({
           </div>
         </div>
       </div>
-      <p className="text-center text-white/70 text-sm">{title}</p>
+      <p className={cn(
+        "text-center text-white/70",
+        compact ? "text-[8px] truncate" // Even smaller text and ensure it doesn't wrap
+          : "text-sm"
+      )}>
+        {title}
+      </p>
     </div>
   );
 }
