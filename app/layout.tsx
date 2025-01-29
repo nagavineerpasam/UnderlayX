@@ -8,19 +8,19 @@ import { PricingProvider } from '@/contexts/PricingContext';
 
 
 export const metadata = {
-  title: 'Transform Your Images with Cloning, Text Behind, and Background Customization - UnderlayX AI',
+  title: 'All-in-One Free AI Image Editor - UnderlayX AI',
   description: 'The ultimate tool to add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects effortlessly. Perfect for creators and designers.',
   metadataBase: new URL('https://www.underlayx.com'),
   openGraph: {
     type: 'website',
     url: 'https://www.underlayx.com',
-    title: 'Transform Your Images with Cloning, Text Behind, and Background Customization - UnderlayX AI',
+    title: 'All-in-One Free AI Image Editor - UnderlayX AI',
     description: 'Add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects. Elevate your visuals with UnderlayX AI.',
     images: ['/og-image.png'],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'UnderlayX AI | Transform Your Images with Cloning, Text Behind, and Background Customization',
+    title: 'UnderlayX AI | All-in-One Free AI Image Editor',
     description: 'Add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects effortlessly. Try it now!',
     creator: '@underlayx',
     images: ['/og-image.png'],
