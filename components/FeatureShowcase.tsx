@@ -51,25 +51,29 @@ const features = [
 
 interface FeatureShowcaseProps {
   compact?: boolean;
+  limited?: boolean;  // Add this prop
 }
 
-export function FeatureShowcase({ compact = false }: FeatureShowcaseProps) {
+export function FeatureShowcase({ compact = false, limited = false }: FeatureShowcaseProps) {
+  // Only take first 3 features if limited is true
+  const displayFeatures = limited ? features.slice(0, 3) : features;
+
   return (
     <section 
       className={cn(
-        "py-1", // Reduced padding
+        "py-1",
         !compact && "py-8 px-4"
       )} 
       aria-label="Feature examples"
     >
       <div className={cn("mx-auto", !compact && "max-w-7xl")}>
         <div className={cn(
-          "grid gap-2", // Reduced gap further
+          "grid gap-3",
           compact 
-            ? "grid-cols-3 max-h-[calc(100vh-280px)]" // Add max height constraint
+            ? "grid-cols-3" // Always 3 columns for compact mode
             : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
         )}>
-          {features.map((feature, index) => (
+          {displayFeatures.map((feature, index) => (
             <ComparisonSlider
               key={index}
               beforeImage={feature.beforeImage}

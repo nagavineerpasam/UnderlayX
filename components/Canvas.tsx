@@ -336,7 +336,7 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
       >
         {!image.original ? (
           <div className="h-full flex flex-col">
-            {/* Upload Area - Updated Text */}
+            {/* Upload Area - Make it taller */}
             <div
               onDrop={handleDrop}
               onDragOver={handleDragOver}
@@ -345,7 +345,7 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
                 "relative flex items-center justify-center",
                 isMobile
                   ? "h-full"
-                  : "h-[140px]" // Even more compact
+                  : "h-[380px]" // Significantly increased height
               )}
             >
               <input
@@ -407,14 +407,14 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
               )}
             </div>
 
-            {/* Example Showcase - Add spacing */}
+            {/* Example Showcase - Updated heading */}
             {!isMobile && (
-              <div className="flex-1">
-                <div className="pt-6"> {/* Increased top padding */}
-                  <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">
-                    Example Effects
+              <div className="flex-1 max-h-[calc(100vh-380px)]"> {/* Add max height */}
+                <div className="pt-8 px-6"> {/* Increased padding */}
+                  <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-wide">
+                    Unlock Endless Creative Possibilities
                   </h3>
-                  <FeatureShowcase compact />
+                  <FeatureShowcase compact limited />
                 </div>
               </div>
             )}
