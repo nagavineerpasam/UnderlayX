@@ -4,6 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
 
 interface TransformationPageProps {
   title: string;
@@ -32,33 +33,53 @@ export function TransformationPage({
   return (
     <div className={`min-h-screen ${bgColor} flex flex-col p-4`}>
       <nav className="w-full max-w-7xl mx-auto py-2 md:py-4">
-        <Link href="/" className={`text-xl font-bold ${textColor} hover:opacity-80`}>
+        <Link 
+          href="/" 
+          className={cn(
+            "text-xl font-bold",
+            "bg-clip-text text-transparent",
+            "bg-gradient-to-r from-purple-600 to-pink-600",
+            "hover:opacity-80 transition-opacity"
+          )}
+        >
           UnderlayX AI
         </Link>
       </nav>
 
       <main className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto text-center pt-4 md:pt-0">
-        <h1 className={`text-4xl md:text-5xl font-bold ${textColor} mb-4`}>
+        <h1 className={cn(
+          "text-4xl md:text-5xl font-bold mb-4",
+          "bg-clip-text text-transparent",
+          "bg-gradient-to-r from-purple-600 to-pink-600"
+        )}>
           {title}
         </h1>
         
-        <p className={`${textColorMuted} text-lg mb-6 max-w-2xl`}>
+        <p className={`${textColorMuted} text-lg mb-8 max-w-2xl`}>
           {description}
         </p>
 
-        <div className="space-y-4 mb-8">
+        <div className="space-y-4 mb-12">
           <button
             onClick={() => router.push('/custom-editor')}
-            className="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-xl font-semibold transition-all"
+            className={cn(
+              "px-8 py-3 text-xl font-semibold text-white",
+              "bg-gradient-to-r from-purple-600 to-pink-600",
+              "rounded-lg shadow-lg",
+              "transform transition-all duration-200",
+              "hover:scale-105 hover:shadow-xl",
+              "hover:from-purple-500 hover:to-pink-500",
+              "active:scale-95"
+            )}
           >
             Create now
           </button>
-          <p className={`${textColorMuted} text-sm`}>
+          <p className={`${textColorMuted} text-sm animate-pulse`}>
             Start creating your own transformed images now
           </p>
         </div>
 
-        <div className="flex items-center gap-4 md:gap-8"> {/* Reduced gap */}
+        <div className="flex items-center gap-8">
           <div className="text-center">
             <Image
               src={beforeImage}

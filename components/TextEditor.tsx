@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { useEditor } from '@/hooks/useEditor';
-import { FONT_OPTIONS, FONT_WEIGHTS } from '@/constants/fonts';
+import { FontWeight } from '@/constants/fonts';
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,9 @@ import { GlowEffect } from '@/types/editor';
 import { useDebounce } from '@/hooks/useDebounce';
 import { ColorInput } from './ColorInput';
 import { cn } from '@/lib/utils';
+import { FontSelector } from './FontSelector';
+import { Bold } from "lucide-react"; // Add this import
+import { Button } from "@/components/ui/button";
 
 // Helper function for smooth scrolling
 const scrollToElement = (element: HTMLElement | null) => {
@@ -95,66 +98,42 @@ export function TextEditor() {
           />
           
           {/* Font Controls */}
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label asChild>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                  <Select
-                    value={textSet.fontFamily}
-                    onValueChange={(value) => updateTextSet(textSet.id, { fontFamily: value })}
-                  >
-                    <SelectTrigger className="bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
-                      <SelectValue placeholder="Select font" />
-                    </SelectTrigger>
-                    <SelectContent 
-                      className="max-h-[400px] overflow-y-auto bg-white dark:bg-zinc-900 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white w-[280px]"
-                    >
-                      <div className="pt-2">
-                        {FONT_OPTIONS
-                          .filter(font => 
-                            font.name.toLowerCase().includes(fontSearch.toLowerCase())
-                          )
-                          .map((font) => (
-                            <SelectItem 
-                              key={font.value} 
-                              value={font.value}
-                              className="focus:bg-gray-100 dark:focus:bg-white/10 focus:text-gray-900 dark:focus:text-white h-10 text-gray-900 dark:text-white data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-white/10"
-                              style={{ fontFamily: font.value }}
-                            >
-                              {font.name}
-                            </SelectItem>
-                          ))}
-                      </div>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </Label>
-            </div>
-
-            <div>
-              <Label asChild>
-                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">
-                  <Select
-                    value={textSet.fontWeight}
-                    onValueChange={(value) => updateTextSet(textSet.id, { fontWeight: value })}
-                  >
-                    <SelectTrigger className="bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
-                      <SelectValue placeholder="Select weight" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-white dark:bg-zinc-900 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white">
-                      {FONT_WEIGHTS.map((weight) => (
-                        <SelectItem 
-                          key={weight.value} 
-                          value={weight.value}
-                          className="focus:bg-gray-100 dark:focus:bg-white/10 focus:text-gray-900 dark:focus:text-white data-[highlighted]:bg-gray-100 dark:data-[highlighted]:bg-white/10"
-                        >
-                          {weight.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </Label>
+          <div className="grid gap-4">
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <Label className="text-sm text-gray-600 dark:text-gray-400 mb-1.5">
+                  Font Family
+                </Label>
+                <FontSelector
+                  value={textSet.fontFamily}
+                  onValueChange={(value) => {
+                    updateTextSet(textSet.id, {
+                      fontFamily: value,
+                      // Keep existing weight when changing font
+                      fontWeight: textSet.fontWeight
+                    });
+                  }}
+                />
+              </div>
+              <div className="pt-6">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className={cn(
+                    "h-10 w-10",
+                    textSet.fontWeight === '700' && 
+                    "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+                  )}
+                  onClick={() => updateTextSet(textSet.id, {
+                    fontWeight: textSet.fontWeight === '400' ? '700' : '400'
+                  })}
+                >
+                  <Bold className={cn(
+                    "h-4 w-4",
+                    textSet.fontWeight === '700' && "text-purple-600 dark:text-purple-400"
+                  )} />
+                </Button>
+              </div>
             </div>
           </div>
 
