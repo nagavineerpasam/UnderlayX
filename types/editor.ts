@@ -1,3 +1,5 @@
+import type { FontWeight } from '@/constants/fonts';
+
 export interface GlowEffect {
   enabled: boolean;
   color: string;
@@ -13,7 +15,7 @@ export interface TextSet {
   id: number;
   text: string;
   fontFamily: string;
-  fontWeight: string;
+  fontWeight: FontWeight;
   fontSize: number;
   color: string;
   opacity: number;

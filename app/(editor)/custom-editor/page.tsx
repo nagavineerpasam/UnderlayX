@@ -4,6 +4,7 @@ import { useEditor } from '@/hooks/useEditor';
 import { useEffect } from 'react';
 import { EditorLayout } from '@/components/EditorLayout';
 import { SideNavigation } from '@/components/SideNavigation';
+import '@/app/fonts.css';
 
 export default function EditorPage() {
   const { resetEditor } = useEditor();

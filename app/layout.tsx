@@ -1,11 +1,12 @@
 import './globals.css';
-import { inter } from './fonts';
+import { Inter } from 'next/font/google'
 import { Toaster } from "@/components/ui/toaster"
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { Analytics } from '@vercel/analytics/next';
 import { PricingProvider } from '@/contexts/PricingContext';
 
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
   title: 'All-in-One Free AI Image Editor - UnderlayX AI',

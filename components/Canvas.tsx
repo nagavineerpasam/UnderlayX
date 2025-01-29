@@ -16,6 +16,7 @@ import { incrementGenerationCount } from "@/lib/supabase-utils";
 import { useToast } from "@/hooks/use-toast";
 import { ProPlanDialog } from "./ProPlanDialog";
 import { supabase } from "@/lib/supabaseClient";
+import { FeatureShowcase } from './FeatureShowcase';
 
 interface CanvasProps {
   shouldAutoUpload?: boolean;
@@ -327,91 +328,95 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
     <>
       <div
         className={cn(
-          "absolute inset-0 flex items-center justify-center w-full h-full",
+          "absolute inset-0 w-full h-full",
           "p-4 sm:p-6",
-          "overflow-hidden",
           isMobile && "mt-2",
           isPanelOpen && isMobile && "mb-4"
         )}
       >
         {!image.original ? (
-          <div
-            onDrop={handleDrop}
-            onDragOver={handleDragOver}
-            className={cn(
-              "w-full transition-all duration-300",
-              "relative flex items-center justify-center",
-              isMobile
-                ? isPanelOpen
-                  ? "h-[65vh]" // Increased height for upload area
-                  : "h-[75vh]" // Increased height for upload area
-                : isPanelOpen
-                ? "h-[calc(80vh-8rem)]"
-                : "h-[calc(100vh-10rem)]"
-            )}
-          >
-            <input
-              ref={fileInputRef}
-              id="canvas-upload"
-              type="file"
-              onChange={onFileChange}
-              accept="image/jpeg,image/png,image.webp,image.heic,image.heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
-              className="hidden"
-              disabled={isConverting || isProcessing} // Disable during conversion
-            />
-            {isMobile ? (
-              <div className="flex flex-col items-center gap-4">
-                <p className="text-gray-600 dark:text-gray-400 text-center">
-                  {isConverting
-                    ? "Converting image..."
-                    : "Upload an image to get started"}
-                </p>
+          <div className="h-full flex flex-col">
+            {/* Upload Area - Make it taller */}
+            <div
+              onDrop={handleDrop}
+              onDragOver={handleDragOver}
+              className={cn(
+                "transition-all duration-300",
+                "relative flex items-center justify-center",
+                isMobile
+                  ? "h-full"
+                  : "h-[380px]" // Significantly increased height
+              )}
+            >
+              <input
+                ref={fileInputRef}
+                id="canvas-upload"
+                type="file"
+                onChange={onFileChange}
+                accept="image/jpeg,image/png,image.webp,image.heic,image.heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
+                className="hidden"
+                disabled={isConverting || isProcessing}
+              />
+              {isMobile ? (
+                <div className="flex flex-col items-center gap-4">
+                  <p className="text-gray-600 dark:text-gray-400 text-center">
+                    {isConverting
+                      ? "Converting image..."
+                      : "Upload an image to get started"}
+                  </p>
+                  <label
+                    htmlFor="canvas-upload"
+                    className={cn(
+                      "bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2 transition-colors",
+                      (isConverting || isProcessing) &&
+                        "opacity-50 cursor-not-allowed"
+                    )}
+                    onClick={(e) =>
+                      (isConverting || isProcessing) && e.preventDefault()
+                    }
+                  >
+                    <Upload className="w-5 h-5" />
+                    <span>{isConverting ? "Converting..." : "Upload"}</span>
+                  </label>
+                </div>
+              ) : (
                 <label
                   htmlFor="canvas-upload"
                   className={cn(
-                    "bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center gap-2 transition-colors",
-                    (isConverting || isProcessing) &&
-                      "opacity-50 cursor-not-allowed"
+                    "absolute inset-0 flex flex-col items-center justify-center gap-3",
+                    "border-2 border-dashed border-gray-300/50 dark:border-gray-600/30",
+                    "rounded-lg", // Smaller border radius
+                    "transition-all bg-white/50 dark:bg-zinc-900/50",
+                    "hover:bg-gray-50/80 dark:hover:bg-zinc-800/50",
+                    "backdrop-blur-sm",
+                    "cursor-pointer",
+                    (isConverting || isProcessing) && "opacity-50 cursor-not-allowed"
                   )}
-                  onClick={(e) =>
-                    (isConverting || isProcessing) && e.preventDefault()
-                  }
+                  onClick={(e) => (isConverting || isProcessing) && e.preventDefault()}
                 >
-                  <Upload className="w-5 h-5" />
-                  <span>{isConverting ? "Converting..." : "Upload"}</span>
+                  <div className="flex items-center gap-3 px-4 py-2 bg-purple-600 hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-700 rounded-full shadow-sm transition-colors">
+                    <Upload className="w-5 h-5 text-white" />
+                    <span className="text-sm font-medium text-white">
+                      {isConverting ? "Converting..." : "Select an image"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Drag and drop an image here or click to select a file
+                  </p>
                 </label>
-              </div>
-            ) : (
-              <label
-                htmlFor="canvas-upload"
-                className={cn(
-                  "absolute inset-0 flex items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600/50 rounded-xl transition-all bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800/80 cursor-pointer",
-                  (isConverting || isProcessing) &&
-                    "opacity-50 cursor-not-allowed"
-                )}
-                onClick={(e) =>
-                  (isConverting || isProcessing) && e.preventDefault()
-                }
-              >
-                <div className="text-center space-y-6">
-                  <h3 className="text-xl font-medium text-gray-900 dark:text-white/90">
-                    {isConverting
-                      ? "Converting image format..."
-                      : "Upload an image to get started"}
+              )}
+            </div>
+
+            {/* Example Showcase - Updated heading */}
+            {!isMobile && (
+              <div className="flex-1 max-h-[calc(100vh-380px)]"> {/* Add max height */}
+                <div className="pt-8 px-6"> {/* Increased padding */}
+                  <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-wide">
+                    Unlock Endless Creative Possibilities
                   </h3>
-                  <div className="w-20 h-20 mx-auto rounded-2xl bg-gray-100 dark:bg-gray-800/50 backdrop-blur-sm flex items-center justify-center border border-gray-200 dark:border-gray-700 shadow-xl">
-                    <Upload className="w-10 h-10 text-gray-400" />
-                  </div>
-                  <div className="space-y-2">
-                    <p className="text-gray-600 font-medium dark:text-gray-400">
-                      Click here or drag & drop to upload
-                    </p>
-                    <p className="text-gray-600 text-sm dark:text-gray-400">
-                      Supports: JPG, PNG, WEBP, HEIC, HEIF
-                    </p>
-                  </div>
+                  <FeatureShowcase compact limited />
                 </div>
-              </label>
+              </div>
             )}
           </div>
         ) : (
@@ -420,13 +425,6 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
               "relative w-full h-full",
               "max-w-5xl",
               "flex items-center justify-center",
-              isMobile
-                ? isPanelOpen
-                  ? "h-[48vh] mb-6" // Reduced height and increased bottom margin
-                  : "h-full"
-                : isPanelOpen
-                ? "h-[calc(85vh-8rem)]"
-                : "h-full",
               !user && "pt-10"
             )}
           >

@@ -127,18 +127,25 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
       onClick={() => setActiveTab(activeTab === tabName ? null : tabName)}
       className={cn(
         mobile ? "flex-1 p-2" : "p-3",
-        "rounded-lg flex flex-col items-center gap-0.5 transition-colors",
+        "rounded-lg flex flex-col items-center gap-0.5",
+        "transition-all duration-200 ease-in-out transform",
+        "hover:scale-105",
         activeTab === tabName
-          ? "bg-gray-100 dark:bg-white/10 text-gray-900 dark:text-white"
-          : "text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white",
-        isTabDisabled(tabName) && "opacity-50 cursor-not-allowed"
+          ? "bg-gradient-to-br from-purple-500/10 to-purple-600/10 text-purple-600 dark:text-purple-400 shadow-lg backdrop-blur-sm"
+          : "text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400",
+        isTabDisabled(tabName) && "opacity-50 cursor-not-allowed hover:scale-100"
       )}
       disabled={isTabDisabled(tabName)}
     >
-      {icon}
+      <div className={cn(
+        "transition-transform duration-200",
+        activeTab === tabName && "transform scale-110"
+      )}>
+        {icon}
+      </div>
       <span className={cn(
         mobile ? "text-[10px]" : "text-xs",
-        "font-medium"
+        "font-medium transition-colors"
       )}>{label}</span>
     </button>
   );
@@ -255,8 +262,10 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
 
   return (
     <div className={cn(
-      "fixed left-0 top-16 bottom-0 flex h-[calc(100vh-4rem)] z-50 border-r border-t border-gray-200 dark:border-white/10",
-      // Increase the width of the expanded panel
+      "fixed left-0 top-16 bottom-0 flex h-[calc(100vh-4rem)] z-50",
+      "transition-all duration-300 ease-in-out",
+      "border-r border-t border-gray-200/50 dark:border-white/5",
+      "backdrop-blur-xl",
       activeTab ? "w-[360px]" : "w-[80px]"
     )}>
       {/* Side Navigation Bar */}
