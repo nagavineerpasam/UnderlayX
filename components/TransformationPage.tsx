@@ -36,9 +36,7 @@ export function TransformationPage({
         <Link 
           href="/" 
           className={cn(
-            "text-xl font-bold",
-            "bg-clip-text text-transparent",
-            "bg-gradient-to-r from-purple-600 to-pink-600",
+            "text-xl font-bold text-purple-600",
             "hover:opacity-80 transition-opacity"
           )}
         >
@@ -48,9 +46,7 @@ export function TransformationPage({
 
       <main className="flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto text-center pt-4 md:pt-0">
         <h1 className={cn(
-          "text-4xl md:text-5xl font-bold mb-4",
-          "bg-clip-text text-transparent",
-          "bg-gradient-to-r from-purple-600 to-pink-600"
+          "text-4xl md:text-5xl font-bold mb-4 text-purple-600"
         )}>
           {title}
         </h1>
@@ -64,11 +60,10 @@ export function TransformationPage({
             onClick={() => router.push('/custom-editor')}
             className={cn(
               "px-8 py-3 text-xl font-semibold text-white",
-              "bg-gradient-to-r from-purple-600 to-pink-600",
+              "bg-purple-600 hover:bg-purple-700",
               "rounded-lg shadow-lg",
               "transform transition-all duration-200",
               "hover:scale-105 hover:shadow-xl",
-              "hover:from-purple-500 hover:to-pink-500",
               "active:scale-95"
             )}
           >

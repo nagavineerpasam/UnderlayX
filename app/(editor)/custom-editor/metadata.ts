@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     siteName: 'UnderlayX AI',
     images: [
       {
-        url: 'https://underlayx.com/og-image.png', // Add your OG image path
+        url: 'https://underlayx.com/og-image.png',
         width: 1200,
         height: 630,
         alt: 'UnderlayX AI Editor Preview'
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'UnderlayX AI: Edit Images with Cloning, Text Behind, and Background Customization',
     description: 'Free online tool to clone images, customize backgrounds, add text behind images, and place shapes behind objects for stunning visual edits.',
-    images: ['https://underlayx.com/og-image.png'], // Add your Twitter card image path
+    images: ['https://underlayx.com/og-image.png'],
   },
   robots: {
     index: true,

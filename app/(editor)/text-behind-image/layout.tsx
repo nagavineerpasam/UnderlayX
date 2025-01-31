@@ -1,9 +1,14 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Add Text Behind Image - UnderlayX AI',
-  description: 'Add text behind your images with our easy-to-use editor. Perfect for creating unique designs and compositions.',
-  keywords: 'text behind image, image text editor, text overlay, image text tool'
+  title: 'Add Text Behind Image | Text Behind Picture Editor | UnderlayX AI',
+  description: 'Create stunning text behind image effects. Our AI-powered tool helps you add text behind photos, create text background effects, and design creative text overlays for your images.',
+  keywords: 'text behind image, put text behind picture, text behind photo editor, image text effects, text background effects',
+  openGraph: {
+    title: 'Add Text Behind Image | Text Behind Picture Editor',
+    description: 'Create stunning text behind image effects with UnderlayX. Add text behind photos easily.',
+    images: ['/povafter.jpg'],
+  }
 };
 
 export default function Layout({
