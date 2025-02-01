@@ -344,44 +344,38 @@ export function CanvasPreview() {
 
         // Apply cutout effect if enabled - BEFORE drawing the foreground
         if (cutout.enabled) {
-          // Create a temporary canvas for the outline
+          // Create a temporary canvas for the silhouette
           const outlineCanvas = document.createElement('canvas');
-          const outlineCtx = outlineCanvas.getContext('2d', { willReadFrequently: true });
+          const outlineCtx = outlineCanvas.getContext('2d');
           if (!outlineCtx) return;
-      
+        
           outlineCanvas.width = canvas.width;
           outlineCanvas.height = canvas.height;
-      
-          // Draw the foreground on the outline canvas
+        
+          // Draw foreground on outline canvas
           outlineCtx.drawImage(fgImageRef.current, x + offsetX, y + offsetY, newWidth, newHeight);
-      
-          // Get image data to find edges
-          const imageData = outlineCtx.getImageData(0, 0, canvas.width, canvas.height);
-          const data = imageData.data;
-      
-          // Create a new canvas for the expanded outline
+        
+          // Create outline mask
           const expandedCanvas = document.createElement('canvas');
           const expandedCtx = expandedCanvas.getContext('2d');
           if (!expandedCtx) return;
-      
+        
           expandedCanvas.width = canvas.width;
           expandedCanvas.height = canvas.height;
-      
-          // Set the expanded outline style
+        
+          // Set up the outline style
           expandedCtx.fillStyle = cutout.color;
+          expandedCtx.strokeStyle = cutout.color;
+          expandedCtx.lineWidth = cutout.width;
+          expandedCtx.globalAlpha = cutout.intensity / 100;
           
-          // Apply blur for width
-          expandedCtx.filter = `blur(${cutout.width}px)`;
-          
-          // Scale intensity properly (0.01 to 1 range)
-          expandedCtx.globalAlpha = Math.max(0.01, Math.min(1, cutout.intensity / 100));
-      
-          // Draw the expanded shape
-          expandedCtx.drawImage(outlineCanvas, 0, 0);
+          // Draw expanded shape for outline
+          expandedCtx.drawImage(outlineCanvas, -cutout.width/2, -cutout.width/2, 
+            canvas.width + cutout.width, canvas.height + cutout.width);
           expandedCtx.globalCompositeOperation = 'source-in';
           expandedCtx.fillRect(0, 0, canvas.width, canvas.height);
-      
-          // Draw the expanded outline behind the foreground
+        
+          // Draw the outline behind the foreground
           ctx.drawImage(expandedCanvas, 0, 0);
         }
 

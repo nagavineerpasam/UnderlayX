@@ -11,9 +11,9 @@ import { isSubscriptionActive } from '@/lib/utils';
 // Update the defaultCutout object
 const defaultCutout = {
   enabled: false,
-  width: 20,
-  color: '#00FF00', // Changed from #FFFFFF to #00FF00 (green)
-  intensity: 100    // Changed from 50 to 100
+  width: 10,        // Changed from 20 to 10 for thinner initial outline
+  color: '#FFFFFF', // Set white as default
+  intensity: 100    // Keep 100 as default
 };
 
 // Add a type definition for the cutout
@@ -928,22 +928,18 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
         // Apply cutout effect before drawing foreground
         if (get().cutout.enabled) {
-          // Create a temporary canvas for the outline
+          // Create a temporary canvas for the silhouette
           const outlineCanvas = document.createElement('canvas');
-          const outlineCtx = outlineCanvas.getContext('2d', { willReadFrequently: true });
+          const outlineCtx = outlineCanvas.getContext('2d');
           if (!outlineCtx) return;
 
           outlineCanvas.width = canvas.width;
           outlineCanvas.height = canvas.height;
 
-          // Draw the foreground on the outline canvas
+          // Draw foreground on outline canvas
           outlineCtx.drawImage(fgImg, x + offsetX, y + offsetY, newWidth, newHeight);
 
-          // Get image data to find edges
-          const imageData = outlineCtx.getImageData(0, 0, canvas.width, canvas.height);
-          const data = imageData.data;
-
-          // Create a new canvas for the expanded outline
+          // Create outline mask
           const expandedCanvas = document.createElement('canvas');
           const expandedCtx = expandedCanvas.getContext('2d');
           if (!expandedCtx) return;
@@ -951,17 +947,20 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
           expandedCanvas.width = canvas.width;
           expandedCanvas.height = canvas.height;
 
-          // Set the expanded outline style with intensity
+          // Set up the outline style
           const { cutout } = get();
           expandedCtx.fillStyle = cutout.color;
-          expandedCtx.filter = `blur(${cutout.width * (cutout.intensity / 50)}px)`;
-
-          // Draw the expanded shape
-          expandedCtx.drawImage(outlineCanvas, 0, 0);
+          expandedCtx.strokeStyle = cutout.color;
+          expandedCtx.lineWidth = cutout.width;
+          expandedCtx.globalAlpha = cutout.intensity / 100;
+          
+          // Draw expanded shape for outline
+          expandedCtx.drawImage(outlineCanvas, -cutout.width/2, -cutout.width/2, 
+            canvas.width + cutout.width, canvas.height + cutout.width);
           expandedCtx.globalCompositeOperation = 'source-in';
           expandedCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-          // Draw the expanded outline behind the foreground
+          // Draw the outline behind the foreground
           ctx.drawImage(expandedCanvas, 0, 0);
         }
 
