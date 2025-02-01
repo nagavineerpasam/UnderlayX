@@ -159,7 +159,7 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
         "image/jpeg",
         "image/png",
         "image.webp",
-        "image.webp",
+        "image/webp",
         "image.heic",
         "image/heic",
         "image.heif",
@@ -212,7 +212,7 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
     }
 
     // For other image types
-    const validTypes = ["image/jpeg", "image/png", "image.webp", "image.webp"];
+    const validTypes = ["image/jpeg", "image/png", "image.webp", "image/webp"];
     if (validTypes.includes(fileType)) {
       await handleFileProcess(file);
     } else {
