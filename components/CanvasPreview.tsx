@@ -18,16 +18,17 @@ export function CanvasPreview() {
     foregroundPosition, 
     hasChangedBackground, 
     clonedForegrounds,
-    backgroundImages,  // Add this line
+    backgroundImages,
     backgroundColor,
     foregroundSize,
-    downloadImage, // Keep this
+    downloadImage,
     isDrawingMode,
     drawingTool,
     drawingSize,
     drawingColor,
     drawings,
-    addDrawingPath 
+    addDrawingPath,
+    cutout
   } = useEditor();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
@@ -334,13 +335,52 @@ export function CanvasPreview() {
         const x = (canvas.width - newWidth) / 2;
         const y = (canvas.height - newHeight) / 2;
 
-        if (hasTransparentBackground || hasChangedBackground) {
-          const offsetX = (canvas.width * foregroundPosition.x) / 100;
-          const offsetY = (canvas.height * foregroundPosition.y) / 100;
-          ctx.drawImage(fgImageRef.current, x + offsetX, y + offsetY, newWidth, newHeight);
-        } else {
-          ctx.drawImage(fgImageRef.current, x, y, newWidth, newHeight);
+        const offsetX = hasTransparentBackground || hasChangedBackground 
+          ? (canvas.width * foregroundPosition.x) / 100 
+          : 0;
+        const offsetY = hasTransparentBackground || hasChangedBackground 
+          ? (canvas.height * foregroundPosition.y) / 100 
+          : 0;
+
+        // Apply cutout effect if enabled - BEFORE drawing the foreground
+        if (cutout.enabled) {
+          // Create a temporary canvas for the silhouette
+          const outlineCanvas = document.createElement('canvas');
+          const outlineCtx = outlineCanvas.getContext('2d');
+          if (!outlineCtx) return;
+        
+          outlineCanvas.width = canvas.width;
+          outlineCanvas.height = canvas.height;
+        
+          // Draw foreground on outline canvas
+          outlineCtx.drawImage(fgImageRef.current, x + offsetX, y + offsetY, newWidth, newHeight);
+        
+          // Create outline mask
+          const expandedCanvas = document.createElement('canvas');
+          const expandedCtx = expandedCanvas.getContext('2d');
+          if (!expandedCtx) return;
+        
+          expandedCanvas.width = canvas.width;
+          expandedCanvas.height = canvas.height;
+        
+          // Set up the outline style
+          expandedCtx.fillStyle = cutout.color;
+          expandedCtx.strokeStyle = cutout.color;
+          expandedCtx.lineWidth = cutout.width;
+          expandedCtx.globalAlpha = cutout.intensity / 100;
+          
+          // Draw expanded shape for outline
+          expandedCtx.drawImage(outlineCanvas, -cutout.width/2, -cutout.width/2, 
+            canvas.width + cutout.width, canvas.height + cutout.width);
+          expandedCtx.globalCompositeOperation = 'source-in';
+          expandedCtx.fillRect(0, 0, canvas.width, canvas.height);
+        
+          // Draw the outline behind the foreground
+          ctx.drawImage(expandedCanvas, 0, 0);
         }
+
+        // Draw the original foreground on top
+        ctx.drawImage(fgImageRef.current, x + offsetX, y + offsetY, newWidth, newHeight);
 
         // Draw cloned foregrounds
         clonedForegrounds.forEach(clone => {
@@ -386,7 +426,7 @@ export function CanvasPreview() {
       }
 
     });
-  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds, backgroundImages, backgroundColor, foregroundSize, drawings, currentPath]);
+  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds, backgroundImages, backgroundColor, foregroundSize, drawings, currentPath, cutout]);
 
   // Cleanup on unmount
   useEffect(() => {

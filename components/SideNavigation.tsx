@@ -1,7 +1,7 @@
 'use client';
 
 import React, { JSX } from 'react';
-import { Type, Shapes, Plus, ImageIcon, Image, Copy, Images, Pencil } from 'lucide-react';
+import { Type, Shapes, Plus, ImageIcon, Image, Copy, Images, Pencil, Scissors, Box } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { TextEditor } from './TextEditor';
@@ -13,8 +13,9 @@ import { CloneImageEditor } from './CloneImageEditor';
 import { useEditorPanel } from '@/contexts/EditorPanelContext';
 import { ImageEditor } from './ImageEditor';
 import { DrawingEditor } from './DrawingEditor';
+import { CutoutEditor } from './CutoutEditor';
 
-type TabType = 'text' | 'shapes' | 'remove-background' | 'change-background' | 'clone-image' | 'images' | 'draw' | null;
+type TabType = 'text' | 'shapes' | 'remove-background' | 'change-background' | 'clone-image' | 'images' | 'draw' | 'cutout' | null;
 
 interface SideNavigationProps {
   mobile?: boolean;
@@ -167,6 +168,13 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
     )
   );
 
+  // Add cutout button
+  const cutoutButton = renderTabButton(
+    'cutout',
+    <Box className={mobile ? "w-4 h-4" : "w-5 h-5"} />,
+    'Outline'
+  );
+
   const renderMobileNavigation = () => (
     <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 p-1.5 z-50 overflow-x-auto">
       <div className="flex gap-2 min-w-fit px-2">  {/* Changed from max-w-md mx-auto to min-w-fit px-2 */}
@@ -174,6 +182,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
         {cloneImageButton}
         {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-4 h-4" />, 'Remove BG')}
         {changeBackgroundButton}
+        {cutoutButton}
         {showDrawButton && renderTabButton('draw', <Pencil className="w-4 h-4" />, 'Draw')}
         {showTextButton && renderTabButton('text', <Type className="w-4 h-4" />, 'Text')}
         {showShapesButton && renderTabButton('shapes', <Shapes className="w-4 h-4" />, 'Shapes')}
@@ -187,6 +196,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
       {cloneImageButton}
       {changeBackgroundButton}
       {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-5 h-5" />, 'Remove BG')}
+      {cutoutButton}
       {showDrawButton && renderTabButton('draw', <Pencil className="w-5 h-5" />, 'Draw')}
       {showTextButton && renderTabButton('text', <Type className="w-5 h-5" />, 'Text')}
       {showShapesButton && renderTabButton('shapes', <Shapes className="w-5 h-5" />, 'Shapes')}
@@ -250,6 +260,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                     {activeTab === 'clone-image' && <CloneImageEditor />}
                     {activeTab === 'images' && <ImageEditor />}
                     {activeTab === 'draw' && <DrawingEditor />}
+                    {activeTab === 'cutout' && <CutoutEditor />}
                   </>
                 )}
               </div>
@@ -294,6 +305,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                    activeTab === 'clone-image' ? 'Clone Image' :
                    activeTab === 'text' ? 'Add Text' :
                    activeTab === 'draw' ? 'Draw' :
+                   activeTab === 'cutout' ? 'Outline' :
                    'Add Shapes'}
                 </h3>
               )}
@@ -312,6 +324,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                   {activeTab === 'clone-image' && <CloneImageEditor />}
                   {activeTab === 'images' && <ImageEditor />}
                   {activeTab === 'draw' && <DrawingEditor />}
+                  {activeTab === 'cutout' && <CutoutEditor />}
                 </>
               )}
             </div>

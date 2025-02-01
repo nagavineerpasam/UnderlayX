@@ -149,9 +149,9 @@ export function ChangeBackgroundEditor() {
 
       {/* Show controls when background is changed or color is selected */}
       {(hasChangedBackground || backgroundColor) && (
-        <div className="space-y-4">
+        <div className="space-y-2">
           {/* Foreground Size Control */}
-          <div className="space-y-2">
+          <div>
             <label className="text-sm font-medium">Foreground Size</label>
             <Slider
               value={[foregroundSize]}
@@ -160,9 +160,6 @@ export function ChangeBackgroundEditor() {
               max={200}
               step={1}
             />
-            <div className="text-xs text-gray-500 text-right">
-              {foregroundSize}%
-            </div>
           </div>
 
           {/* Position controls */}
@@ -187,16 +184,15 @@ export function ChangeBackgroundEditor() {
               step={1}
             />
           </div>
-
-          <Button
-            onClick={resetBackground}
-            variant="outline"
-            className="w-full"
-            // Enable button if background is changed or color is selected
-            disabled={!hasChangedBackground && !backgroundColor}
-          >
-            Reset Background
-          </Button>
+            <Button
+              onClick={resetBackground}
+              variant="outline"
+              className="w-full"
+              // Enable button if background is changed or color is selected
+              disabled={!hasChangedBackground && !backgroundColor}
+            >
+              Reset Background
+            </Button>
         </div>
       )}
     </div>

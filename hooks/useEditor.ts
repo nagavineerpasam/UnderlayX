@@ -8,6 +8,22 @@ import { removeBackground } from "@imgly/background-removal";
 import { supabase } from '@/lib/supabaseClient'; // Add this import
 import { isSubscriptionActive } from '@/lib/utils';
 
+// Update the defaultCutout object
+const defaultCutout = {
+  enabled: false,
+  width: 10,        // Changed from 20 to 10 for thinner initial outline
+  color: '#FFFFFF', // Set white as default
+  intensity: 100    // Keep 100 as default
+};
+
+// Add a type definition for the cutout
+interface CutoutSettings {
+  enabled: boolean;
+  width: number; // This allows any number
+  color: string;
+  intensity: number; // Add new property
+}
+
 interface GlowEffect {
   enabled: boolean;
   color: string;
@@ -138,6 +154,7 @@ interface EditorState {
   drawingTool: 'pencil';  // Remove eraser option
   drawingSize: number;
   drawingColor: string;
+  cutout: CutoutSettings; // Use the new interface instead of typeof defaultCutout
 }
 
 // Update the EditorActions interface to include flip in updateClonedForegroundTransform
@@ -180,6 +197,8 @@ interface EditorActions {
   addDrawingPath: (path: DrawingPoint[]) => void;
   clearDrawings: () => void;
   undoLastDrawing: () => void;
+  setCutoutEnabled: (enabled: boolean) => void;
+  updateCutout: (updates: Partial<CutoutSettings>) => void;
 }
 
 // Modify the export of helper functions
@@ -346,6 +365,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   drawingTool: 'pencil',  // Remove eraser option
   drawingSize: 20,  // Changed from 5 to 50
   drawingColor: '#FFFFFF',  // Changed from #000000 to #FFFFFF
+  cutout: defaultCutout, // Use the default value here instead of inline object
 
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
@@ -903,14 +923,49 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         const x = (canvas.width - newWidth) / 2;
         const y = (canvas.height - newHeight) / 2;
 
-        // Apply offset if background is changed or transparent
-        if (hasTransparentBackground || hasChangedBackground) {
-          const offsetX = (canvas.width * foregroundPosition.x) / 100;
-          const offsetY = (canvas.height * foregroundPosition.y) / 100;
-          ctx.drawImage(fgImg, x + offsetX, y + offsetY, newWidth, newHeight);
-        } else {
-          ctx.drawImage(fgImg, x, y, newWidth, newHeight);
+        const offsetX = (hasTransparentBackground || hasChangedBackground) ? (canvas.width * foregroundPosition.x) / 100 : 0;
+        const offsetY = (hasTransparentBackground || hasChangedBackground) ? (canvas.height * foregroundPosition.y) / 100 : 0;
+
+        // Apply cutout effect before drawing foreground
+        if (get().cutout.enabled) {
+          // Create a temporary canvas for the silhouette
+          const outlineCanvas = document.createElement('canvas');
+          const outlineCtx = outlineCanvas.getContext('2d');
+          if (!outlineCtx) return;
+
+          outlineCanvas.width = canvas.width;
+          outlineCanvas.height = canvas.height;
+
+          // Draw foreground on outline canvas
+          outlineCtx.drawImage(fgImg, x + offsetX, y + offsetY, newWidth, newHeight);
+
+          // Create outline mask
+          const expandedCanvas = document.createElement('canvas');
+          const expandedCtx = expandedCanvas.getContext('2d');
+          if (!expandedCtx) return;
+
+          expandedCanvas.width = canvas.width;
+          expandedCanvas.height = canvas.height;
+
+          // Set up the outline style
+          const { cutout } = get();
+          expandedCtx.fillStyle = cutout.color;
+          expandedCtx.strokeStyle = cutout.color;
+          expandedCtx.lineWidth = cutout.width;
+          expandedCtx.globalAlpha = cutout.intensity / 100;
+          
+          // Draw expanded shape for outline
+          expandedCtx.drawImage(outlineCanvas, -cutout.width/2, -cutout.width/2, 
+            canvas.width + cutout.width, canvas.height + cutout.width);
+          expandedCtx.globalCompositeOperation = 'source-in';
+          expandedCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // Draw the outline behind the foreground
+          ctx.drawImage(expandedCanvas, 0, 0);
         }
+
+        // Draw the foreground image on top
+        ctx.drawImage(fgImg, x + offsetX, y + offsetY, newWidth, newHeight);
 
         // Draw cloned foregrounds
         for (const clone of get().clonedForegrounds) {
@@ -1317,4 +1372,17 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     });
   },
 
+  setCutoutEnabled: (enabled) => set(state => ({
+    cutout: {
+      ...state.cutout,
+      enabled
+    }
+  })),
+
+  updateCutout: (updates: Partial<CutoutSettings>) => set(state => ({
+    cutout: {
+      ...state.cutout,
+      ...updates
+    }
+  })),
 }));
