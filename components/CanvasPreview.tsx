@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useMemo, useCallback, useState } from 'react';
-import { useEditor, roundRect } from '@/hooks/useEditor';  // Add this import
+import { useEditor, roundRect, drawBackgroundWithOpacity } from '@/hooks/useEditor';  // Add drawBackgroundWithOpacity to imports
 import { SHAPES } from '@/constants/shapes';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -28,7 +28,9 @@ export function CanvasPreview() {
     drawingColor,
     drawings,
     addDrawingPath,
-    cutout
+    cutout,
+    backgroundDimensions,
+    backgroundOpacity,
   } = useEditor();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
@@ -87,6 +89,7 @@ export function CanvasPreview() {
     );
   }, []);
 
+  // Update the render callback to use the same helper function
   const render = useCallback(() => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d', { alpha: true });
@@ -99,32 +102,35 @@ export function CanvasPreview() {
 
     // Schedule next render with high priority
     renderRequestRef.current = requestAnimationFrame(() => {
+      // Set canvas dimensions based on background state
+      if (hasChangedBackground && backgroundDimensions.width && backgroundDimensions.height) {
+        canvas.width = backgroundDimensions.width;
+        canvas.height = backgroundDimensions.height;
+      } else {
+        canvas.width = bgImageRef.current!.width;
+        canvas.height = bgImageRef.current!.height;
+      }
+
       // Reset canvas transform and clear
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Set canvas size to match background image
-      canvas.width = bgImageRef.current!.width;
-      canvas.height = bgImageRef.current!.height;
-
-      // Clear canvas with transparency
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // First, handle background color if set
-      if (backgroundColor) {
-        ctx.fillStyle = backgroundColor;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Use the shared helper function for both preview and download
+      if (!hasTransparentBackground) {
+        drawBackgroundWithOpacity(ctx, {
+          backgroundColor,
+          backgroundImage: image.background ? bgImageRef.current : null,
+          width: canvas.width,
+          height: canvas.height,
+          opacity: backgroundOpacity,
+          filter: image.background ? filterString : undefined
+        });
       } else if (hasTransparentBackground) {
         const pattern = ctx.createPattern(createCheckerboardPattern(), 'repeat');
         if (pattern) {
           ctx.fillStyle = pattern;
           ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
-      } else if (image.background) {
-        // Draw background image only if no color is set
-        ctx.filter = filterString;
-        ctx.drawImage(bgImageRef.current!, 0, 0);
-        ctx.filter = 'none';
       }
 
       // Draw background images
@@ -426,7 +432,7 @@ export function CanvasPreview() {
       }
 
     });
-  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds, backgroundImages, backgroundColor, foregroundSize, drawings, currentPath, cutout]);
+  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds, backgroundImages, backgroundColor, foregroundSize, drawings, currentPath, cutout, backgroundDimensions, backgroundOpacity]);
 
   // Cleanup on unmount
   useEffect(() => {

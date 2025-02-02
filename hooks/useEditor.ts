@@ -155,6 +155,11 @@ interface EditorState {
   drawingSize: number;
   drawingColor: string;
   cutout: CutoutSettings; // Use the new interface instead of typeof defaultCutout
+  backgroundDimensions: {
+    width: number | null;
+    height: number | null;
+  };
+  backgroundOpacity: number; // Add this line
 }
 
 // Update the EditorActions interface to include flip in updateClonedForegroundTransform
@@ -175,7 +180,7 @@ interface EditorActions {
   setProcessingMessage: (message: string) => void;
   removeBackground: () => Promise<void>;
   resetBackground: () => void;
-  changeBackground: () => Promise<void>;
+  changeBackground: () => Promise<void>; // Update the signature to not take arguments
   updateForegroundPosition: (position: { x: number; y: number }) => void;
   addClonedForeground: () => void;
   removeClonedForeground: (id: number) => void;
@@ -199,7 +204,46 @@ interface EditorActions {
   undoLastDrawing: () => void;
   setCutoutEnabled: (enabled: boolean) => void;
   updateCutout: (updates: Partial<CutoutSettings>) => void;
+  updateBackgroundOpacity: (opacity: number) => void; // Add this line
 }
+
+// Update the helper function with more specific types and consistent behavior
+export const drawBackgroundWithOpacity = (
+  ctx: CanvasRenderingContext2D, 
+  options: {
+    backgroundColor?: string | null;
+    backgroundImage?: HTMLImageElement | null;
+    width: number;
+    height: number;
+    opacity: number;
+    filter?: string;
+  }
+) => {
+  const { backgroundColor, backgroundImage, width, height, opacity, filter } = options;
+  
+  // Store the original global alpha
+  const originalAlpha = ctx.globalAlpha;
+  const originalFilter = ctx.filter;
+  
+  try {
+    // Set global alpha for opacity
+    ctx.globalAlpha = Math.max(0, Math.min(1, opacity / 100));
+
+    if (backgroundColor) {
+      ctx.fillStyle = backgroundColor;
+      ctx.fillRect(0, 0, width, height);
+    } else if (backgroundImage) {
+      if (filter) {
+        ctx.filter = filter;
+      }
+      ctx.drawImage(backgroundImage, 0, 0, width, height);
+    }
+  } finally {
+    // Always restore the original values
+    ctx.globalAlpha = originalAlpha;
+    ctx.filter = originalFilter;
+  }
+};
 
 // Modify the export of helper functions
 export const roundRect = (ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) => {
@@ -366,6 +410,11 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   drawingSize: 20,  // Changed from 5 to 50
   drawingColor: '#FFFFFF',  // Changed from #000000 to #FFFFFF
   cutout: defaultCutout, // Use the default value here instead of inline object
+  backgroundDimensions: {
+    width: null,
+    height: null,
+  },
+  backgroundOpacity: 100, // Default to 100%
 
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
@@ -678,7 +727,9 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         hasChangedBackground,
         foregroundPosition,
         backgroundImages,
-        foregroundSize
+        foregroundSize,
+        backgroundDimensions,
+        backgroundOpacity
       } = get();
 
       // Modified validation check to allow downloads with backgroundColor
@@ -690,26 +741,33 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Failed to get canvas context');
 
-      // Set canvas dimensions from foreground image
-      const fgImg = await loadImage(image.foreground);
-      canvas.width = fgImg.width;
-      canvas.height = fgImg.height;
+      // Set canvas dimensions based on background state
+      if (hasChangedBackground && backgroundDimensions.width && backgroundDimensions.height) {
+        // Use the new background dimensions if available
+        canvas.width = backgroundDimensions.width;
+        canvas.height = backgroundDimensions.height;
+      } else {
+        // Fall back to foreground dimensions
+        const fgImg = await loadImage(image.foreground);
+        canvas.width = fgImg.width;
+        canvas.height = fgImg.height;
+      }
 
       // Clear canvas with transparency
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Only draw background if it's not meant to be transparent
+      // This is where we need to modify the background drawing logic
       if (!hasTransparentBackground) {
-        if (backgroundColor) {
-          // Fill with background color
-          ctx.fillStyle = backgroundColor;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        } else if (image.background) {
-          // Draw background image with filters
-          const bgImg = await loadImage(image.background);
-          ctx.filter = filterString(imageEnhancements);
-          ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
-          ctx.filter = 'none';
+        if (backgroundColor || image.background) {
+          const bgImg = image.background ? await loadImage(image.background) : null;
+          drawBackgroundWithOpacity(ctx, {
+            backgroundColor,
+            backgroundImage: bgImg,
+            width: canvas.width,
+            height: canvas.height,
+            opacity: backgroundOpacity,
+            filter: image.background ? filterString(imageEnhancements) : undefined
+          });
         }
       }
 
@@ -1146,7 +1204,11 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       foregroundPosition: { x: 0, y: 0 },
       backgroundImages: [],
       backgroundColor: null,  // Reset background color
-      foregroundSize: 100
+      foregroundSize: 100,
+      backgroundDimensions: {  // Reset dimensions
+        width: null,
+        height: null
+      }
     }));
   },
 
@@ -1160,17 +1222,32 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         processingMessage: 'Changing background...'
       });
 
+      // Create a promise to get image dimensions
+      const getDimensions = (url: string): Promise<{ width: number; height: number }> => {
+        return new Promise((resolve) => {
+          const img = new Image();
+          img.onload = () => {
+            resolve({ width: img.width, height: img.height });
+          };
+          img.src = url;
+        });
+      };
+
       const backgroundUrl = URL.createObjectURL(file);
-      await loadImage(backgroundUrl); // Ensure image loads successfully
+      const dimensions = await getDimensions(backgroundUrl);
 
       set(state => ({
         image: {
           ...state.image,
           background: backgroundUrl
         },
-        hasTransparentBackground: false, // Important: Set this to false
+        hasTransparentBackground: false,
         hasChangedBackground: true,
         isBackgroundRemoved: false,
+        backgroundDimensions: {
+          width: dimensions.width,
+          height: dimensions.height
+        },
         isProcessing: false,
         processingMessage: 'Background changed successfully!'
       }));
@@ -1385,4 +1462,6 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       ...updates
     }
   })),
+
+  updateBackgroundOpacity: (opacity: number) => set({ backgroundOpacity: opacity }), // Add this line
 }));
