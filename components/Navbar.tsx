@@ -10,6 +10,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { useToast } from '@/hooks/use-toast';
 import { isSubscriptionActive } from '@/lib/utils';
 import { AvatarFallback } from './AvatarFallback';
+import { KofiButton } from './KofiButton'; // Add KofiButton import
 
 // Remove getUserGenerationInfo import
 
@@ -228,13 +229,6 @@ export function Navbar() {
               </div>
 
               {/* Separate Pricing Link */}
-              {/* <button
-                onClick={handlePricingClick}
-                className="text-white/80 hover:text-white transition-colors"
-              >
-                Pricing
-              </button> */}
-
               <a
                 href="https://github.com/nagavineerpasam/UnderlayX"
                 target="_blank"
@@ -316,6 +310,9 @@ export function Navbar() {
                   <span>Login</span>
                 </button>
               )}
+
+              {/* Ko-fi button moved here - after login/user menu */}
+              <KofiButton />
             </div>
 
             {/* Mobile Menu Button */}
