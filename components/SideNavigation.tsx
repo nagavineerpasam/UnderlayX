@@ -1,7 +1,7 @@
 'use client';
 
 import React, { JSX } from 'react';
-import { Type, Shapes, Plus, ImageIcon, Image, Copy, Images, Pencil, Scissors, Box } from 'lucide-react';
+import { Type, Shapes, Plus, ImageIcon, Image, Copy, Images, Pencil, Scissors, Box, Sliders } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { TextEditor } from './TextEditor';
@@ -14,8 +14,9 @@ import { useEditorPanel } from '@/contexts/EditorPanelContext';
 import { ImageEditor } from './ImageEditor';
 import { DrawingEditor } from './DrawingEditor';
 import { CutoutEditor } from './CutoutEditor';
+import { TuneImageEditor } from './TuneImageEditor';
 
-type TabType = 'text' | 'shapes' | 'remove-background' | 'change-background' | 'clone-image' | 'images' | 'draw' | 'cutout' | null;
+type TabType = 'text' | 'shapes' | 'remove-background' | 'change-background' | 'clone-image' | 'images' | 'draw' | 'cutout' | 'tune-image' | null;
 
 interface SideNavigationProps {
   mobile?: boolean;
@@ -175,6 +176,13 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
     'Outline'
   );
 
+  // Add tuneImage button
+  const tuneImageButton = renderTabButton(
+    'tune-image',
+    <Sliders className={mobile ? "w-4 h-4" : "w-5 h-5"} />,
+    'Tune Image'
+  );
+
   const renderMobileNavigation = () => (
     <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 p-1.5 z-50 overflow-x-auto">
       <div className="flex gap-2 min-w-fit px-2">  {/* Changed from max-w-md mx-auto to min-w-fit px-2 */}
@@ -183,6 +191,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
         {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-4 h-4" />, 'Remove BG')}
         {changeBackgroundButton}
         {cutoutButton}
+        {tuneImageButton} {/* Add here */}
         {showDrawButton && renderTabButton('draw', <Pencil className="w-4 h-4" />, 'Draw')}
         {showTextButton && renderTabButton('text', <Type className="w-4 h-4" />, 'Text')}
         {showShapesButton && renderTabButton('shapes', <Shapes className="w-4 h-4" />, 'Shapes')}
@@ -197,6 +206,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
       {changeBackgroundButton}
       {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-5 h-5" />, 'Remove BG')}
       {cutoutButton}
+      {tuneImageButton} {/* Add here, before text and shapes */}
       {showDrawButton && renderTabButton('draw', <Pencil className="w-5 h-5" />, 'Draw')}
       {showTextButton && renderTabButton('text', <Type className="w-5 h-5" />, 'Text')}
       {showShapesButton && renderTabButton('shapes', <Shapes className="w-5 h-5" />, 'Shapes')}
@@ -261,6 +271,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                     {activeTab === 'images' && <ImageEditor />}
                     {activeTab === 'draw' && <DrawingEditor />}
                     {activeTab === 'cutout' && <CutoutEditor />}
+                    {activeTab === 'tune-image' && <TuneImageEditor />}
                   </>
                 )}
               </div>
@@ -306,6 +317,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                    activeTab === 'text' ? 'Add Text' :
                    activeTab === 'draw' ? 'Draw' :
                    activeTab === 'cutout' ? 'Outline' :
+                   activeTab === 'tune-image' ? 'Tune Image' :
                    'Add Shapes'}
                 </h3>
               )}
@@ -325,6 +337,7 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
                   {activeTab === 'images' && <ImageEditor />}
                   {activeTab === 'draw' && <DrawingEditor />}
                   {activeTab === 'cutout' && <CutoutEditor />}
+                  {activeTab === 'tune-image' && <TuneImageEditor />}
                 </>
               )}
             </div>

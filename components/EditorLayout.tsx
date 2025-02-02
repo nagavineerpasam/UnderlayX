@@ -14,6 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabaseClient";
 import { isSubscriptionActive } from "@/lib/utils";
 import { ProUpgradeButton } from "./ProUpgradeButton"; // Add ProUpgradeButton to imports
+import { KofiButton } from './KofiButton';
 
 interface EditorLayoutProps {
   SideNavComponent: React.ComponentType<{ mobile?: boolean }>;
@@ -141,6 +142,7 @@ export function EditorLayout({
           <div className="flex items-center gap-2 sm:gap-4">
             {" "}
             {/* Reduced gap for mobile */}
+            <KofiButton />
             {image.original && (
               <>
                 <button
