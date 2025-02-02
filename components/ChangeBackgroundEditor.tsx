@@ -170,7 +170,7 @@ export function ChangeBackgroundEditor() {
       {(hasChangedBackground || backgroundColor) && (
         <div className="space-y-4">
           {/* Background Opacity Control */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <label className="text-sm font-medium">Background Opacity</label>
             <Slider
               value={[backgroundOpacity]}
@@ -179,7 +179,7 @@ export function ChangeBackgroundEditor() {
               max={100}
               step={1}
             />
-          </div>
+          </div> */}
 
           {/* Foreground Size Control */}
           <div className="space-y-2">

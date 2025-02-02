@@ -160,6 +160,8 @@ interface EditorState {
     height: number | null;
   };
   backgroundOpacity: number; // Add this line
+  applyToBackground: boolean; // Add this line
+  applyToForeground: boolean; // Add this line
 }
 
 // Update the EditorActions interface to include flip in updateClonedForegroundTransform
@@ -205,6 +207,8 @@ interface EditorActions {
   setCutoutEnabled: (enabled: boolean) => void;
   updateCutout: (updates: Partial<CutoutSettings>) => void;
   updateBackgroundOpacity: (opacity: number) => void; // Add this line
+  setApplyToBackground: (value: boolean) => void; // Add this line
+  setApplyToForeground: (value: boolean) => void; // Add this line
 }
 
 // Update the helper function with more specific types and consistent behavior
@@ -415,6 +419,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     height: null,
   },
   backgroundOpacity: 100, // Default to 100%
+  applyToBackground: true, // Add this line
+  applyToForeground: true, // Add this line
 
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
@@ -729,7 +735,9 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         backgroundImages,
         foregroundSize,
         backgroundDimensions,
-        backgroundOpacity
+        backgroundOpacity,
+        applyToBackground, // Add this line
+        applyToForeground // Add this line
       } = get();
 
       // Modified validation check to allow downloads with backgroundColor
@@ -766,7 +774,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
             width: canvas.width,
             height: canvas.height,
             opacity: backgroundOpacity,
-            filter: image.background ? filterString(imageEnhancements) : undefined
+            filter: image.background && applyToBackground ? filterString(imageEnhancements) : undefined
           });
         }
       }
@@ -966,7 +974,11 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       // 4. Draw foreground LAST and ONCE
       if (image.foreground) {
         const fgImg = await loadImage(image.foreground);
-        ctx.filter = 'none';
+        if (applyToForeground) {
+          ctx.filter = filterString(imageEnhancements);
+        } else {
+          ctx.filter = 'none';
+        }
         ctx.globalAlpha = 1;
 
         const scale = Math.min(
@@ -1464,4 +1476,21 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   })),
 
   updateBackgroundOpacity: (opacity: number) => set({ backgroundOpacity: opacity }), // Add this line
+  setApplyToBackground: (value: boolean) => set({ applyToBackground: value }), // Add this line
+  setApplyToForeground: (value: boolean) => set({ applyToForeground: value }), // Add this line
 }));
+
+// Update the render and download functions to use these flags
+export const applyImageEnhancements = (
+  ctx: CanvasRenderingContext2D,
+  image: HTMLImageElement,
+  enhancements: ImageEnhancements,
+  shouldApplyFilters: boolean
+) => {
+  if (shouldApplyFilters) {
+    ctx.filter = filterString(enhancements);
+  } else {
+    ctx.filter = 'none';
+  }
+  return ctx;
+};

@@ -9,6 +9,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { DrawingPoint } from '@/types/editor';  // Add this import
 
 export function CanvasPreview() {
+  // Add applyToBackground and applyToForeground to destructured props
   const { 
     image, 
     textSets, 
@@ -31,6 +32,8 @@ export function CanvasPreview() {
     cutout,
     backgroundDimensions,
     backgroundOpacity,
+    applyToBackground,
+    applyToForeground,
   } = useEditor();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
@@ -116,6 +119,7 @@ export function CanvasPreview() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Use the shared helper function for both preview and download
+      // Background drawing with filter application control
       if (!hasTransparentBackground) {
         drawBackgroundWithOpacity(ctx, {
           backgroundColor,
@@ -123,7 +127,7 @@ export function CanvasPreview() {
           width: canvas.width,
           height: canvas.height,
           opacity: backgroundOpacity,
-          filter: image.background ? filterString : undefined
+          filter: image.background && applyToBackground ? filterString : undefined
         });
       } else if (hasTransparentBackground) {
         const pattern = ctx.createPattern(createCheckerboardPattern(), 'repeat');
@@ -326,7 +330,12 @@ export function CanvasPreview() {
 
       // Draw original foreground
       if (fgImageRef.current) {
-        ctx.filter = 'none';
+        // Apply filters to foreground if enabled
+        if (applyToForeground) {
+          ctx.filter = filterString;
+        } else {
+          ctx.filter = 'none';
+        }
         ctx.globalAlpha = 1;
 
         const scale = Math.min(
@@ -388,6 +397,9 @@ export function CanvasPreview() {
         // Draw the original foreground on top
         ctx.drawImage(fgImageRef.current, x + offsetX, y + offsetY, newWidth, newHeight);
 
+        // Reset filter after drawing foreground
+        ctx.filter = 'none';
+
         // Draw cloned foregrounds
         clonedForegrounds.forEach(clone => {
           const scale = Math.min(
@@ -432,7 +444,7 @@ export function CanvasPreview() {
       }
 
     });
-  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds, backgroundImages, backgroundColor, foregroundSize, drawings, currentPath, cutout, backgroundDimensions, backgroundOpacity]);
+  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds, backgroundImages, backgroundColor, foregroundSize, drawings, currentPath, cutout, backgroundDimensions, backgroundOpacity, applyToBackground, applyToForeground]);
 
   // Cleanup on unmount
   useEffect(() => {
