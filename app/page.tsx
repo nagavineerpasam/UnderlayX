@@ -74,7 +74,7 @@ export default function Home() {
           </section>
 
           {/* Product Hunt Badges Section */}
-          <section className="container mx-auto px-4 mb-10"> {/* Removed py-4, added -mt-4 */}
+          {/* <section className="container mx-auto px-4 mb-10">
             <div className="flex flex-row justify-center items-center gap-4">
               {[
                 {
@@ -106,7 +106,7 @@ export default function Home() {
                 </a>
               ))}
             </div>
-          </section>
+          </section> */}
 
           {/* Feature Showcase */}
           <FeatureShowcase />
