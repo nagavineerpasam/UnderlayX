@@ -54,3 +54,14 @@ export interface DrawingPoint {
   size: number;
   color: string;
 }
+
+export interface ImageEnhancements {
+  brightness: number;
+  contrast: number;
+  saturation: number;
+  fade: number;
+  exposure: number;
+  highlights: number;
+  shadows: number;
+  sharpness: number;
+}

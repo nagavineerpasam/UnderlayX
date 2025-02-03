@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { DrawingPoint } from '@/types/editor';  // Add this import
+import type { ImageEnhancements } from '@/types/editor';  // Add this line
 
 export function CanvasPreview() {
   // Add applyToBackground and applyToForeground to destructured props
@@ -34,6 +35,8 @@ export function CanvasPreview() {
     backgroundOpacity,
     applyToBackground,
     applyToForeground,
+    foregroundEnhancements, // Add this
+    backgroundEnhancements, // Add this
   } = useEditor();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
@@ -46,13 +49,13 @@ export function CanvasPreview() {
   const [currentPath, setCurrentPath] = useState<DrawingPoint[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
 
-  // Memoize the filter string
-  const filterString = useMemo(() => `
-    brightness(${imageEnhancements.brightness}%)
-    contrast(${imageEnhancements.contrast}%)
-    saturate(${imageEnhancements.saturation}%)
-    opacity(${100 - imageEnhancements.fade}%)
-  `, [imageEnhancements]);
+  // Change from const filterString = useMemo() to makeFilterString
+  const makeFilterString = (enhancements: ImageEnhancements): string => `
+    brightness(${enhancements.brightness}%)
+    contrast(${enhancements.contrast}%)
+    saturate(${enhancements.saturation}%)
+    opacity(${100 - enhancements.fade}%)
+  `;
 
   // Add this new function to handle background image loading
   const loadBackgroundImage = useCallback((url: string): Promise<HTMLImageElement> => {
@@ -121,14 +124,21 @@ export function CanvasPreview() {
       // Use the shared helper function for both preview and download
       // Background drawing with filter application control
       if (!hasTransparentBackground) {
-        drawBackgroundWithOpacity(ctx, {
-          backgroundColor,
-          backgroundImage: image.background ? bgImageRef.current : null,
-          width: canvas.width,
-          height: canvas.height,
-          opacity: backgroundOpacity,
-          filter: image.background && applyToBackground ? filterString : undefined
-        });
+        if (backgroundColor || image.background) {
+          const bgImg = image.background ? bgImageRef.current : null;
+          const filterToApply = applyToBackground 
+            ? makeFilterString(backgroundEnhancements) // Use backgroundEnhancements
+            : undefined;
+
+          drawBackgroundWithOpacity(ctx, {
+            backgroundColor,
+            backgroundImage: bgImg,
+            width: canvas.width,
+            height: canvas.height,
+            opacity: backgroundOpacity,
+            filter: filterToApply
+          });
+        }
       } else if (hasTransparentBackground) {
         const pattern = ctx.createPattern(createCheckerboardPattern(), 'repeat');
         if (pattern) {
@@ -332,7 +342,7 @@ export function CanvasPreview() {
       if (fgImageRef.current) {
         // Apply filters to foreground if enabled
         if (applyToForeground) {
-          ctx.filter = filterString;
+          ctx.filter = makeFilterString(foregroundEnhancements); // Use foregroundEnhancements
         } else {
           ctx.filter = 'none';
         }
@@ -444,7 +454,26 @@ export function CanvasPreview() {
       }
 
     });
-  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds, backgroundImages, backgroundColor, foregroundSize, drawings, currentPath, cutout, backgroundDimensions, backgroundOpacity, applyToBackground, applyToForeground]);
+  }, [
+    textSets, 
+    shapeSets, 
+    hasTransparentBackground, 
+    hasChangedBackground, 
+    foregroundPosition, 
+    clonedForegrounds, 
+    backgroundImages, 
+    backgroundColor, 
+    foregroundSize, 
+    drawings, 
+    currentPath, 
+    cutout, 
+    backgroundDimensions, 
+    backgroundOpacity, 
+    applyToBackground,
+    applyToForeground,
+    foregroundEnhancements, // Add this
+    backgroundEnhancements, // Add this
+  ]);
 
   // Cleanup on unmount
   useEffect(() => {
