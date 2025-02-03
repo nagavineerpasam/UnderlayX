@@ -24,6 +24,7 @@ import {
   Download,
   Eye,
   Image,
+  PaintBucket as Paint,
 } from "lucide-react";
 
 export default function Home() {
@@ -58,10 +59,10 @@ export default function Home() {
       <div ref={scrollRef} className="relative z-10 flex-grow">
         <Navbar />
 
-        <main className="pt-24" role="main" aria-label="Main content">
+        <main className="pt-24 w-full" role="main" aria-label="Main content">
           {/* Hero Section */}
-          <section className="container mx-auto px-4 min-h-[calc(100vh-80px)] flex flex-col justify-center">
-            <div className="max-w-4xl mx-auto text-center">
+          <section className="w-full px-4 min-h-[calc(100vh-80px)] flex flex-col justify-center">
+            <div className="max-w-4xl mx-auto text-center w-full">
               <p className="text-gray-400 mb-8">
                 50+ Powerful Image Editing Tools in One App
               </p>
@@ -94,22 +95,21 @@ export default function Home() {
               </div>
 
               {/* Tool Icons Carousel */}
-              <div className="relative max-w-5xl mx-auto mb-12">
-                {/* Add gradient masks */}
-                <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0A0A0A] to-transparent z-10"></div>
-                <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0A0A0A] to-transparent z-10"></div>
+              <div className="relative w-full max-w-[90vw] md:max-w-5xl mx-auto mb-12">
+                {/* Gradients only visible on desktop */}
+                <div className="hidden md:block absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A] to-transparent z-10"></div>
+                <div className="hidden md:block absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0A0A0A] via-[#0A0A0A] to-transparent z-10"></div>
 
                 {/* Carousel container */}
-                <div className="overflow-hidden">
+                <div className="w-full overflow-hidden px-0 md:px-4">
                   <div 
-                    className="flex animate-[scroll_40s_linear_infinite]"
+                    className="flex animate-scroll"
                     style={{
-                      width: 'fit-content',
-                      willChange: 'transform'
+                      width: 'max-content'
                     }}
                   >
                     {[...Array(2)].map((_, duplicateIndex) => (
-                      <div key={duplicateIndex} className="flex">
+                      <div key={duplicateIndex} className="flex shrink-0">
                         {[
                           { Icon: ImageOff, name: "Remove Background" },
                           { Icon: Layers, name: "Customize Background" },
@@ -123,13 +123,14 @@ export default function Home() {
                           { Icon: Filter, name: "Apply Filters & Effects" },
                           { Icon: Download, name: "Export High-Quality Images" },
                           { Icon: Eye, name: "Toggle Overlays" },
+                          { Icon: Paint, name: "Outline Objects with Colors" }, // New item
                         ].map((tool, index) => (
                           <div
                             key={`${duplicateIndex}-${index}`}
-                            className="flex flex-col items-center p-4 bg-gray-900/50 rounded-xl min-w-[140px] mx-2"
+                            className="flex-none w-[160px] flex flex-col items-center p-4 bg-gray-900/50 rounded-xl mx-2"
                           >
                             <tool.Icon className="w-6 h-6 mb-2 text-purple-500" />
-                            <span className="text-sm text-gray-300 whitespace-nowrap">
+                            <span className="text-sm text-gray-300 text-center break-words w-full">
                               {tool.name}
                             </span>
                           </div>

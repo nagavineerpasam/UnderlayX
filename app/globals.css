@@ -292,6 +292,18 @@
     width: 100% !important;
     min-height: 55px !important;
   }
+
+  /* Update the animate-scroll class */
+  .animate-scroll {
+    animation: scroll 50s linear infinite;
+    width: max-content;
+    display: flex;
+    gap: 1rem;
+    
+    &:hover {
+      animation-play-state: paused;
+    }
+  }
 }
 
 /* Prevent scroll when editor is open on mobile */
@@ -313,26 +325,5 @@
   select,
   textarea {
     font-size: 16px !important; /* Prevents zoom on iOS */
-  }
-}
-
-@keyframes scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.animate-scroll {
-  animation: scroll 10s linear infinite;
-  display: flex;
-  /* Double the content to create seamless loop */
-  & > * {
-    flex-shrink: 0;
-  }
-  &:hover {
-    animation-play-state: paused;
   }
 }
