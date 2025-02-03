@@ -64,4 +64,19 @@ export interface ImageEnhancements {
   highlights: number;
   shadows: number;
   sharpness: number;
+  blur: number;    // Remove optional
+  blacks: number;  // Remove optional
 }
+
+export const defaultEnhancements: ImageEnhancements = {
+  brightness: 100,
+  contrast: 100,
+  saturation: 100,
+  fade: 0,
+  exposure: 0,
+  highlights: 0,
+  shadows: 0,
+  sharpness: 0,
+  blur: 0,
+  blacks: 0
+} as const;

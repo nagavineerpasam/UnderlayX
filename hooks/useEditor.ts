@@ -65,6 +65,8 @@ interface ImageEnhancements {
   highlights: number;
   shadows: number;
   sharpness: number;
+  blur?: number;    // Add this
+  blacks?: number;   // Add this
 }
 
 interface ClonedForeground {
@@ -324,12 +326,19 @@ const loadImage = (src: string): Promise<HTMLImageElement> => {
   });
 };
 
-const filterString = (enhancements: ImageEnhancements): string => `
-  brightness(${enhancements.brightness}%)
-  contrast(${enhancements.contrast}%)
-  saturate(${enhancements.saturation}%)
-  opacity(${100 - enhancements.fade}%)
-`;
+const filterString = (enhancements: ImageEnhancements): string => {
+  const blur = enhancements.blur ?? 0;  // Use nullish coalescing
+  const blacks = enhancements.blacks ?? 0;  // Use nullish coalescing
+  
+  return `
+    brightness(${enhancements.brightness}%)
+    contrast(${enhancements.contrast}%)
+    saturate(${enhancements.saturation}%)
+    opacity(${100 - enhancements.fade}%)
+    blur(${blur}px)
+    brightness(${100 - blacks}%)
+  `;
+};
 
 const POSITION_UPDATE_DELAY = 8; // Reduced from 16ms
 
@@ -394,6 +403,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     highlights: 0,
     shadows: 0,
     sharpness: 0,
+    blur: 0,
+    blacks: 0
   },
   originalFileName: null,
   processingMessage: '',
@@ -433,6 +444,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     highlights: 0,
     shadows: 0,
     sharpness: 0,
+    blur: 0,
+    blacks: 0
   },
   backgroundEnhancements: {
     brightness: 100,
@@ -443,6 +456,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     highlights: 0,
     shadows: 0,
     sharpness: 0,
+    blur: 0,
+    blacks: 0
   },
 
   setProcessingMessage: (message) => set({ processingMessage: message }),
@@ -592,6 +607,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         highlights: 0,
         shadows: 0,
         sharpness: 0,
+        blur: 0,    // Initialize with default value
+        blacks: 0   // Initialize with default value
       },
       clonedForegrounds: [],
       hasTransparentBackground: false,
@@ -1178,6 +1195,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         highlights: 0,
         shadows: 0,
         sharpness: 0,
+        blur: 0,    // Initialize with default value
+        blacks: 0   // Initialize with default value
       },
       clonedForegrounds: [],
       hasTransparentBackground: false,
