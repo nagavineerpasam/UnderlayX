@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { DrawingPoint } from '@/types/editor';  // Add this import
+import type { ImageEnhancements } from '@/types/editor';  // Add this line
 
 export function CanvasPreview() {
   // Add applyToBackground and applyToForeground to destructured props
@@ -34,6 +35,8 @@ export function CanvasPreview() {
     backgroundOpacity,
     applyToBackground,
     applyToForeground,
+    foregroundEnhancements, // Add this
+    backgroundEnhancements, // Add this
   } = useEditor();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const bgImageRef = useRef<HTMLImageElement | null>(null);
@@ -46,13 +49,27 @@ export function CanvasPreview() {
   const [currentPath, setCurrentPath] = useState<DrawingPoint[]>([]);
   const [isDrawing, setIsDrawing] = useState(false);
 
-  // Memoize the filter string
-  const filterString = useMemo(() => `
-    brightness(${imageEnhancements.brightness}%)
-    contrast(${imageEnhancements.contrast}%)
-    saturate(${imageEnhancements.saturation}%)
-    opacity(${100 - imageEnhancements.fade}%)
-  `, [imageEnhancements]);
+  // Change from const filterString = useMemo() to makeFilterString
+  const makeFilterString = (enhancements: ImageEnhancements): string => {
+    // Ensure all values have defaults
+    const {
+      brightness = 100,
+      contrast = 100,
+      saturation = 100,
+      fade = 0,
+      blur = 0,
+      blacks = 0
+    } = enhancements;
+    
+    return `
+      brightness(${brightness}%)
+      contrast(${contrast}%)
+      saturate(${saturation}%)
+      opacity(${100 - fade}%)
+      blur(${blur}px)
+      brightness(${100 - blacks}%)
+    `;
+  };
 
   // Add this new function to handle background image loading
   const loadBackgroundImage = useCallback((url: string): Promise<HTMLImageElement> => {
@@ -121,14 +138,36 @@ export function CanvasPreview() {
       // Use the shared helper function for both preview and download
       // Background drawing with filter application control
       if (!hasTransparentBackground) {
-        drawBackgroundWithOpacity(ctx, {
-          backgroundColor,
-          backgroundImage: image.background ? bgImageRef.current : null,
-          width: canvas.width,
-          height: canvas.height,
-          opacity: backgroundOpacity,
-          filter: image.background && applyToBackground ? filterString : undefined
-        });
+        if (backgroundColor || image.background) {
+          const bgImg = image.background ? bgImageRef.current : null;
+          // Fix: Spread first, then provide defaults for missing values
+          const enhancementsWithDefaults: ImageEnhancements = {
+            ...backgroundEnhancements,
+            brightness: backgroundEnhancements.brightness ?? 100,
+            contrast: backgroundEnhancements.contrast ?? 100,
+            saturation: backgroundEnhancements.saturation ?? 100,
+            fade: backgroundEnhancements.fade ?? 0,
+            blur: backgroundEnhancements.blur ?? 0,
+            blacks: backgroundEnhancements.blacks ?? 0,
+            exposure: backgroundEnhancements.exposure ?? 0,
+            highlights: backgroundEnhancements.highlights ?? 0,
+            shadows: backgroundEnhancements.shadows ?? 0,
+            sharpness: backgroundEnhancements.sharpness ?? 0,
+          };
+
+          const filterToApply = applyToBackground 
+            ? makeFilterString(enhancementsWithDefaults)
+            : undefined;
+
+          drawBackgroundWithOpacity(ctx, {
+            backgroundColor,
+            backgroundImage: bgImg,
+            width: canvas.width,
+            height: canvas.height,
+            opacity: backgroundOpacity,
+            filter: filterToApply
+          });
+        }
       } else if (hasTransparentBackground) {
         const pattern = ctx.createPattern(createCheckerboardPattern(), 'repeat');
         if (pattern) {
@@ -332,11 +371,25 @@ export function CanvasPreview() {
       if (fgImageRef.current) {
         // Apply filters to foreground if enabled
         if (applyToForeground) {
-          ctx.filter = filterString;
+          // Add default values for foreground enhancements
+          const enhancementsWithDefaults: ImageEnhancements = {
+            ...foregroundEnhancements,
+            brightness: foregroundEnhancements.brightness ?? 100,
+            contrast: foregroundEnhancements.contrast ?? 100,
+            saturation: foregroundEnhancements.saturation ?? 100,
+            fade: foregroundEnhancements.fade ?? 0,
+            blur: foregroundEnhancements.blur ?? 0,
+            blacks: foregroundEnhancements.blacks ?? 0,
+            exposure: foregroundEnhancements.exposure ?? 0,
+            highlights: foregroundEnhancements.highlights ?? 0,
+            shadows: foregroundEnhancements.shadows ?? 0,
+            sharpness: foregroundEnhancements.sharpness ?? 0,
+          };
+          
+          ctx.filter = makeFilterString(enhancementsWithDefaults);
         } else {
           ctx.filter = 'none';
         }
-        ctx.globalAlpha = 1;
 
         const scale = Math.min(
           canvas.width / fgImageRef.current.width,
@@ -444,7 +497,26 @@ export function CanvasPreview() {
       }
 
     });
-  }, [textSets, shapeSets, filterString, hasTransparentBackground, hasChangedBackground, foregroundPosition, clonedForegrounds, backgroundImages, backgroundColor, foregroundSize, drawings, currentPath, cutout, backgroundDimensions, backgroundOpacity, applyToBackground, applyToForeground]);
+  }, [
+    textSets, 
+    shapeSets, 
+    hasTransparentBackground, 
+    hasChangedBackground, 
+    foregroundPosition, 
+    clonedForegrounds, 
+    backgroundImages, 
+    backgroundColor, 
+    foregroundSize, 
+    drawings, 
+    currentPath, 
+    cutout, 
+    backgroundDimensions, 
+    backgroundOpacity, 
+    applyToBackground,
+    applyToForeground,
+    foregroundEnhancements, // Add this
+    backgroundEnhancements, // Add this
+  ]);
 
   // Cleanup on unmount
   useEffect(() => {

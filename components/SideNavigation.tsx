@@ -186,30 +186,30 @@ export function SideNavigation({ mobile = false, mode = 'full' }: SideNavigation
   const renderMobileNavigation = () => (
     <div className="fixed bottom-0 left-0 right-0 bg-white dark:bg-zinc-950 border-t border-gray-200 dark:border-white/10 p-1.5 z-50 overflow-x-auto">
       <div className="flex gap-2 min-w-fit px-2">  {/* Changed from max-w-md mx-auto to min-w-fit px-2 */}
-        {showSmartOverlay && renderTabButton('images', <Images className="w-4 h-4" />, 'Smart Overlay')}
-        {cloneImageButton}
         {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-4 h-4" />, 'Remove BG')}
         {changeBackgroundButton}
+        {tuneImageButton}
+        {cloneImageButton}
         {cutoutButton}
-        {tuneImageButton} {/* Add here */}
-        {showDrawButton && renderTabButton('draw', <Pencil className="w-4 h-4" />, 'Draw')}
+        {showSmartOverlay && renderTabButton('images', <Images className="w-4 h-4" />, 'Smart Overlay')}
         {showTextButton && renderTabButton('text', <Type className="w-4 h-4" />, 'Text')}
         {showShapesButton && renderTabButton('shapes', <Shapes className="w-4 h-4" />, 'Shapes')}
+        {showDrawButton && renderTabButton('draw', <Pencil className="w-4 h-4" />, 'Draw')}
       </div>
     </div>
   );
 
   const renderDesktopNavigation = () => (
     <div className="w-[80px] border-r border-gray-200 dark:border-white/10 flex flex-col gap-1 p-2">
-      {showSmartOverlay && renderTabButton('images', <Images className="w-5 h-5" />, 'Smart Overlay')}
-      {cloneImageButton}
-      {changeBackgroundButton}
       {showRemoveBackground && renderTabButton('remove-background', <ImageIcon className="w-5 h-5" />, 'Remove BG')}
+      {changeBackgroundButton}
+      {tuneImageButton}
+      {cloneImageButton}
+      {showSmartOverlay && renderTabButton('images', <Images className="w-5 h-5" />, 'Smart Overlay')}
       {cutoutButton}
-      {tuneImageButton} {/* Add here, before text and shapes */}
-      {showDrawButton && renderTabButton('draw', <Pencil className="w-5 h-5" />, 'Draw')}
       {showTextButton && renderTabButton('text', <Type className="w-5 h-5" />, 'Text')}
       {showShapesButton && renderTabButton('shapes', <Shapes className="w-5 h-5" />, 'Shapes')}
+      {showDrawButton && renderTabButton('draw', <Pencil className="w-5 h-5" />, 'Draw')}
     </div>
   );
 

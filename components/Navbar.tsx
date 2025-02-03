@@ -312,7 +312,7 @@ export function Navbar() {
               )}
 
               {/* Ko-fi button moved here - after login/user menu */}
-              <KofiButton />
+              {/* <KofiButton /> */}
             </div>
 
             {/* Mobile Menu Button */}

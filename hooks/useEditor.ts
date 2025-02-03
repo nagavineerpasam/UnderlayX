@@ -65,6 +65,8 @@ interface ImageEnhancements {
   highlights: number;
   shadows: number;
   sharpness: number;
+  blur?: number;    // Add this
+  blacks?: number;   // Add this
 }
 
 interface ClonedForeground {
@@ -162,9 +164,10 @@ interface EditorState {
   backgroundOpacity: number; // Add this line
   applyToBackground: boolean; // Add this line
   applyToForeground: boolean; // Add this line
+  foregroundEnhancements: ImageEnhancements;
+  backgroundEnhancements: ImageEnhancements;
 }
 
-// Update the EditorActions interface to include flip in updateClonedForegroundTransform
 interface EditorActions {
   addTextSet: () => void;
   updateTextSet: (id: number, updates: Partial<TextSet>) => void;
@@ -209,6 +212,8 @@ interface EditorActions {
   updateBackgroundOpacity: (opacity: number) => void; // Add this line
   setApplyToBackground: (value: boolean) => void; // Add this line
   setApplyToForeground: (value: boolean) => void; // Add this line
+  updateForegroundEnhancements: (enhancements: ImageEnhancements) => void;
+  updateBackgroundEnhancements: (enhancements: ImageEnhancements) => void;
 }
 
 // Update the helper function with more specific types and consistent behavior
@@ -321,12 +326,19 @@ const loadImage = (src: string): Promise<HTMLImageElement> => {
   });
 };
 
-const filterString = (enhancements: ImageEnhancements): string => `
-  brightness(${enhancements.brightness}%)
-  contrast(${enhancements.contrast}%)
-  saturate(${enhancements.saturation}%)
-  opacity(${100 - enhancements.fade}%)
-`;
+const filterString = (enhancements: ImageEnhancements): string => {
+  const blur = enhancements.blur ?? 0;  // Use nullish coalescing
+  const blacks = enhancements.blacks ?? 0;  // Use nullish coalescing
+  
+  return `
+    brightness(${enhancements.brightness}%)
+    contrast(${enhancements.contrast}%)
+    saturate(${enhancements.saturation}%)
+    opacity(${100 - enhancements.fade}%)
+    blur(${blur}px)
+    brightness(${100 - blacks}%)
+  `;
+};
 
 const POSITION_UPDATE_DELAY = 8; // Reduced from 16ms
 
@@ -391,6 +403,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     highlights: 0,
     shadows: 0,
     sharpness: 0,
+    blur: 0,
+    blacks: 0
   },
   originalFileName: null,
   processingMessage: '',
@@ -419,8 +433,32 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     height: null,
   },
   backgroundOpacity: 100, // Default to 100%
-  applyToBackground: true, // Add this line
-  applyToForeground: true, // Add this line
+  applyToBackground: true,  // Always true now
+  applyToForeground: true,  // Always true now
+  foregroundEnhancements: {
+    brightness: 100,
+    contrast: 100,
+    saturation: 100,
+    fade: 0,
+    exposure: 0,
+    highlights: 0,
+    shadows: 0,
+    sharpness: 0,
+    blur: 0,
+    blacks: 0
+  },
+  backgroundEnhancements: {
+    brightness: 100,
+    contrast: 100,
+    saturation: 100,
+    fade: 0,
+    exposure: 0,
+    highlights: 0,
+    shadows: 0,
+    sharpness: 0,
+    blur: 0,
+    blacks: 0
+  },
 
   setProcessingMessage: (message) => set({ processingMessage: message }),
 
@@ -569,6 +607,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         highlights: 0,
         shadows: 0,
         sharpness: 0,
+        blur: 0,    // Initialize with default value
+        blacks: 0   // Initialize with default value
       },
       clonedForegrounds: [],
       hasTransparentBackground: false,
@@ -728,7 +768,6 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         backgroundColor,
         textSets, 
         shapeSets, 
-        imageEnhancements, 
         hasTransparentBackground,
         hasChangedBackground,
         foregroundPosition,
@@ -736,8 +775,10 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         foregroundSize,
         backgroundDimensions,
         backgroundOpacity,
-        applyToBackground, // Add this line
-        applyToForeground // Add this line
+        applyToBackground,
+        applyToForeground,
+        foregroundEnhancements,  // Add this
+        backgroundEnhancements,  // Add this
       } = get();
 
       // Modified validation check to allow downloads with backgroundColor
@@ -768,13 +809,17 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       if (!hasTransparentBackground) {
         if (backgroundColor || image.background) {
           const bgImg = image.background ? await loadImage(image.background) : null;
+          const filterToApply = applyToBackground 
+            ? filterString(backgroundEnhancements)  // Use backgroundEnhancements
+            : undefined;
+
           drawBackgroundWithOpacity(ctx, {
             backgroundColor,
             backgroundImage: bgImg,
             width: canvas.width,
             height: canvas.height,
             opacity: backgroundOpacity,
-            filter: image.background && applyToBackground ? filterString(imageEnhancements) : undefined
+            filter: filterToApply
           });
         }
       }
@@ -975,7 +1020,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       if (image.foreground) {
         const fgImg = await loadImage(image.foreground);
         if (applyToForeground) {
-          ctx.filter = filterString(imageEnhancements);
+          ctx.filter = filterString(foregroundEnhancements);  // Use foregroundEnhancements
         } else {
           ctx.filter = 'none';
         }
@@ -1150,6 +1195,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         highlights: 0,
         shadows: 0,
         sharpness: 0,
+        blur: 0,    // Initialize with default value
+        blacks: 0   // Initialize with default value
       },
       clonedForegrounds: [],
       hasTransparentBackground: false,
@@ -1478,6 +1525,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   updateBackgroundOpacity: (opacity: number) => set({ backgroundOpacity: opacity }), // Add this line
   setApplyToBackground: (value: boolean) => set({ applyToBackground: value }), // Add this line
   setApplyToForeground: (value: boolean) => set({ applyToForeground: value }), // Add this line
+  updateForegroundEnhancements: (enhancements) => set({ foregroundEnhancements: enhancements }),
+  updateBackgroundEnhancements: (enhancements) => set({ backgroundEnhancements: enhancements }),
 }));
 
 // Update the render and download functions to use these flags
