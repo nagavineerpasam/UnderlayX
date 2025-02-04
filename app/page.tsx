@@ -16,7 +16,7 @@ import {
   Settings as Adjustments,
   Layout as Overlay,
   Type,
-  Sticker,
+  Star as Sticker,
   Square as Shapes,
   Copy,
   Wand2 as Wand,
@@ -99,28 +99,29 @@ export default function Home() {
         <Navbar />
 
         <main 
-          className="pt-16 md:pt-10 w-full"
+          className="pt-16 md:pt-10 w-full h-[100dvh]" // Add h-[100dvh] for dynamic viewport height
           role="main" 
           aria-label="Main content"
         >
           {/* Hero Section */}
-          <section className="w-full px-4 min-h-screen flex flex-col justify-center pt-8 md:pt-0">
+          <section className="w-full px-4 h-full flex flex-col justify-center">
             <div className="max-w-4xl mx-auto text-center w-full">
-              <p className="text-gray-400 mb-6">
+              {/* Adjust spacing for mobile */}
+              <p className="text-gray-400 mb-4 md:mb-6">
                 50+ Powerful Image Editing Tools in One App
               </p>
-              <h1 className="text-3xl md:text-6xl font-bold text-white mb-6 leading-tight">
+              <h1 className="text-3xl md:text-6xl font-bold text-white mb-4 md:mb-6 leading-tight">
                 One Powerful Tool for
                 <br />
                 Effortless Image Editing
               </h1>
-              <p className="text-base md:text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
+              <p className="text-base md:text-lg text-gray-300 mb-6 md:mb-8 max-w-2xl mx-auto">
                 Everything you need to remove backgrounds, edit photos, and
                 magically place text and logos behind objects—fast and easy.
               </p>
 
               {/* Create Now Button */}
-              <div className="flex justify-center mb-12">
+              <div className="flex justify-center mb-8 md:mb-12">
                 <Link
                   href="/custom-editor"
                   onClick={() => setIsLoading(true)}
@@ -138,18 +139,18 @@ export default function Home() {
               </div>
 
               {/* Static Functionality Grid / Mobile Carousel */}
-              <div className="w-full max-w-5xl mx-auto">
+              <div className="w-full max-w-5xl mx-auto -mx-4 md:mx-0">
+                {/* Desktop Grid */}
                 <div className="hidden md:grid md:grid-cols-4 lg:grid-cols-7 gap-3 px-4">
-                  {/* Desktop Grid */}
                   {tools.map((tool, index) => (
                     <FeatureCard key={index} tool={tool} />
                   ))}
                 </div>
 
-                {/* Mobile Carousel */}
-                <div className="md:hidden w-full overflow-hidden px-4">
+                {/* Mobile Carousel - Adjusted for better vertical positioning */}
+                <div className="md:hidden w-full overflow-hidden">
                   <div 
-                    className="flex animate-carousel"
+                    className="flex animate-carousel px-4"
                     style={{
                       width: 'max-content',
                       animationDuration: '30s',
@@ -157,43 +158,41 @@ export default function Home() {
                   >
                     {/* First set */}
                     {tools.map((tool, index) => (
-                      <div key={index} className="w-[160px] flex-none mx-2">
+                      <div key={index} className="w-[140px] flex-none mx-1.5"> {/* Reduced size and margin */}
                         <FeatureCard tool={tool} />
                       </div>
                     ))}
                     {/* Duplicate set for seamless loop */}
                     {tools.map((tool, index) => (
-                      <div key={`dup-${index}`} className="w-[160px] flex-none mx-2">
+                      <div key={`dup-${index}`} className="w-[140px] flex-none mx-1.5">
                         <FeatureCard tool={tool} />
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
-
             </div>
           </section>
 
-          {/* Feature Showcase Section */}
-          <section className="px-4 py-16 md:py-24">
-            <div className="max-w-4xl mx-auto text-center mb-12">
-              <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">
-                Unlimited Possibilities
-              </h2>
-              <p className="text-gray-400 text-base md:text-lg">
-                Create stunning visuals with our powerful editing tools
-              </p>
-            </div>
-            <FeatureShowcase />
-          </section>
+          {/* Move other sections outside of the 100vh container */}
+          <div className="relative">
+            {/* Feature Showcase Section */}
+            <section className="px-4 py-16 md:py-24">
+              <div className="max-w-4xl mx-auto text-center mb-12">
+                <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">
+                  Unlimited Possibilities
+                </h2>
+                <p className="text-gray-400 text-base md:text-lg">
+                  Create stunning visuals with our powerful editing tools
+                </p>
+              </div>
+              <FeatureShowcase />
+            </section>
 
-          <Features />
-          <UseCases />
-          {/* <section id="pricing">
-            <Pricing />
-          </section> */}
-
-          <Footer />
+            <Features />
+            <UseCases />
+            <Footer />
+          </div>
         </main>
       </div>
     </div>
