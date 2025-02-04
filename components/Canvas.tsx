@@ -159,7 +159,7 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
         "image/jpeg",
         "image/png",
         "image.webp",
-        "image/webp",
+        "image.webp",
         "image.heic",
         "image/heic",
         "image.heif",
@@ -168,25 +168,41 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
       const fileType = file.type.toLowerCase();
       const fileName = file.name.toLowerCase();
 
-      // Check if it's HEIC/HEIF first
-      if (
-        fileType.includes("heic") ||
-        fileType.includes("heif") ||
-        fileName.endsWith(".heic") ||
-        fileName.endsWith(".heif")
-      ) {
-        setPendingFile(file);
-        setShowConvertDialog(true);
-        return;
-      }
+      // Set processing state immediately
+      setIsProcessing(true);
+      setProcessingMessage("Preparing to process your image...");
 
-      // For other image types
-      if (validTypes.includes(fileType)) {
-        await handleFileProcess(file);
-      } else {
-        alert(
-          "Please upload a valid image file (JPG, PNG, WEBP, HEIC, or HEIF)"
-        );
+      try {
+        // Check if it's HEIC/HEIF first
+        if (
+          fileType.includes("heic") ||
+          fileType.includes("heif") ||
+          fileName.endsWith(".heic") ||
+          fileName.endsWith(".heif")
+        ) {
+          setPendingFile(file);
+          setShowConvertDialog(true);
+          return;
+        }
+
+        // For other image types
+        if (validTypes.includes(fileType)) {
+          await handleFileProcess(file);
+        } else {
+          alert(
+            "Please upload a valid image file (JPG, PNG, WEBP, HEIC, or HEIF)"
+          );
+        }
+      } catch (error) {
+        console.error("Error processing file:", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to process image. Please try again.",
+        });
+      } finally {
+        setIsProcessing(false);
+        setProcessingMessage("");
       }
     }
   };

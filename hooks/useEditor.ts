@@ -606,35 +606,20 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   }),
 
   handleImageUpload: async (file: File, state?: { isConverting?: boolean; isProcessing?: boolean; isAuthenticated?: boolean; userId?: string }) => {
-    // First, reset the editor state while preserving certain flags
+    // Reset relevant state first
     set(state => ({
       ...state,
+      image: {
+        original: null,
+        background: null,
+        foreground: null
+      },
       textSets: [],
       shapeSets: [],
-      imageEnhancements: {
-        brightness: 100,
-        contrast: 100,
-        saturation: 100,
-        fade: 0,
-        exposure: 0,
-        highlights: 0,
-        shadows: 0,
-        sharpness: 0,
-        blur: 0,    // Initialize with default value
-        blacks: 0   // Initialize with default value
-      },
-      clonedForegrounds: [],
-      hasTransparentBackground: false,
-      hasChangedBackground: false,
-      isBackgroundRemoved: false,
-      foregroundPosition: { x: 0, y: 0 },
-      backgroundImages: [],
-      backgroundColor: null,
-      foregroundSize: 100,
+      drawings: [],
+      isProcessing: true,
+      processingMessage: 'Analyzing your image, please wait...'
     }));
-
-    if (state?.isConverting !== undefined) set({ isConverting: state.isConverting });
-    if (state?.isProcessing !== undefined) set({ isProcessing: state.isProcessing });
 
     try {
       const fileName = file.name.replace(/\.[^/.]+$/, "");

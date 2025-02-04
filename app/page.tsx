@@ -27,6 +27,45 @@ import {
   PaintBucket as Paint,
 } from "lucide-react";
 
+const tools = [
+  { Icon: ImageOff, name: "Remove Background" },
+  { Icon: Layers, name: "Customize Background" },
+  { Icon: Adjustments, name: "Tune Image" },
+  { Icon: Overlay, name: "Overlay Images" },
+  { Icon: Type, name: "Add Text Behind" },
+  { Icon: Sticker, name: "Add Logo Behind" },
+  { Icon: Shapes, name: "Add Shapes" },
+  { Icon: Copy, name: "Image Clone" },
+  { Icon: Wand, name: "AI Detection" },
+  { Icon: Filter, name: "Apply Effects" },
+  { Icon: Download, name: "Export HD" },
+  { Icon: Eye, name: "Toggle Overlays" },
+  { Icon: Paint, name: "Object Outline" },
+  { Icon: Image, name: "Image Enhance" },
+];
+
+const FeatureCard = ({ tool: { Icon, name } }) => (
+  <div
+    className="flex flex-col items-center p-3 bg-gray-900/50 rounded-xl backdrop-blur-sm 
+      transform transition-all duration-200 
+      hover:bg-gray-900/70 hover:scale-105 
+      hover:shadow-lg hover:shadow-purple-500/20
+      group"
+  >
+    <Icon className="w-5 h-5 mb-2 text-purple-500 
+      transition-transform duration-200 
+      group-hover:scale-110 
+      group-hover:text-purple-400" 
+    />
+    <span className="text-xs text-gray-300 text-center
+      transition-colors duration-200
+      group-hover:text-white"
+    >
+      {name}
+    </span>
+  </div>
+);
+
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef(null);
@@ -59,25 +98,29 @@ export default function Home() {
       <div ref={scrollRef} className="relative z-10 flex-grow">
         <Navbar />
 
-        <main className="pt-24 w-full" role="main" aria-label="Main content">
+        <main 
+          className="pt-16 md:pt-10 w-full"
+          role="main" 
+          aria-label="Main content"
+        >
           {/* Hero Section */}
-          <section className="w-full px-4 min-h-[calc(100vh-80px)] flex flex-col justify-center">
+          <section className="w-full px-4 min-h-screen flex flex-col justify-center pt-8 md:pt-0">
             <div className="max-w-4xl mx-auto text-center w-full">
-              <p className="text-gray-400 mb-8">
+              <p className="text-gray-400 mb-6">
                 50+ Powerful Image Editing Tools in One App
               </p>
-              <h1 className="text-3xl md:text-6xl font-bold text-white mb-8 leading-tight">
+              <h1 className="text-3xl md:text-6xl font-bold text-white mb-6 leading-tight">
                 One Powerful Tool for
                 <br />
                 Effortless Image Editing
               </h1>
-              <p className="text-base md:text-lg text-gray-300 mb-12 max-w-2xl mx-auto">
+              <p className="text-base md:text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
                 Everything you need to remove backgrounds, edit photos, and
                 magically place text and logos behind objects—fast and easy.
               </p>
 
               {/* Create Now Button */}
-              <div className="flex justify-center mb-16">
+              <div className="flex justify-center mb-12">
                 <Link
                   href="/custom-editor"
                   onClick={() => setIsLoading(true)}
@@ -94,104 +137,56 @@ export default function Home() {
                 </Link>
               </div>
 
-              {/* Tool Icons Carousel */}
-              <div className="relative w-full max-w-[90vw] md:max-w-5xl mx-auto mb-12">
-                {/* Gradients only visible on desktop */}
-                <div className="hidden md:block absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#0A0A0A] via-[#0A0A0A] to-transparent z-10"></div>
-                <div className="hidden md:block absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#0A0A0A] via-[#0A0A0A] to-transparent z-10"></div>
+              {/* Static Functionality Grid / Mobile Carousel */}
+              <div className="w-full max-w-5xl mx-auto">
+                <div className="hidden md:grid md:grid-cols-4 lg:grid-cols-7 gap-3 px-4">
+                  {/* Desktop Grid */}
+                  {tools.map((tool, index) => (
+                    <FeatureCard key={index} tool={tool} />
+                  ))}
+                </div>
 
-                {/* Carousel container */}
-                <div className="w-full overflow-hidden px-0 md:px-4">
+                {/* Mobile Carousel */}
+                <div className="md:hidden w-full overflow-hidden px-4">
                   <div 
-                    className="flex animate-scroll"
+                    className="flex animate-carousel"
                     style={{
-                      width: 'max-content'
+                      width: 'max-content',
+                      animationDuration: '30s',
                     }}
                   >
-                    {[...Array(2)].map((_, duplicateIndex) => (
-                      <div key={duplicateIndex} className="flex shrink-0">
-                        {[
-                          { Icon: ImageOff, name: "Remove Background" },
-                          { Icon: Layers, name: "Customize Background" },
-                          { Icon: Adjustments, name: "Tune Image" },
-                          { Icon: Overlay, name: "Overlay Images" },
-                          { Icon: Type, name: "Add Text Behind Objects" },
-                          { Icon: Sticker, name: "Add Logo Behind Objects" },
-                          { Icon: Shapes, name: "Add Shapes Behind Objects" },
-                          { Icon: Copy, name: "Image Clone" },
-                          { Icon: Wand, name: "AI Object Detection" },
-                          { Icon: Filter, name: "Apply Filters & Effects" },
-                          { Icon: Download, name: "Export High-Quality Images" },
-                          { Icon: Eye, name: "Toggle Overlays" },
-                          { Icon: Paint, name: "Outline Objects with Colors" }, // New item
-                        ].map((tool, index) => (
-                          <div
-                            key={`${duplicateIndex}-${index}`}
-                            className="flex-none w-[160px] flex flex-col items-center p-4 bg-gray-900/50 rounded-xl mx-2"
-                          >
-                            <tool.Icon className="w-6 h-6 mb-2 text-purple-500" />
-                            <span className="text-sm text-gray-300 text-center break-words w-full">
-                              {tool.name}
-                            </span>
-                          </div>
-                        ))}
+                    {/* First set */}
+                    {tools.map((tool, index) => (
+                      <div key={index} className="w-[160px] flex-none mx-2">
+                        <FeatureCard tool={tool} />
+                      </div>
+                    ))}
+                    {/* Duplicate set for seamless loop */}
+                    {tools.map((tool, index) => (
+                      <div key={`dup-${index}`} className="w-[160px] flex-none mx-2">
+                        <FeatureCard tool={tool} />
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
 
-              {/* Statistics */}
-              <div className="text-center mb-8">
-                <div className="flex justify-center items-center gap-2">
-                  <span className="text-2xl md:text-3xl font-bold text-white">
-                    100,000+
-                  </span>
-                  <span className="text-gray-400 text-sm ml-2">
-                    Images Generated
-                  </span>
-                </div>
-              </div>
             </div>
           </section>
 
-          {/* Product Hunt Badges Section */}
-          {/* <section className="container mx-auto px-4 mb-10">
-            <div className="flex flex-row justify-center items-center gap-4">
-              {[
-                {
-                  href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx",
-                  src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=44"
-                },
-                {
-                  href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-underlayx",
-                  src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=739682&theme=light&period=daily"
-                },
-                {
-                  href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx",
-                  src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=164"
-                }
-              ].map((badge, index) => (
-                <a 
-                  key={index}
-                  href={badge.href}
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                >
-                  <img
-                    src={badge.src}
-                    alt="UnderlayX - Product Hunt Badge"
-                    width={150}
-                    height={32}
-                    className="h-18 w-auto"
-                  />
-                </a>
-              ))}
+          {/* Feature Showcase Section */}
+          <section className="px-4 py-16 md:py-24">
+            <div className="max-w-4xl mx-auto text-center mb-12">
+              <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">
+                Unlimited Possibilities
+              </h2>
+              <p className="text-gray-400 text-base md:text-lg">
+                Create stunning visuals with our powerful editing tools
+              </p>
             </div>
-          </section> */}
+            <FeatureShowcase />
+          </section>
 
-          {/* Feature Showcase */}
-          <FeatureShowcase />
           <Features />
           <UseCases />
           {/* <section id="pricing">
