@@ -146,7 +146,13 @@ export function EditorLayout({
             {image.original && (
               <>
                 <button
-                  onClick={() => resetEditor(true)}
+                  onClick={() => {
+                    resetEditor(true); // Force reset the editor first
+                    const fileInput = document.getElementById('canvas-upload') as HTMLInputElement;
+                    if (fileInput) {
+                      fileInput.click();
+                    }
+                  }}
                   disabled={isActionDisabled}
                   className={cn(
                     "flex flex-col items-center px-1 sm:px-2", // Reduced padding for mobile
