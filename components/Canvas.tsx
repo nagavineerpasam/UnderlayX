@@ -335,17 +335,15 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
         )}
       >
         {!image.original ? (
-          <div className="h-full flex flex-col">
-            {/* Upload Area - Make it taller */}
+          <div className="h-full flex items-center justify-center"> {/* Modified this line */}
             <div
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               className={cn(
                 "transition-all duration-300",
                 "relative flex items-center justify-center",
-                isMobile
-                  ? "h-full"
-                  : "h-[380px]" // Significantly increased height
+                "w-full", // Added this
+                isMobile ? "h-full" : "h-[600px]" // Increased height from 380px to 600px
               )}
             >
               <input
@@ -384,10 +382,11 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
                   htmlFor="canvas-upload"
                   className={cn(
                     "absolute inset-0 flex flex-col items-center justify-center gap-3",
-                    "border-2 border-dashed border-gray-300/50 dark:border-gray-600/30",
+                    "border-2 border-dashed border-purple-500/50 dark:border-purple-400/30", // Changed this line
                     "rounded-lg", // Smaller border radius
                     "transition-all bg-white/50 dark:bg-zinc-900/50",
                     "hover:bg-gray-50/80 dark:hover:bg-zinc-800/50",
+                    "hover:border-purple-500 dark:hover:border-purple-400", // Added this line for hover effect
                     "backdrop-blur-sm",
                     "cursor-pointer",
                     (isConverting || isProcessing) && "opacity-50 cursor-not-allowed"
@@ -406,18 +405,6 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
                 </label>
               )}
             </div>
-
-            {/* Example Showcase - Updated heading */}
-            {!isMobile && (
-              <div className="flex-1 max-h-[calc(100vh-380px)]"> {/* Add max height */}
-                <div className="pt-8 px-6"> {/* Increased padding */}
-                  <h3 className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-4 uppercase tracking-wide">
-                    Unlock Endless Creative Possibilities
-                  </h3>
-                  <FeatureShowcase compact limited />
-                </div>
-              </div>
-            )}
           </div>
         ) : (
           <div

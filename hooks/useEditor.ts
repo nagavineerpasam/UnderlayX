@@ -382,6 +382,19 @@ const cleanupImageUrls = (state: EditorState) => {
   });
 };
 
+const defaultEnhancements: ImageEnhancements = {
+  brightness: 100,
+  contrast: 100,
+  saturation: 100,
+  fade: 0,
+  exposure: 0,
+  highlights: 0,
+  shadows: 0,
+  sharpness: 0,
+  blur: 0,
+  blacks: 0
+};
+
 export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   image: {
     original: null,
@@ -1186,18 +1199,9 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     return {
       textSets: [],
       shapeSets: [],
-      imageEnhancements: {
-        brightness: 100,
-        contrast: 100,
-        saturation: 100,
-        fade: 0,
-        exposure: 0,
-        highlights: 0,
-        shadows: 0,
-        sharpness: 0,
-        blur: 0,    // Initialize with default value
-        blacks: 0   // Initialize with default value
-      },
+      imageEnhancements: { ...defaultEnhancements },
+      foregroundEnhancements: { ...defaultEnhancements }, // Add this
+      backgroundEnhancements: { ...defaultEnhancements }, // Add this
       clonedForegrounds: [],
       hasTransparentBackground: false,
       hasChangedBackground: false,
@@ -1207,7 +1211,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       isProcessing: false,
       isConverting: false,
       isDownloading: false,
-      backgroundImages: [], // Add this line to clear background images
+      backgroundImages: [],
       image: clearImage ? {
         original: null,
         background: null,
