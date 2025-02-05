@@ -5,7 +5,6 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: '*',
       allow: '/',
-      disallow: ['/pay'],
     },
     sitemap: 'https://www.underlayx.com/sitemap.xml',
     host: 'https://www.underlayx.com',

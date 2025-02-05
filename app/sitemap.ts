@@ -1,68 +1,88 @@
 import { MetadataRoute } from 'next'
+import { getAllBlogPosts } from '@/lib/blog'
+
+type ChangeFrequency = 'always' | 'hourly' | 'daily' | 'weekly' | 'monthly' | 'yearly' | 'never';
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://www.underlayx.com'
+  const blogPosts = getAllBlogPosts()
+  const staticDate = new Date('2024-02-05')
   
-  return [
+  const staticRoutes = [
     {
       url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
+      lastModified: staticDate,
+      changeFrequency: 'daily' as ChangeFrequency,
       priority: 1,
     },
     {
       url: `${baseUrl}/custom-editor`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
+      lastModified: staticDate,
+      changeFrequency: 'daily' as ChangeFrequency,
       priority: 1,
     },
     {
       url: `${baseUrl}/text-behind-image`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
+      lastModified: staticDate,
+      changeFrequency: 'daily' as ChangeFrequency,
       priority: 1,
     },
     {
       url: `${baseUrl}/shape-behind-image`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
+      lastModified: staticDate,
+      changeFrequency: 'daily' as ChangeFrequency,
       priority: 1,
     },
     {
       url: `${baseUrl}/remove-background`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
+      lastModified: staticDate,
+      changeFrequency: 'daily' as ChangeFrequency,
       priority: 1,
     },
     {
       url: `${baseUrl}/overlay-image`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
+      lastModified: staticDate,
+      changeFrequency: 'daily' as ChangeFrequency,
+      priority: 1,
+    },
+    {
+      url: `${baseUrl}/draw-behind-image`,
+      lastModified: staticDate,
+      changeFrequency: 'daily' as ChangeFrequency,
       priority: 1,
     },
     {
       url: `${baseUrl}/clone-image`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
+      lastModified: staticDate,
+      changeFrequency: 'daily' as ChangeFrequency,
       priority: 1,
     },
     {
       url: `${baseUrl}/change-background`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
+      lastModified: staticDate,
+      changeFrequency: 'daily' as ChangeFrequency,
       priority: 1,
     },
     {
       url: `${baseUrl}/faq`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
+      lastModified: staticDate,
+      changeFrequency: 'daily' as ChangeFrequency,
       priority: 1,
     },
     {
       url: `${baseUrl}/blog`,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
+      lastModified: staticDate,
+      changeFrequency: 'daily' as ChangeFrequency,
       priority: 1,
     }
   ]
+
+  const blogRoutes = blogPosts.map(post => ({
+    url: `${baseUrl}/blog/${post.slug}`,
+    lastModified: new Date(post.date),
+    changeFrequency: 'weekly' as ChangeFrequency,
+    priority: 0.8,
+  }))
+
+  return [...staticRoutes, ...blogRoutes]
 }
