@@ -90,7 +90,6 @@ export default function FAQ() {
           ))}
         </div>
       </main>
-      <Footer />
     </div>
   );
 }

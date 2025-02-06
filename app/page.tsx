@@ -46,20 +46,21 @@ const tools = [
 
 const FeatureCard = ({ tool: { Icon, name } }) => (
   <div
-    className="flex flex-col items-center p-3 bg-gray-900/50 rounded-xl backdrop-blur-sm 
+    className="flex flex-col items-center p-3 bg-white/80 dark:bg-gray-900/50 rounded-xl backdrop-blur-sm 
       transform transition-all duration-200 
-      hover:bg-gray-900/70 hover:scale-105 
+      hover:bg-gray-50 dark:hover:bg-gray-900/70 hover:scale-105 
       hover:shadow-lg hover:shadow-purple-500/20
+      border border-gray-200 dark:border-white/10
       group"
   >
-    <Icon className="w-5 h-5 mb-2 text-purple-500 
+    <Icon className="w-5 h-5 mb-2 text-purple-600 dark:text-purple-500 
       transition-transform duration-200 
       group-hover:scale-110 
-      group-hover:text-purple-400" 
+      group-hover:text-purple-700 dark:group-hover:text-purple-400" 
     />
-    <span className="text-xs text-gray-300 text-center
+    <span className="text-xs text-gray-600 dark:text-gray-300 text-center
       transition-colors duration-200
-      group-hover:text-white"
+      group-hover:text-gray-900 dark:group-hover:text-white"
     >
       {name}
     </span>
@@ -88,10 +89,9 @@ export default function Home() {
       role="region"
       aria-label="Home page content"
     >
-      {/* Simplified Gradient Background */}
+      {/* Simplified Background - Remove gradient */}
       <div className="fixed inset-0 z-0" aria-hidden="true">
-        <div className="absolute inset-0 bg-[#0A0A0A]" />
-        <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-[#0A0A0A] to-[#0A0A0A]" />
+        <div className="absolute inset-0 bg-white dark:bg-[#0A0A0A]" />
       </div>
 
       {/* Content Container */}
@@ -107,15 +107,15 @@ export default function Home() {
           <section className="w-full px-4 h-full flex flex-col justify-center">
             <div className="max-w-4xl mx-auto text-center w-full">
               {/* Adjust spacing for mobile */}
-              <p className="text-gray-400 mb-4 md:mb-6">
+              <p className="text-gray-600 dark:text-gray-400 mb-4 md:mb-6">
                 50+ Powerful Image Editing Tools in One App
               </p>
-              <h1 className="text-3xl md:text-6xl font-bold text-white mb-4 md:mb-6 leading-tight">
+              <h1 className="text-3xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4 md:mb-6 leading-tight">
                 One Powerful Tool for
                 <br />
                 Effortless Image Editing
               </h1>
-              <p className="text-base md:text-lg text-gray-300 mb-6 md:mb-8 max-w-2xl mx-auto">
+              <p className="text-base md:text-lg text-gray-600 dark:text-gray-300 mb-6 md:mb-8 max-w-2xl mx-auto">
                 Everything you need to remove backgrounds, edit photos, and
                 magically place text and logos behind objects—fast and easy.
               </p>
@@ -179,10 +179,10 @@ export default function Home() {
             {/* Feature Showcase Section */}
             <section className="px-4 py-16 md:py-24">
               <div className="max-w-4xl mx-auto text-center mb-12">
-                <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">
-                  Unlimited Possibilities
+                <h2 className="text-2xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                  Unlimited <span className="text-purple-700 dark:text-purple-400">Possibilities</span>
                 </h2>
-                <p className="text-gray-400 text-base md:text-lg">
+                <p className="text-gray-600 dark:text-gray-400 text-base md:text-lg">
                   Create stunning visuals with our powerful editing tools
                 </p>
               </div>

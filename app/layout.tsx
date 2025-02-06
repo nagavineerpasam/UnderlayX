@@ -48,7 +48,7 @@ export default function RootLayout({
         />
         <meta httpEquiv="Content-Type" content="text/html; charset=utf-8" />
       </head>
-      <body className={`${inter.className} bg-[#0A0A0A] min-h-screen`}>
+      <body className="min-h-screen bg-white dark:bg-[#0A0A0A] transition-colors">
         <PricingProvider>
           <ThemeProvider
             attribute="class"

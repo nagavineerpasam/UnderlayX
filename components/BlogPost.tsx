@@ -49,7 +49,6 @@ export function BlogPost({ post }: BlogPostProps) {
           </div>
         </article>
       </main>
-      <Footer />
     </div>
   );
 }

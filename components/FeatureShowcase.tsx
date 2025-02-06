@@ -215,7 +215,7 @@ function ComparisonSlider({
         </div>
       </div>
       <p className={cn(
-        "text-center text-white/70",
+        "text-center text-gray-900 dark:text-gray-400 font-medium",
         compact ? "text-[8px] truncate" // Even smaller text and ensure it doesn't wrap
           : "text-sm"
       )}>

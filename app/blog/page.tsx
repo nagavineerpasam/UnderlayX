@@ -32,7 +32,6 @@ export default function BlogIndex() {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 }
