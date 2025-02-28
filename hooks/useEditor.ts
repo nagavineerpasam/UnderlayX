@@ -39,6 +39,7 @@ interface TextSet {
   opacity: number;
   rotation: number;
   glow?: GlowEffect;
+  placement: 'background' | 'foreground';
 }
 
 interface ShapeSet {
@@ -486,7 +487,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         horizontal: 50 
       },
       opacity: 1,
-      rotation: 0
+      rotation: 0,
+      placement: 'background'
     }]
   })),
 
@@ -512,6 +514,19 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
             )
           }));
         });
+        return;
+      }
+
+      // Handle placement updates
+      if (updates.placement) {
+        set(state => ({
+          textSets: state.textSets.map(set => 
+            set.id === id ? { 
+              ...set, 
+              placement: updates.placement as 'background' | 'foreground'
+            } : set
+          )
+        }));
         return;
       }
 
@@ -933,8 +948,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         ctx.restore();
       });
 
-      // Draw text
-      textSets.forEach(textSet => {
+      // Draw text that should be behind the foreground
+      textSets.filter(textSet => textSet.placement === 'background').forEach(textSet => {
         ctx.save();
         
         ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px "${textSet.fontFamily}"`;
@@ -982,7 +997,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         
         const x = (canvas.width - newWidth) / 2;
         const y = (canvas.height - newHeight) / 2;
-
+        
         const offsetX = (hasTransparentBackground || hasChangedBackground) ? (canvas.width * foregroundPosition.x) / 100 : 0;
         const offsetY = (hasTransparentBackground || hasChangedBackground) ? (canvas.height * foregroundPosition.y) / 100 : 0;
 
@@ -1046,13 +1061,13 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
           // Save context state before transformations
           ctx.save();
-
+          
           // Move to center of where we want to draw the image
           ctx.translate(x + offsetX + newWidth / 2, y + offsetY + newHeight / 2);
           
           // Rotate around the center
           ctx.rotate((clone.rotation * Math.PI) / 180);
-          
+
           // Apply flip transformations
           ctx.scale(clone.flip.horizontal ? -1 : 1, clone.flip.vertical ? -1 : 1);
 
@@ -1069,6 +1084,34 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
           ctx.restore();
         }
       }
+      
+      // Draw text that should be on top of the foreground
+      textSets.filter(textSet => textSet.placement === 'foreground').forEach(textSet => {
+        ctx.save();
+        
+        ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px "${textSet.fontFamily}"`;
+        ctx.fillStyle = textSet.color;
+        ctx.globalAlpha = textSet.opacity;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const x = (canvas.width * textSet.position.horizontal) / 100;
+        const y = (canvas.height * textSet.position.vertical) / 100;
+
+        ctx.translate(x, y);
+        ctx.rotate((textSet.rotation * Math.PI) / 180);
+
+        if (textSet.glow?.enabled) {
+          ctx.shadowColor = textSet.glow.color;
+          ctx.shadowBlur = textSet.glow.intensity;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+        }
+
+        ctx.fillText(textSet.text, 0, 0);
+        
+        ctx.restore();
+      });
 
       try {
         // Convert canvas to blob with maximum quality

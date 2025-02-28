@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabaseClient";
 import { isSubscriptionActive } from "@/lib/utils";
 import { ProUpgradeButton } from "./ProUpgradeButton"; // Add ProUpgradeButton to imports
-import { KofiButton } from './KofiButton';
+import { KofiButton } from "./KofiButton";
 
 interface EditorLayoutProps {
   SideNavComponent: React.ComponentType<{ mobile?: boolean }>;
@@ -148,7 +148,9 @@ export function EditorLayout({
                 <button
                   onClick={() => {
                     resetEditor(true); // Force reset the editor first
-                    const fileInput = document.getElementById('canvas-upload') as HTMLInputElement;
+                    const fileInput = document.getElementById(
+                      "canvas-upload"
+                    ) as HTMLInputElement;
                     if (fileInput) {
                       fileInput.click();
                     }
@@ -279,7 +281,6 @@ export function EditorLayout({
       </nav>
 
       <div className="pt-16 flex flex-col h-screen overflow-hidden">
-        {/* Changed lg to xl for larger screens only */}
         <div className="hidden xl:block fixed top-16 bottom-0 w-[320px] border-r border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 z-10">
           <SideNavComponent mobile={false} />
         </div>
