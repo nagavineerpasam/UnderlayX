@@ -5,8 +5,6 @@ import { convertHeicToJpeg } from '@/lib/image-utils';
 import { SHAPES } from '@/constants/shapes';
 import { uploadFile } from '@/lib/upload';
 import { removeBackground } from "@imgly/background-removal";
-import { supabase } from '@/lib/supabaseClient'; // Add this import
-import { isSubscriptionActive } from '@/lib/utils';
 
 // Update the defaultCutout object
 const defaultCutout = {
@@ -653,74 +651,23 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
       set({ isProcessing: true });
 
-      // Different processing based on authentication status and subscription
+      // Use client-side background removal for all users
       let foregroundUrl;
       
-      if (state?.isAuthenticated && state.userId) {  // Add userId check
-        // Check if subscription is active before using API
-        const profile = await supabase
-          .from('profiles')
-          .select('expires_at')
-          .eq('id', state.userId)  // Use userId from state
-          .single();
-
-        const isProActive = profile.data?.expires_at && isSubscriptionActive(profile.data.expires_at);
-        set({ isProSubscriptionActive: isProActive });
-
-        if (isProActive) {
-          try {
-            // Pro users with active subscription: Use API endpoint
-            const formData = new FormData();
-            formData.append('file', fileToUpload);
-            formData.append('isAuthenticated', 'true');
-    
-            const response = await fetch('/api/remove-background', {
-              method: 'POST',
-              body: formData
-            });
-    
-            const data = await response.json();
-    
-            if (!response.ok) {
-              throw new Error(data.error || 'Failed to remove background');
-            }
-    
-            // Fetch the processed image
-            const processedImageResponse = await fetch(data.url);
-            if (!processedImageResponse.ok) {
-              throw new Error('Failed to fetch processed image');
-            }
-    
-            const processedBlob = await processedImageResponse.blob();
-            foregroundUrl = URL.createObjectURL(processedBlob);
-          } catch (error) {
-            throw new Error('Failed to analyze image. Please try again.');
-          }
-        } else {
-          try {
-            // Expired subscription: Use client-side removal
-            const imageUrl = URL.createObjectURL(fileToUpload);
-            const imageBlob = await removeBackground(imageUrl);
-            foregroundUrl = URL.createObjectURL(imageBlob);
-            URL.revokeObjectURL(imageUrl);
-          } catch (error) {
-            throw new Error('Failed to analyze image. Please try with a different image or try again later.');
-          }
-        }
-      } else {
-        try {
-          // Free plan: Use client-side removal
-          const imageUrl = URL.createObjectURL(fileToUpload);
-          const imageBlob = await removeBackground(imageUrl);
-          foregroundUrl = URL.createObjectURL(imageBlob);
-          URL.revokeObjectURL(imageUrl);
-        } catch (error) {
-          set({ 
-            processingMessage: 'Failed to analyze image. Please try with a different image.',
-            isProcessing: false 
-          });
-          throw new Error('Failed to analyze image. Please try with a different image.');
-        }
+      try {
+        // Create a new URL for the image to be processed
+        const imageUrl = URL.createObjectURL(fileToUpload);
+        // Use client-side background removal
+        const imageBlob = await removeBackground(imageUrl);
+        foregroundUrl = URL.createObjectURL(imageBlob);
+        // Clean up the temporary URL
+        URL.revokeObjectURL(imageUrl);
+      } catch (error) {
+        set({ 
+          processingMessage: 'Failed to analyze image. Please try with a different image.',
+          isProcessing: false 
+        });
+        throw new Error('Failed to analyze image. Please try with a different image.');
       }
   
       set(state => ({

@@ -272,6 +272,15 @@
     margin-bottom: 35vh;
   }
 
+  /* Ensure canvas is centered on mobile */
+  @media (max-width: 768px) {
+    canvas {
+      display: block;
+      margin: 0 auto;
+      max-width: 100% !important;
+    }
+  }
+
   /* PayPal Button Fixes */
   .paypal-buttons {
     min-width: 100% !important;
@@ -303,6 +312,20 @@
     &:hover {
       animation-play-state: paused;
     }
+  }
+
+  /* Add scrollbar-hide utility class */
+  .scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari and Opera */
+  }
+  
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
