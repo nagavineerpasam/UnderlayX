@@ -22,6 +22,7 @@ export interface TextSet {
   position: Position;
   rotation: number;
   glow?: GlowEffect;
+  placement: 'background' | 'foreground';
 }
 
 export interface ShapeSet {

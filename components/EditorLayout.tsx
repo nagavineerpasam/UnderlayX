@@ -2,7 +2,7 @@
 
 import { useEditor } from "@/hooks/useEditor";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Upload, Save, LogIn, Loader2, Home } from "lucide-react";
+import { Upload, Save, LogIn, Loader2, Home, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Canvas } from "@/components/Canvas";
 import { useIsMobile } from "@/hooks/useIsMobile"; // Add this hook
@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabaseClient";
 import { isSubscriptionActive } from "@/lib/utils";
 import { ProUpgradeButton } from "./ProUpgradeButton"; // Add ProUpgradeButton to imports
-import { KofiButton } from './KofiButton';
+import { KofiButton } from "./KofiButton";
 
 interface EditorLayoutProps {
   SideNavComponent: React.ComponentType<{ mobile?: boolean }>;
@@ -148,7 +148,9 @@ export function EditorLayout({
                 <button
                   onClick={() => {
                     resetEditor(true); // Force reset the editor first
-                    const fileInput = document.getElementById('canvas-upload') as HTMLInputElement;
+                    const fileInput = document.getElementById(
+                      "canvas-upload"
+                    ) as HTMLInputElement;
                     if (fileInput) {
                       fileInput.click();
                     }
@@ -267,7 +269,7 @@ export function EditorLayout({
                   onClick={() => setShowAuthDialog(true)}
                   className="flex flex-col items-center px-1 sm:px-2"
                 >
-                  <LogIn className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" />
+                  <User className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" />
                   <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400">
                     Login
                   </span>
@@ -279,8 +281,7 @@ export function EditorLayout({
       </nav>
 
       <div className="pt-16 flex flex-col h-screen overflow-hidden">
-        {/* Changed lg to xl for larger screens only */}
-        <div className="hidden xl:block fixed top-16 bottom-0 w-[320px] border-r border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 z-10">
+        <div className="hidden xl:block fixed top-16 bottom-0 w-[380px] border-r border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 z-10">
           <SideNavComponent mobile={false} />
         </div>
 
@@ -288,7 +289,7 @@ export function EditorLayout({
           className={cn(
             "flex-1 relative transition-all duration-300 ease-in-out",
             "px-0 sm:px-4",
-            "xl:ml-[320px]",
+            "xl:ml-[380px]",
             "pt-4",
             "overflow-hidden",
             isMobile

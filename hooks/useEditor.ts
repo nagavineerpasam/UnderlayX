@@ -5,8 +5,6 @@ import { convertHeicToJpeg } from '@/lib/image-utils';
 import { SHAPES } from '@/constants/shapes';
 import { uploadFile } from '@/lib/upload';
 import { removeBackground } from "@imgly/background-removal";
-import { supabase } from '@/lib/supabaseClient'; // Add this import
-import { isSubscriptionActive } from '@/lib/utils';
 
 // Update the defaultCutout object
 const defaultCutout = {
@@ -41,6 +39,7 @@ interface TextSet {
   opacity: number;
   rotation: number;
   glow?: GlowEffect;
+  placement: 'background' | 'foreground';
 }
 
 interface ShapeSet {
@@ -488,7 +487,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         horizontal: 50 
       },
       opacity: 1,
-      rotation: 0
+      rotation: 0,
+      placement: 'background'
     }]
   })),
 
@@ -514,6 +514,19 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
             )
           }));
         });
+        return;
+      }
+
+      // Handle placement updates
+      if (updates.placement) {
+        set(state => ({
+          textSets: state.textSets.map(set => 
+            set.id === id ? { 
+              ...set, 
+              placement: updates.placement as 'background' | 'foreground'
+            } : set
+          )
+        }));
         return;
       }
 
@@ -653,74 +666,23 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
       set({ isProcessing: true });
 
-      // Different processing based on authentication status and subscription
+      // Use client-side background removal for all users
       let foregroundUrl;
       
-      if (state?.isAuthenticated && state.userId) {  // Add userId check
-        // Check if subscription is active before using API
-        const profile = await supabase
-          .from('profiles')
-          .select('expires_at')
-          .eq('id', state.userId)  // Use userId from state
-          .single();
-
-        const isProActive = profile.data?.expires_at && isSubscriptionActive(profile.data.expires_at);
-        set({ isProSubscriptionActive: isProActive });
-
-        if (isProActive) {
-          try {
-            // Pro users with active subscription: Use API endpoint
-            const formData = new FormData();
-            formData.append('file', fileToUpload);
-            formData.append('isAuthenticated', 'true');
-    
-            const response = await fetch('/api/remove-background', {
-              method: 'POST',
-              body: formData
-            });
-    
-            const data = await response.json();
-    
-            if (!response.ok) {
-              throw new Error(data.error || 'Failed to remove background');
-            }
-    
-            // Fetch the processed image
-            const processedImageResponse = await fetch(data.url);
-            if (!processedImageResponse.ok) {
-              throw new Error('Failed to fetch processed image');
-            }
-    
-            const processedBlob = await processedImageResponse.blob();
-            foregroundUrl = URL.createObjectURL(processedBlob);
-          } catch (error) {
-            throw new Error('Failed to analyze image. Please try again.');
-          }
-        } else {
-          try {
-            // Expired subscription: Use client-side removal
-            const imageUrl = URL.createObjectURL(fileToUpload);
-            const imageBlob = await removeBackground(imageUrl);
-            foregroundUrl = URL.createObjectURL(imageBlob);
-            URL.revokeObjectURL(imageUrl);
-          } catch (error) {
-            throw new Error('Failed to analyze image. Please try with a different image or try again later.');
-          }
-        }
-      } else {
-        try {
-          // Free plan: Use client-side removal
-          const imageUrl = URL.createObjectURL(fileToUpload);
-          const imageBlob = await removeBackground(imageUrl);
-          foregroundUrl = URL.createObjectURL(imageBlob);
-          URL.revokeObjectURL(imageUrl);
-        } catch (error) {
-          set({ 
-            processingMessage: 'Failed to analyze image. Please try with a different image.',
-            isProcessing: false 
-          });
-          throw new Error('Failed to analyze image. Please try with a different image.');
-        }
+      try {
+        // Create a new URL for the image to be processed
+        const imageUrl = URL.createObjectURL(fileToUpload);
+        // Use client-side background removal
+        const imageBlob = await removeBackground(imageUrl);
+        foregroundUrl = URL.createObjectURL(imageBlob);
+        // Clean up the temporary URL
+        URL.revokeObjectURL(imageUrl);
+      } catch (error) {
+        set({ 
+          processingMessage: 'Failed to analyze image. Please try with a different image.',
+          isProcessing: false 
+        });
+        throw new Error('Failed to analyze image. Please try with a different image.');
       }
   
       set(state => ({
@@ -986,8 +948,8 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         ctx.restore();
       });
 
-      // Draw text
-      textSets.forEach(textSet => {
+      // Draw text that should be behind the foreground
+      textSets.filter(textSet => textSet.placement === 'background').forEach(textSet => {
         ctx.save();
         
         ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px "${textSet.fontFamily}"`;
@@ -1035,7 +997,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         
         const x = (canvas.width - newWidth) / 2;
         const y = (canvas.height - newHeight) / 2;
-
+        
         const offsetX = (hasTransparentBackground || hasChangedBackground) ? (canvas.width * foregroundPosition.x) / 100 : 0;
         const offsetY = (hasTransparentBackground || hasChangedBackground) ? (canvas.height * foregroundPosition.y) / 100 : 0;
 
@@ -1099,13 +1061,13 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
           // Save context state before transformations
           ctx.save();
-
+          
           // Move to center of where we want to draw the image
           ctx.translate(x + offsetX + newWidth / 2, y + offsetY + newHeight / 2);
           
           // Rotate around the center
           ctx.rotate((clone.rotation * Math.PI) / 180);
-          
+
           // Apply flip transformations
           ctx.scale(clone.flip.horizontal ? -1 : 1, clone.flip.vertical ? -1 : 1);
 
@@ -1122,6 +1084,34 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
           ctx.restore();
         }
       }
+      
+      // Draw text that should be on top of the foreground
+      textSets.filter(textSet => textSet.placement === 'foreground').forEach(textSet => {
+        ctx.save();
+        
+        ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px "${textSet.fontFamily}"`;
+        ctx.fillStyle = textSet.color;
+        ctx.globalAlpha = textSet.opacity;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        const x = (canvas.width * textSet.position.horizontal) / 100;
+        const y = (canvas.height * textSet.position.vertical) / 100;
+
+        ctx.translate(x, y);
+        ctx.rotate((textSet.rotation * Math.PI) / 180);
+
+        if (textSet.glow?.enabled) {
+          ctx.shadowColor = textSet.glow.color;
+          ctx.shadowBlur = textSet.glow.intensity;
+          ctx.shadowOffsetX = 0;
+          ctx.shadowOffsetY = 0;
+        }
+
+        ctx.fillText(textSet.text, 0, 0);
+        
+        ctx.restore();
+      });
 
       try {
         // Convert canvas to blob with maximum quality
