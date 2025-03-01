@@ -281,7 +281,7 @@ export function EditorLayout({
       </nav>
 
       <div className="pt-16 flex flex-col h-screen overflow-hidden">
-        <div className="hidden xl:block fixed top-16 bottom-0 w-[320px] border-r border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 z-10">
+        <div className="hidden xl:block fixed top-16 bottom-0 w-[380px] border-r border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 z-10">
           <SideNavComponent mobile={false} />
         </div>
 
@@ -289,7 +289,7 @@ export function EditorLayout({
           className={cn(
             "flex-1 relative transition-all duration-300 ease-in-out",
             "px-0 sm:px-4",
-            "xl:ml-[320px]",
+            "xl:ml-[380px]",
             "pt-4",
             "overflow-hidden",
             isMobile

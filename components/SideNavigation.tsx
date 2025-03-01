@@ -397,7 +397,7 @@ export function SideNavigation({
         "transition-all duration-300 ease-in-out",
         "border-r border-t border-gray-200/50 dark:border-white/5",
         "backdrop-blur-xl",
-        activeTab ? "w-[360px]" : "w-[80px]"
+        activeTab ? "w-[380px]" : "w-[80px]"
       )}
     >
       {/* Side Navigation Bar */}
@@ -407,7 +407,7 @@ export function SideNavigation({
 
         {/* Editor Content with border */}
         {activeTab && (
-          <div className="w-[280px] border-r border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 flex flex-col">
+          <div className="w-[380px] border-r border-gray-200 dark:border-white/10 bg-white dark:bg-zinc-950 flex flex-col">
             <div className="sticky top-0 bg-white dark:bg-zinc-950 p-4 border-b border-gray-200 dark:border-white/10 z-10">
               {(activeTab === "text" || activeTab === "shapes") &&
               canAddLayers ? (

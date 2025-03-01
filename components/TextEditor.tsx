@@ -119,12 +119,23 @@ export function TextEditor() {
               >
                 Font
               </Label>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                <FontSelector
+                  value={textSet.fontFamily}
+                  onValueChange={(value) =>
+                    updateTextSet(textSet.id, { fontFamily: value })
+                  }
+                />
+              </div>
 
               <Button
                 variant="outline"
                 size="icon"
                 className={cn(
-                  "h-8 w-8",
+                  "h-8 w-8 flex-shrink-0",
                   textSet.fontWeight === "700" &&
                     "bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-600"
                 )}
@@ -144,13 +155,6 @@ export function TextEditor() {
                 />
               </Button>
             </div>
-
-            <FontSelector
-              value={textSet.fontFamily}
-              onValueChange={(value) =>
-                updateTextSet(textSet.id, { fontFamily: value })
-              }
-            />
           </div>
 
           {/* Text Placement Toggle */}
@@ -158,20 +162,20 @@ export function TextEditor() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Behind
+                  Front
                 </span>
                 <Switch
                   id={`text-placement-${textSet.id}`}
-                  checked={textSet.placement === "foreground"}
+                  checked={textSet.placement === "background"}
                   onCheckedChange={(checked) =>
                     updateTextSet(textSet.id, {
-                      placement: checked ? "foreground" : "background",
+                      placement: checked ? "background" : "foreground",
                     })
                   }
                   className="data-[state=checked]:bg-purple-600"
                 />
                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Front
+                  Behind
                 </span>
               </div>
             </div>
