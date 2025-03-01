@@ -236,6 +236,8 @@ export function SideNavigation({
         {" "}
         {/* Added pb-safe for iPhone X+ */}
         <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1 px-1 snap-x snap-mandatory">
+          {showTextButton &&
+            renderTabButton("text", <Type className="w-4 h-4" />, "Text")}
           {showRemoveBackground &&
             renderTabButton(
               "remove-background",
@@ -252,8 +254,6 @@ export function SideNavigation({
               <Images className="w-4 h-4" />,
               "Smart Overlay"
             )}
-          {showTextButton &&
-            renderTabButton("text", <Type className="w-4 h-4" />, "Text")}
           {showShapesButton &&
             renderTabButton("shapes", <Shapes className="w-4 h-4" />, "Shapes")}
           {showDrawButton &&
@@ -266,6 +266,8 @@ export function SideNavigation({
   const renderDesktopNavigation = () => (
     <div className="w-[80px] border-r border-gray-200 dark:border-white/10 flex flex-col gap-1 p-2 h-full overflow-y-auto">
       <div className="flex flex-col gap-1 min-h-min">
+        {showTextButton &&
+          renderTabButton("text", <Type className="w-5 h-5" />, "Text")}
         {showRemoveBackground &&
           renderTabButton(
             "remove-background",
@@ -282,8 +284,6 @@ export function SideNavigation({
             "Smart Overlay"
           )}
         {cutoutButton}
-        {showTextButton &&
-          renderTabButton("text", <Type className="w-5 h-5" />, "Text")}
         {showShapesButton &&
           renderTabButton("shapes", <Shapes className="w-5 h-5" />, "Shapes")}
         {showDrawButton &&

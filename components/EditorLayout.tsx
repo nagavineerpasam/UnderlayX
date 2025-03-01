@@ -2,7 +2,7 @@
 
 import { useEditor } from "@/hooks/useEditor";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { Upload, Save, LogIn, Loader2, Home } from "lucide-react";
+import { Upload, Save, LogIn, Loader2, Home, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Canvas } from "@/components/Canvas";
 import { useIsMobile } from "@/hooks/useIsMobile"; // Add this hook
@@ -269,7 +269,7 @@ export function EditorLayout({
                   onClick={() => setShowAuthDialog(true)}
                   className="flex flex-col items-center px-1 sm:px-2"
                 >
-                  <LogIn className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" />
+                  <User className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" />
                   <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400">
                     Login
                   </span>

@@ -222,12 +222,22 @@ export default function Home() {
               {/* Right side - Hero image with floating elements */}
               <div className="order-1 md:order-2 relative">
                 <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/20 border border-gray-200 dark:border-gray-800">
+                  {/* Light mode image */}
                   <Image
                     src="/hero-editor.webp"
                     alt="UnderlayX AI Editor Interface"
                     width={700}
                     height={500}
-                    className="w-full h-auto object-cover"
+                    className="w-full h-auto object-cover dark:hidden"
+                    priority
+                  />
+                  {/* Dark mode image */}
+                  <Image
+                    src="/hero-section.webp"
+                    alt="UnderlayX AI Editor Interface"
+                    width={700}
+                    height={500}
+                    className="w-full h-auto object-cover hidden dark:block"
                     priority
                   />
                 </div>
