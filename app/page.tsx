@@ -622,52 +622,6 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Creative Freedom Section */}
-              <div className="mb-24">
-                <div className="text-center mb-12">
-                  <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                    Creative Freedom with 50+ Tools
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto mb-8">
-                    From basic adjustments to advanced effects, UnderlayX AI
-                    gives you complete creative control
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {tools.slice(0, 6).map((tool, index) => (
-                    <div
-                      key={index}
-                      className="p-5 rounded-xl bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 
-                        hover:shadow-md hover:shadow-purple-500/10 transition-all flex items-start gap-4"
-                    >
-                      <div className="bg-purple-100 dark:bg-purple-900/30 p-3 rounded-lg">
-                        <tool.Icon className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900 dark:text-white mb-1">
-                          {tool.name}
-                        </h4>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          {index === 0 &&
-                            "Create transparent backgrounds with AI precision"}
-                          {index === 1 &&
-                            "Change or enhance image backgrounds easily"}
-                          {index === 2 &&
-                            "Adjust brightness, contrast, and more"}
-                          {index === 3 &&
-                            "Add images on top of or behind your photos"}
-                          {index === 4 &&
-                            "Place text behind objects for unique effects"}
-                          {index === 5 &&
-                            "Add logos behind image elements seamlessly"}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
               {/* Perfect for Every Creator Section */}
               <div>
                 <div className="text-center mb-12">
