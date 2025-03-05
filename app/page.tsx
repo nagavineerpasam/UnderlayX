@@ -124,7 +124,7 @@ const FeatureCard = ({ tool: { Icon, name } }) => (
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
-  const scrollRef = useRef(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   const section = searchParams.get("section");
   const { user } = useAuth();
@@ -150,146 +150,92 @@ export default function Home() {
         <div className="absolute inset-0 opacity-5 dark:opacity-10 bg-[radial-gradient(#8b5cf6_1px,transparent_1px)] [background-size:20px_20px]" />
       </div>
 
+      {/* Sticky Navbar */}
+      <div className="sticky top-0 z-50 w-full border-b border-gray-200 dark:border-white/10">
+        <Navbar />
+      </div>
+
       {/* Content Container */}
       <div ref={scrollRef} className="relative z-10 flex-grow">
-        <Navbar />
-
         <main className="w-full" role="main" aria-label="Main content">
-          {/* Hero Section - Redesigned with split layout */}
-          <section className="w-full px-4 py-16 md:py-24 md:min-h-[90vh] flex flex-col justify-center">
-            <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-              {/* Left side - Text content */}
-              <div className="order-2 md:order-1">
-                <div className="inline-flex items-center px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 mb-6">
-                  <span className="text-xs font-medium text-purple-800 dark:text-purple-300">
-                    50+ Powerful Image Editing Tools in One App
+          <section className="relative overflow-hidden border-b border-gray-200 dark:border-white/10">
+            <div className="absolute inset-0 bg-gradient-to-b from-purple-500/10 to-transparent dark:from-purple-500/20" />
+
+            <div className="relative max-w-7xl mx-auto px-4 pt-24 pb-20">
+              {/* Top Label */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-center mb-4"
+              >
+                <span className="inline-block px-4 py-1.5 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full text-sm font-medium text-gray-800 dark:text-gray-300 backdrop-blur-sm border border-gray-200 dark:border-white/10">
+                  50+ Powerful Image Editing Tools in One App
+                </span>
+              </motion.div>
+
+              {/* Main Headline */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                className="text-center mb-8"
+              >
+                <h1 className="text-4xl md:text-7xl font-bold mb-6 text-gray-900 dark:text-white">
+                  One Powerful Tool for{" "}
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-600">
+                    Effortless Image Editing
                   </span>
-                </div>
-
-                <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-                  Transform Your{" "}
-                  <span className="text-purple-600 dark:text-purple-400">
-                    Images
-                  </span>{" "}
-                  with AI-Powered Editing
                 </h1>
-
-                <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl">
+                <p className="text-xl text-gray-700 dark:text-gray-400 max-w-3xl mx-auto">
                   Everything you need to remove backgrounds, edit photos, and
                   magically place text and logos behind objects—fast and easy.
                 </p>
+              </motion.div>
 
-                {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 mb-8">
-                  <Link
-                    href="/custom-editor"
-                    onClick={() => setIsLoading(true)}
-                    className="inline-flex items-center justify-center px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-lg font-semibold transition-all shadow-lg shadow-purple-600/20 hover:shadow-purple-600/30"
-                  >
-                    {isLoading ? (
-                      <>
-                        <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
-                        Loading...
-                      </>
-                    ) : (
-                      <>
-                        Start Editing Now
-                        <ArrowRight className="ml-2 w-5 h-5" />
-                      </>
-                    )}
-                  </Link>
-                  <Link
-                    href="#examples"
-                    className="inline-flex items-center justify-center px-8 py-3 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700 rounded-lg text-lg font-semibold transition-all hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    See Examples
-                  </Link>
-                </div>
+              {/* CTA Button */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="text-center mb-16"
+              >
+                <Link
+                  href="/custom-editor"
+                  className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-full text-lg font-semibold transition-all duration-300 shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30"
+                >
+                  Create Now
+                  <ArrowRight className="ml-2 w-5 h-5" />
+                </Link>
+              </motion.div>
 
-                {/* Trust indicators */}
-                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                  <CheckCircle2 className="w-4 h-4 mr-2 text-green-500" />
-                  <span>No credit card required</span>
-                  <span className="mx-2">•</span>
-                  <CheckCircle2 className="w-4 h-4 mr-2 text-green-500" />
-                  <span>Free to use</span>
-                  <span className="mx-2">•</span>
-                  <CheckCircle2 className="w-4 h-4 mr-2 text-green-500" />
-                  <span>No downloads needed</span>
-                </div>
-              </div>
-
-              {/* Right side - Hero image with floating elements */}
-              <div className="order-1 md:order-2 relative">
-                <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/20 border border-gray-200 dark:border-gray-800">
-                  {/* Light mode image */}
-                  <Image
-                    src="/hero-editor.webp"
-                    alt="UnderlayX AI Editor Interface"
-                    width={700}
-                    height={500}
-                    className="w-full h-auto object-cover dark:hidden"
-                    priority
-                  />
-                  {/* Dark mode image */}
-                  <Image
-                    src="/hero-section.webp"
-                    alt="UnderlayX AI Editor Interface"
-                    width={700}
-                    height={500}
-                    className="w-full h-auto object-cover hidden dark:block"
-                    priority
-                  />
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Tools Grid Section */}
-          <section className="w-full px-4 py-12 md:py-16 bg-gray-50 dark:bg-gray-900/30">
-            <div className="max-w-7xl mx-auto">
-              <div className="text-center mb-10">
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                  All the Tools You Need
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
-                  One platform with everything you need to create
-                  professional-looking images
-                </p>
-              </div>
-
-              {/* Desktop Grid */}
-              <div className="hidden md:grid grid-cols-4 lg:grid-cols-7 gap-3">
+              {/* Feature Grid - Desktop */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="hidden md:grid grid-cols-2 lg:grid-cols-7 gap-3 max-w-6xl mx-auto"
+              >
                 {tools.map((tool, index) => (
                   <FeatureCard key={index} tool={tool} />
                 ))}
-              </div>
+              </motion.div>
 
-              {/* Mobile Carousel */}
-              <div className="md:hidden w-full overflow-hidden">
-                <div
-                  className="flex animate-scroll"
-                  style={{
-                    width: "max-content",
-                  }}
-                >
-                  {/* First set */}
+              {/* Feature Carousel - Mobile */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                className="md:hidden"
+              >
+                <div className="flex overflow-x-auto gap-3 pb-6 scrollbar-hide">
                   {tools.map((tool, index) => (
-                    <div key={index} className="w-[140px] flex-none mx-1.5">
-                      <FeatureCard tool={tool} />
-                    </div>
-                  ))}
-                  {/* Duplicate set for seamless loop */}
-                  {tools.map((tool, index) => (
-                    <div
-                      key={`dup-${index}`}
-                      className="w-[140px] flex-none mx-1.5"
-                    >
+                    <div key={index} className="flex-none w-32">
                       <FeatureCard tool={tool} />
                     </div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             </div>
           </section>
 

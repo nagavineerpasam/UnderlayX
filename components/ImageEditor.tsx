@@ -4,14 +4,12 @@ import { useEditor } from "@/hooks/useEditor";
 import { Trash2, Plus, ImageOff, ArrowRight, RotateCcw } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { isSubscriptionActive } from "@/lib/utils";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { incrementGenerationCount } from "@/lib/supabase-utils";
 import { ProPlanDialog } from "./ProPlanDialog";
 import { useToast } from "@/hooks/use-toast";
 import { removeBackground } from "@imgly/background-removal"; // Add this import
-import { supabase } from "@/lib/supabaseClient";
 
 // Add URL cache using WeakMap to automatically cleanup when files are garbage collected
 const processedImageCache = new WeakMap<File, string>();
@@ -44,46 +42,6 @@ export function ImageEditor() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [showProDialog, setShowProDialog] = useState(false);
   const { toast } = useToast();
-
-  // Add imageCache ref to store processed URLs
-  const imageCache = useRef<Map<number, string>>(new Map());
-
-  // Add cached subscription status
-  const [userSubscriptionStatus, setUserSubscriptionStatus] = useState<{
-    isProActive: boolean;
-    expiresAt: string | null;
-  } | null>(null);
-
-  // Add useEffect to fetch subscription status once when component mounts
-  useEffect(() => {
-    const fetchSubscriptionStatus = async () => {
-      if (user) {
-        try {
-          const { data } = await supabase
-            .from("profiles")
-            .select("expires_at")
-            .eq("id", user.id)
-            .single();
-
-          const isProActive = !!(
-            data?.expires_at && isSubscriptionActive(data.expires_at)
-          );
-          setUserSubscriptionStatus({
-            isProActive,
-            expiresAt: data?.expires_at || null,
-          });
-        } catch (error) {
-          console.error("Error fetching subscription status:", error);
-          setUserSubscriptionStatus({
-            isProActive: false,
-            expiresAt: null,
-          });
-        }
-      }
-    };
-
-    fetchSubscriptionStatus();
-  }, [user]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
