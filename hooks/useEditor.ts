@@ -5,6 +5,7 @@ import { convertHeicToJpeg } from '@/lib/image-utils';
 import { SHAPES } from '@/constants/shapes';
 import { uploadFile } from '@/lib/upload';
 import { removeBackground } from "@imgly/background-removal";
+import { BackgroundTextEffect } from '@/types/editor';
 
 // Update the defaultCutout object
 const defaultCutout = {
@@ -39,6 +40,7 @@ interface TextSet {
   opacity: number;
   rotation: number;
   glow?: GlowEffect;
+  background?: BackgroundTextEffect;
   placement: 'background' | 'foreground';
 }
 
@@ -488,6 +490,13 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       },
       opacity: 1,
       rotation: 0,
+      background: {
+        enabled: false,
+        color: '#000000',
+        width: 200,
+        height: 100,
+        borderRadius: 5
+      },
       placement: 'background'
     }]
   })),
@@ -952,17 +961,51 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       textSets.filter(textSet => textSet.placement === 'background').forEach(textSet => {
         ctx.save();
         
-        ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px "${textSet.fontFamily}"`;
-        ctx.fillStyle = textSet.color;
-        ctx.globalAlpha = textSet.opacity;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
         const x = (canvas.width * textSet.position.horizontal) / 100;
         const y = (canvas.height * textSet.position.vertical) / 100;
 
         ctx.translate(x, y);
         ctx.rotate((textSet.rotation * Math.PI) / 180);
+
+        // Draw background if enabled - independent of text size
+        if (textSet.background?.enabled) {
+          ctx.save();
+          ctx.globalAlpha = textSet.opacity;
+          ctx.fillStyle = textSet.background.color;
+          
+          const width = textSet.background.width;
+          const height = textSet.background.height;
+          const borderRadius = textSet.background.borderRadius;
+          
+          // Draw rounded rectangle background
+          if (borderRadius > 0) {
+            roundRect(
+              ctx, 
+              -width / 2, 
+              -height / 2, 
+              width, 
+              height, 
+              borderRadius
+            );
+            ctx.fill();
+          } else {
+            // Simple rectangle if no border radius
+            ctx.fillRect(
+              -width / 2, 
+              -height / 2, 
+              width, 
+              height
+            );
+          }
+          ctx.restore();
+        }
+
+        // Draw text
+        ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px "${textSet.fontFamily}"`;
+        ctx.fillStyle = textSet.color;
+        ctx.globalAlpha = textSet.opacity;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
 
         if (textSet.glow?.enabled) {
           ctx.shadowColor = textSet.glow.color;
@@ -1089,17 +1132,51 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
       textSets.filter(textSet => textSet.placement === 'foreground').forEach(textSet => {
         ctx.save();
         
-        ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px "${textSet.fontFamily}"`;
-        ctx.fillStyle = textSet.color;
-        ctx.globalAlpha = textSet.opacity;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-
         const x = (canvas.width * textSet.position.horizontal) / 100;
         const y = (canvas.height * textSet.position.vertical) / 100;
 
         ctx.translate(x, y);
         ctx.rotate((textSet.rotation * Math.PI) / 180);
+
+        // Draw background if enabled - independent of text size
+        if (textSet.background?.enabled) {
+          ctx.save();
+          ctx.globalAlpha = textSet.opacity;
+          ctx.fillStyle = textSet.background.color;
+          
+          const width = textSet.background.width;
+          const height = textSet.background.height;
+          const borderRadius = textSet.background.borderRadius;
+          
+          // Draw rounded rectangle background
+          if (borderRadius > 0) {
+            roundRect(
+              ctx, 
+              -width / 2, 
+              -height / 2, 
+              width, 
+              height, 
+              borderRadius
+            );
+            ctx.fill();
+          } else {
+            // Simple rectangle if no border radius
+            ctx.fillRect(
+              -width / 2, 
+              -height / 2, 
+              width, 
+              height
+            );
+          }
+          ctx.restore();
+        }
+
+        // Draw text
+        ctx.font = `${textSet.fontWeight} ${textSet.fontSize}px "${textSet.fontFamily}"`;
+        ctx.fillStyle = textSet.color;
+        ctx.globalAlpha = textSet.opacity;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
 
         if (textSet.glow?.enabled) {
           ctx.shadowColor = textSet.glow.color;
