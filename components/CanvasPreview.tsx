@@ -10,7 +10,7 @@ import { SHAPES } from "@/constants/shapes";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { DrawingPoint } from "@/types/editor"; // Add this import
+import { DrawingPoint, BackgroundTextEffect } from "@/types/editor"; // Add BackgroundTextEffect
 import type { ImageEnhancements } from "@/types/editor"; // Add this line
 
 export function CanvasPreview() {
@@ -342,8 +342,6 @@ export function CanvasPreview() {
 
             // Set the font
             ctx.font = fontString;
-            ctx.fillStyle = textSet.color;
-            ctx.globalAlpha = textSet.opacity;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
@@ -365,6 +363,42 @@ export function CanvasPreview() {
               ctx.shadowOffsetY = 0;
             }
 
+            // Measure text width for background
+            const textMetrics = ctx.measureText(textSet.text);
+            const textWidth = textMetrics.width;
+            const textHeight = textSet.fontSize;
+
+            // Draw background if enabled - independent of text size
+            if (textSet.background?.enabled) {
+              ctx.save();
+              ctx.globalAlpha = textSet.opacity;
+              ctx.fillStyle = textSet.background.color;
+
+              const width = textSet.background.width;
+              const height = textSet.background.height;
+              const borderRadius = textSet.background.borderRadius;
+
+              // Draw rounded rectangle background
+              if (borderRadius > 0) {
+                roundRect(
+                  ctx,
+                  -width / 2,
+                  -height / 2,
+                  width,
+                  height,
+                  borderRadius
+                );
+                ctx.fill();
+              } else {
+                // Simple rectangle if no border radius
+                ctx.fillRect(-width / 2, -height / 2, width, height);
+              }
+              ctx.restore();
+            }
+
+            // Draw text
+            ctx.fillStyle = textSet.color;
+            ctx.globalAlpha = textSet.opacity;
             ctx.fillText(textSet.text, 0, 0);
           } catch (error) {
             toast({
@@ -542,8 +576,6 @@ export function CanvasPreview() {
 
             // Set the font
             ctx.font = fontString;
-            ctx.fillStyle = textSet.color;
-            ctx.globalAlpha = textSet.opacity;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
@@ -565,6 +597,42 @@ export function CanvasPreview() {
               ctx.shadowOffsetY = 0;
             }
 
+            // Measure text width for background
+            const textMetrics = ctx.measureText(textSet.text);
+            const textWidth = textMetrics.width;
+            const textHeight = textSet.fontSize;
+
+            // Draw background if enabled
+            if (textSet.background?.enabled) {
+              ctx.save();
+              ctx.globalAlpha = textSet.opacity;
+              ctx.fillStyle = textSet.background.color;
+
+              const width = textSet.background.width;
+              const height = textSet.background.height;
+              const borderRadius = textSet.background.borderRadius;
+
+              // Draw rounded rectangle background
+              if (borderRadius > 0) {
+                roundRect(
+                  ctx,
+                  -width / 2,
+                  -height / 2,
+                  width,
+                  height,
+                  borderRadius
+                );
+                ctx.fill();
+              } else {
+                // Simple rectangle if no border radius
+                ctx.fillRect(-width / 2, -height / 2, width, height);
+              }
+              ctx.restore();
+            }
+
+            // Draw text
+            ctx.fillStyle = textSet.color;
+            ctx.globalAlpha = textSet.opacity;
             ctx.fillText(textSet.text, 0, 0);
           } catch (error) {
             toast({

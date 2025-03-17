@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { GlowEffect } from "@/types/editor";
+import { BackgroundTextEffect } from "@/types/editor";
 import { useDebounce } from "@/hooks/useDebounce";
 import { ColorInput } from "./ColorInput";
 import { cn } from "@/lib/utils";
@@ -379,6 +380,130 @@ export function TextEditor() {
                             intensity: value,
                           };
                           updateTextSet(textSet.id, { glow: newGlow });
+                        }}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Text Background Controls */}
+              <div className="space-y-4 pt-1">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Text Background
+                  </Label>
+                  <Switch
+                    checked={textSet.background?.enabled ?? false}
+                    onCheckedChange={(checked) => {
+                      const newBackground: BackgroundTextEffect = {
+                        enabled: checked,
+                        color: textSet.background?.color || "#000000",
+                        width: textSet.background?.width || 200,
+                        height: textSet.background?.height || 100,
+                        borderRadius: textSet.background?.borderRadius || 5,
+                      };
+                      updateTextSet(textSet.id, { background: newBackground });
+                    }}
+                  />
+                </div>
+
+                {textSet.background?.enabled && (
+                  <>
+                    {/* Background Color */}
+                    <div className="pt-2">
+                      <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                        Background Color
+                      </Label>
+                      <ColorInput
+                        id={`text-background-${textSet.id}`}
+                        value={textSet.background.color}
+                        onChange={(value) => {
+                          const newBackground: BackgroundTextEffect = {
+                            ...textSet.background!,
+                            color: value,
+                          };
+                          updateTextSet(textSet.id, {
+                            background: newBackground,
+                          });
+                        }}
+                      />
+                    </div>
+
+                    {/* Width */}
+                    <div className="space-y-2 pt-2">
+                      <div className="flex justify-between items-center">
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Width
+                        </Label>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          {textSet.background.width}px
+                        </span>
+                      </div>
+                      <Slider
+                        min={50}
+                        max={2000}
+                        value={[textSet.background.width]}
+                        onValueChange={([value]) => {
+                          const newBackground: BackgroundTextEffect = {
+                            ...textSet.background!,
+                            width: value,
+                          };
+                          updateTextSet(textSet.id, {
+                            background: newBackground,
+                          });
+                        }}
+                      />
+                    </div>
+
+                    {/* Height */}
+                    <div className="space-y-2 pt-2">
+                      <div className="flex justify-between items-center">
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Height
+                        </Label>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          {textSet.background.height}px
+                        </span>
+                      </div>
+                      <Slider
+                        min={20}
+                        max={1000}
+                        value={[textSet.background.height]}
+                        onValueChange={([value]) => {
+                          const newBackground: BackgroundTextEffect = {
+                            ...textSet.background!,
+                            height: value,
+                          };
+                          updateTextSet(textSet.id, {
+                            background: newBackground,
+                          });
+                        }}
+                      />
+                    </div>
+
+                    {/* Border Radius */}
+                    <div className="space-y-2 pt-2">
+                      <div className="flex justify-between items-center">
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Rounded Corners
+                        </Label>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          {textSet.background.borderRadius}px
+                        </span>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={50}
+                        value={[textSet.background.borderRadius]}
+                        onValueChange={([value]) => {
+                          const newBackground: BackgroundTextEffect = {
+                            ...textSet.background!,
+                            borderRadius: value,
+                          };
+                          updateTextSet(textSet.id, {
+                            background: newBackground,
+                          });
                         }}
                       />
                     </div>

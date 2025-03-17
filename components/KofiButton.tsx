@@ -1,19 +1,19 @@
-'use client';
+"use client";
+
+import { Coffee } from "lucide-react";
 
 export function KofiButton() {
   return (
     <a
-      href='https://ko-fi.com/I2I819Y9PU'
-      target='_blank'
+      href="https://ko-fi.com/I2I819Y9PU"
+      target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex items-center"
+      className="hidden sm:flex flex-col items-center px-1 sm:px-2"
     >
-      <img
-        height='36'
-        style={{border: 0, height: '36px'}}
-        src='https://storage.ko-fi.com/cdn/kofi2.png?v=6'
-        alt='Buy Me a Coffee at ko-fi.com'
-      />
+      <Coffee className="w-4 h-4 sm:w-5 sm:h-5 text-gray-700 dark:text-gray-300" />
+      <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400">
+        Support
+      </span>
     </a>
   );
 }

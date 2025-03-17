@@ -6,6 +6,14 @@ export interface GlowEffect {
   intensity: number;
 }
 
+export interface BackgroundTextEffect {
+  enabled: boolean;
+  color: string;
+  width: number;
+  height: number;
+  borderRadius: number;
+}
+
 export interface Position {
   horizontal: number;
   vertical: number;
@@ -22,6 +30,7 @@ export interface TextSet {
   position: Position;
   rotation: number;
   glow?: GlowEffect;
+  background?: BackgroundTextEffect;
   placement: 'background' | 'foreground';
 }
 

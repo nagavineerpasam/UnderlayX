@@ -187,7 +187,12 @@ export function EditorLayout({
             <div className="flex items-center gap-2 sm:gap-4">
               {/* {shouldShowUpgradeButton && <ProUpgradeButton variant="nav" />} */}
 
-              <ThemeToggle />
+              <div className="flex flex-col items-center px-1 sm:px-2">
+                <ThemeToggle />
+                <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400">
+                  Theme
+                </span>
+              </div>
 
               {isLoading ? (
                 <div className="w-8 h-8 flex items-center justify-center">
@@ -197,11 +202,11 @@ export function EditorLayout({
                 <div className="relative" ref={userMenuRef}>
                   <button
                     onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="relative flex items-center z-20"
+                    className="relative flex flex-col items-center px-1 sm:px-2 z-20"
                   >
-                    <div className="relative pt-2">
+                    <div className="relative">
                       {" "}
-                      {/* Added pt-2 for badge space */}
+                      {/* Kept for badge space */}
                       {userInfo?.expires_at &&
                         isSubscriptionActive(userInfo.expires_at) && (
                           <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium leading-none whitespace-nowrap z-30">
@@ -230,6 +235,9 @@ export function EditorLayout({
                         </div>
                       </div>
                     </div>
+                    <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400">
+                      Account
+                    </span>
                   </button>
 
                   {showUserMenu && (
