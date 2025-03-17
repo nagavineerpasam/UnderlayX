@@ -322,71 +322,6 @@ export function TextEditor() {
                 />
               </div>
 
-              {/* Glow Effect Controls */}
-              <div className="space-y-4 pt-1">
-                <div className="flex items-center justify-between">
-                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Enable Glow
-                  </Label>
-                  <Switch
-                    checked={textSet.glow?.enabled ?? false}
-                    onCheckedChange={(checked) => {
-                      const newGlow: GlowEffect = {
-                        enabled: checked,
-                        color: textSet.glow?.color || "#ffffff",
-                        intensity: textSet.glow?.intensity || 20,
-                      };
-                      updateTextSet(textSet.id, { glow: newGlow });
-                    }}
-                  />
-                </div>
-
-                {textSet.glow?.enabled && (
-                  <>
-                    {/* Glow Color */}
-                    <div className="pt-2">
-                      <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
-                        Glow Color
-                      </Label>
-                      <ColorInput
-                        id={`text-glow-${textSet.id}`}
-                        value={textSet.glow.color}
-                        onChange={(value) => {
-                          const newGlow: GlowEffect = {
-                            ...textSet.glow!,
-                            color: value,
-                          };
-                          updateTextSet(textSet.id, { glow: newGlow });
-                        }}
-                      />
-                    </div>
-
-                    <div className="space-y-2 pt-2">
-                      <div className="flex justify-between items-center">
-                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          Glow Intensity
-                        </Label>
-                        <span className="text-sm text-gray-600 dark:text-gray-400">
-                          {textSet.glow.intensity}
-                        </span>
-                      </div>
-                      <Slider
-                        min={0}
-                        max={50}
-                        value={[textSet.glow.intensity]}
-                        onValueChange={([value]) => {
-                          const newGlow: GlowEffect = {
-                            ...textSet.glow!,
-                            intensity: value,
-                          };
-                          updateTextSet(textSet.id, { glow: newGlow });
-                        }}
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
-
               {/* Text Background Controls */}
               <div className="space-y-4 pt-1">
                 <div className="flex items-center justify-between">
@@ -442,7 +377,7 @@ export function TextEditor() {
                       </div>
                       <Slider
                         min={50}
-                        max={2000}
+                        max={3000}
                         value={[textSet.background.width]}
                         onValueChange={([value]) => {
                           const newBackground: BackgroundTextEffect = {
@@ -504,6 +439,71 @@ export function TextEditor() {
                           updateTextSet(textSet.id, {
                             background: newBackground,
                           });
+                        }}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Glow Effect Controls */}
+              <div className="space-y-4 pt-1">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Enable Glow
+                  </Label>
+                  <Switch
+                    checked={textSet.glow?.enabled ?? false}
+                    onCheckedChange={(checked) => {
+                      const newGlow: GlowEffect = {
+                        enabled: checked,
+                        color: textSet.glow?.color || "#ffffff",
+                        intensity: textSet.glow?.intensity || 20,
+                      };
+                      updateTextSet(textSet.id, { glow: newGlow });
+                    }}
+                  />
+                </div>
+
+                {textSet.glow?.enabled && (
+                  <>
+                    {/* Glow Color */}
+                    <div className="pt-2">
+                      <Label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">
+                        Glow Color
+                      </Label>
+                      <ColorInput
+                        id={`text-glow-${textSet.id}`}
+                        value={textSet.glow.color}
+                        onChange={(value) => {
+                          const newGlow: GlowEffect = {
+                            ...textSet.glow!,
+                            color: value,
+                          };
+                          updateTextSet(textSet.id, { glow: newGlow });
+                        }}
+                      />
+                    </div>
+
+                    <div className="space-y-2 pt-2">
+                      <div className="flex justify-between items-center">
+                        <Label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          Glow Intensity
+                        </Label>
+                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                          {textSet.glow.intensity}
+                        </span>
+                      </div>
+                      <Slider
+                        min={0}
+                        max={50}
+                        value={[textSet.glow.intensity]}
+                        onValueChange={([value]) => {
+                          const newGlow: GlowEffect = {
+                            ...textSet.glow!,
+                            intensity: value,
+                          };
+                          updateTextSet(textSet.id, { glow: newGlow });
                         }}
                       />
                     </div>
