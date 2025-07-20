@@ -26,6 +26,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
+// tools
 const tools = [
   { Icon: ImageOff, name: "Remove Background" },
   { Icon: Layers, name: "Change Background" },
