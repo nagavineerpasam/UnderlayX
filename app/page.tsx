@@ -1,16 +1,11 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
-import { Features } from "@/components/Features";
-import { UseCases } from "@/components/UseCases";
 import { FeatureShowcase } from "@/components/FeatureShowcase";
-import { Pricing } from "@/components/Pricing";
-import { useAuth } from "@/hooks/useAuth";
 import { motion } from "framer-motion";
 import {
   ImageOff,
@@ -28,7 +23,6 @@ import {
   Image as ImageIcon,
   PaintBucket as Paint,
   ArrowRight,
-  CheckCircle2,
   Sparkles,
 } from "lucide-react";
 
@@ -123,11 +117,9 @@ const FeatureCard = ({ tool: { Icon, name } }) => (
 );
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   const section = searchParams.get("section");
-  const { user } = useAuth();
 
   useEffect(() => {
     if (section === "pricing") {

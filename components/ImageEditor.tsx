@@ -1,13 +1,12 @@
 "use client";
 
 import { useEditor } from "@/hooks/useEditor";
-import { Trash2, Plus, ImageOff, ArrowRight, RotateCcw } from "lucide-react";
+import { Trash2, Plus, ImageOff, ArrowRight } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { incrementGenerationCount } from "@/lib/supabase-utils";
-import { ProPlanDialog } from "./ProPlanDialog";
 import { useToast } from "@/hooks/use-toast";
 import { removeBackground } from "@imgly/background-removal"; // Add this import
 
@@ -40,7 +39,6 @@ export function ImageEditor() {
   } = useEditor();
   const { user } = useAuth();
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const [showProDialog, setShowProDialog] = useState(false);
   const { toast } = useToast();
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -606,11 +604,6 @@ export function ImageEditor() {
           </div>
         ))}
       </div>
-
-      <ProPlanDialog
-        isOpen={showProDialog}
-        onClose={() => setShowProDialog(false)}
-      />
     </>
   );
 }

@@ -10,11 +10,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { AuthDialog } from "@/components/AuthDialog";
 import { useState, useRef, useEffect } from "react";
 import { useEditorPanel } from "@/contexts/EditorPanelContext";
-import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabaseClient";
 import { isSubscriptionActive } from "@/lib/utils";
-import { ProUpgradeButton } from "./ProUpgradeButton"; // Add ProUpgradeButton to imports
 import { KofiButton } from "./KofiButton";
+import { SupportDialog, shouldShowSupportDialog } from "./SupportDialog";
+import { useToast } from "@/hooks/use-toast";
+import { KofiFloatingWidget } from "./KofiFloatingWidget";
+import { KofiPaymentDialog } from "./KofiPaymentDialog";
 
 interface EditorLayoutProps {
   SideNavComponent: React.ComponentType<{ mobile?: boolean }>;
@@ -62,8 +64,10 @@ export function EditorLayout({
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { isPanelOpen } = useEditorPanel();
-  const { toast } = useToast();
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [showSupportDialog, setShowSupportDialog] = useState(false);
+  const [showKofiPayment, setShowKofiPayment] = useState(false);
+  const { toast } = useToast();
 
   // Add click outside handler
   useEffect(() => {
@@ -105,16 +109,34 @@ export function EditorLayout({
   // Unified state check for all button actions
   const isActionDisabled = isProcessing || isConverting || isDownloading;
 
-  // Modify handleDownload to directly download without quality dialog
-  const handleDownload = () => {
-    downloadImage(true); // Always download without checking authentication
-  };
+  // Modify handleDownload to show toast and support dialog after download
+  const handleDownload = async () => {
+    try {
+      await downloadImage(true); // Always download without checking authentication
 
-  // Modify the shouldShowUpgradeButton logic
-  const shouldShowUpgradeButton =
-    !user ||
-    !userInfo?.expires_at || // Show for free plan (no expires_at)
-    !isSubscriptionActive(userInfo.expires_at); // Show for expired pro users
+      // Show success toast
+      toast({
+        title: "Image downloaded! 🎉",
+        description: "Your amazing creation has been saved successfully.",
+        duration: 3000,
+      });
+
+      // Show support dialog if conditions are met
+      if (shouldShowSupportDialog()) {
+        // Small delay to let the toast show first
+        setTimeout(() => {
+          setShowSupportDialog(true);
+        }, 500);
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Download failed",
+        description:
+          "There was an error downloading your image. Please try again.",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-white dark:bg-zinc-950 transition-colors overflow-hidden">
@@ -142,7 +164,7 @@ export function EditorLayout({
           <div className="flex items-center gap-2 sm:gap-4">
             {" "}
             {/* Reduced gap for mobile */}
-            <KofiButton />
+            <KofiButton onClick={() => setShowKofiPayment(true)} />
             {image.original && (
               <>
                 <button
@@ -185,8 +207,6 @@ export function EditorLayout({
               </>
             )}
             <div className="flex items-center gap-2 sm:gap-4">
-              {/* {shouldShowUpgradeButton && <ProUpgradeButton variant="nav" />} */}
-
               <div className="flex flex-col items-center px-1 sm:px-2">
                 <ThemeToggle />
                 <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400">
@@ -354,6 +374,20 @@ export function EditorLayout({
           typeof window !== "undefined" ? window.location.pathname : ""
         }
       />
+
+      <SupportDialog
+        isOpen={showSupportDialog}
+        onClose={() => setShowSupportDialog(false)}
+        onOpenKofiPayment={() => setShowKofiPayment(true)}
+      />
+
+      <KofiPaymentDialog
+        isOpen={showKofiPayment}
+        onClose={() => setShowKofiPayment(false)}
+      />
+
+      {/* Ko-fi floating widget - Commented for future use */}
+      {/* <KofiFloatingWidget /> */}
     </div>
   );
 }

@@ -14,9 +14,7 @@ import { useEditorPanel } from "@/contexts/EditorPanelContext";
 import { useIsMobile } from "@/hooks/useIsMobile"; // Add this import
 import { incrementGenerationCount } from "@/lib/supabase-utils";
 import { useToast } from "@/hooks/use-toast";
-import { ProPlanDialog } from "./ProPlanDialog";
 import { supabase } from "@/lib/supabaseClient";
-import { FeatureShowcase } from './FeatureShowcase';
 
 interface CanvasProps {
   shouldAutoUpload?: boolean;
@@ -49,7 +47,6 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
   const [hasTriedAutoUpload, setHasTriedAutoUpload] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showTokenDialog, setShowTokenDialog] = useState(false);
-  const [showProPlanDialog, setShowProPlanDialog] = useState(false);
   const { user } = useAuth();
   const { isPanelOpen } = useEditorPanel();
   const isMobile = useIsMobile(); // Add this hook
@@ -328,18 +325,6 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
     };
   }, []);
 
-  const handleUploadClick = (e: React.MouseEvent<HTMLElement>) => {
-    // No longer need to check auth here
-  };
-
-  const handleUpgradeClick = () => {
-    if (user) {
-      setShowProPlanDialog(true);
-    } else {
-      setShowAuthDialog(true);
-    }
-  };
-
   return (
     <>
       <div
@@ -351,7 +336,9 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
         )}
       >
         {!image.original ? (
-          <div className="h-full flex items-center justify-center"> {/* Modified this line */}
+          <div className="h-full flex items-center justify-center">
+            {" "}
+            {/* Modified this line */}
             <div
               onDrop={handleDrop}
               onDragOver={handleDragOver}
@@ -405,9 +392,12 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
                     "hover:border-purple-500 dark:hover:border-purple-400", // Added this line for hover effect
                     "backdrop-blur-sm",
                     "cursor-pointer",
-                    (isConverting || isProcessing) && "opacity-50 cursor-not-allowed"
+                    (isConverting || isProcessing) &&
+                      "opacity-50 cursor-not-allowed"
                   )}
-                  onClick={(e) => (isConverting || isProcessing) && e.preventDefault()}
+                  onClick={(e) =>
+                    (isConverting || isProcessing) && e.preventDefault()
+                  }
                 >
                   <div className="flex items-center gap-3 px-4 py-2 bg-purple-600 hover:bg-purple-700 dark:bg-purple-600 dark:hover:bg-purple-700 rounded-full shadow-sm transition-colors">
                     <Upload className="w-5 h-5 text-white" />
@@ -460,11 +450,6 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
       <AuthDialog
         isOpen={showAuthDialog}
         onClose={() => setShowAuthDialog(false)}
-      />
-
-      <ProPlanDialog
-        isOpen={showProPlanDialog}
-        onClose={() => setShowProPlanDialog(false)}
       />
     </>
   );
