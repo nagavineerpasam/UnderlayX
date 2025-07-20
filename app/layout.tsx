@@ -5,29 +5,31 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 import { Analytics } from "@vercel/analytics/next";
 
 export const metadata = {
-  title: "All-in-One Free AI Image Editor - UnderlayX AI",
+  title:
+    "Free AI Image Editor | Remove Background, Text Behind Image, Customize Background | UnderlayX AI",
   description:
-    "The ultimate tool to add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects effortlessly. Perfect for creators and designers.",
+    "Free AI-powered image editor - no signup required! Remove backgrounds, add text behind images, customize backgrounds, clone objects, and create stunning visual effects. Professional image editing made simple.",
   metadataBase: new URL("https://www.underlayx.com"),
   openGraph: {
     type: "website",
     url: "https://www.underlayx.com",
-    title: "All-in-One Free AI Image Editor - UnderlayX AI",
+    title: "Free AI Image Editor | No Signup Required | UnderlayX AI",
     description:
-      "Add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects. Elevate your visuals with UnderlayX AI.",
+      "Transform your images with our free AI editor. Remove backgrounds, add text behind images, customize backgrounds, and more. No signup required - start editing now!",
     images: ["/og-image.png"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "UnderlayX AI | All-in-One Free AI Image Editor",
+    title:
+      "Free AI Image Editor | Remove Background, Text Behind Image | UnderlayX AI",
     description:
-      "Add text and shapes behind images, remove backgrounds, clone objects, change backgrounds, and create glowing effects effortlessly. Try it now!",
+      "Free AI image editor with no signup required. Remove backgrounds, add text behind images, customize backgrounds, and create stunning effects instantly!",
     creator: "@underlayx",
     images: ["/og-image.png"],
     site: "@underlayx",
   },
   keywords:
-    "image behind image, image overlay, blend image, logo behind image, text behind image, logos behind image, shapes behind image, remove background, clone objects, change background, glowing text effect, image editor, photo editing, advanced image editor, youtube thumbnail maker",
+    "free image editor, no signup image editor, remove background free, text behind image, change background, customize background, background remover, ai image editor, online image editor, free background changer, text behind picture, remove background online, background replacement, image background editor, clone image ai, duplicate ai, shapes behind image, free photo editor, no registration image editor",
   icons: {
     icon: "/favicon.ico",
   },

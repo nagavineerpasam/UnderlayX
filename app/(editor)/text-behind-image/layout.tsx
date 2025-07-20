@@ -1,20 +1,69 @@
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Add Text Behind Image | Text Behind Picture Editor | UnderlayX AI',
-  description: 'Create stunning text behind image effects. Our AI-powered tool helps you add text behind photos, create text background effects, and design creative text overlays for your images.',
-  keywords: 'text behind image, put text behind picture, text behind photo editor, image text effects, text background effects',
+  title:
+    "Free Text Behind Image Generator | Add Text Behind Picture Online | UnderlayX AI",
+  description:
+    "Create stunning text behind image effects instantly with our free AI-powered tool. Add text behind pictures, create text background effects, and design professional image overlays. No signup required - start creating now!",
+  keywords:
+    "text behind image, text behind picture, add text behind image, text behind photo, free text behind image tool, text background effects, image text overlay, put text behind picture, text behind image ai, text behind image generator, free image editor, no signup image editor, text overlay generator",
   openGraph: {
-    title: 'Add Text Behind Image | Text Behind Picture Editor',
-    description: 'Create stunning text behind image effects with UnderlayX. Add text behind photos easily.',
-    images: ['/povafter.jpg'],
-  }
+    title: "Free Text Behind Image Generator | Add Text Behind Picture Online",
+    description:
+      "Create stunning text behind image effects instantly. Free AI tool, no signup required. Add text behind pictures and create professional text background effects.",
+    images: ["/povafter.jpg"],
+    type: "website",
+    url: "https://www.underlayx.com/text-behind-image",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Free Text Behind Image Generator | UnderlayX AI",
+    description:
+      "Create stunning text behind image effects instantly. Free AI tool, no signup required.",
+    images: ["/povafter.jpg"],
+  },
+  alternates: {
+    canonical: "https://www.underlayx.com/text-behind-image",
+  },
 };
 
-export default function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return children;
+export default function Layout({ children }: { children: React.ReactNode }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Text Behind Image Generator | UnderlayX AI",
+    description:
+      "Free AI-powered tool to add text behind images. Create professional text behind picture effects with no signup required.",
+    url: "https://www.underlayx.com/text-behind-image",
+    applicationCategory: "DesignApplication",
+    operatingSystem: "Any",
+    permissions: "no registration required",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      description: "Free to use, no signup required",
+    },
+    featureList: [
+      "Add text behind images",
+      "AI-powered object detection",
+      "Professional text effects",
+      "Real-time preview",
+      "Free to use",
+      "No signup required",
+    ],
+    screenshot: "https://www.underlayx.com/povafter.jpg",
+    softwareVersion: "1.0",
+    releaseNotes: "Free AI-powered text behind image generator",
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {children}
+    </>
+  );
 }

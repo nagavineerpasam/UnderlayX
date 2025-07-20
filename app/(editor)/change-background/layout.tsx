@@ -1,20 +1,71 @@
-import type { Metadata } from 'next';
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Change Image Background | Background Replacement Tool | UnderlayX AI',
-  description: 'Change image backgrounds instantly with AI. Replace, modify, or enhance photo backgrounds with our professional background changer.',
-  keywords: 'change background, background replacement, photo background changer, image background editor, AI background tool',
+  title:
+    "Free Background Changer | Change Image Background Online | Customize Background | UnderlayX AI",
+  description:
+    "Change image backgrounds instantly with our free AI-powered background changer. Customize background, replace photo backgrounds, and enhance your images professionally. No signup required - start changing backgrounds now!",
+  keywords:
+    "change background, background changer, customize background, change image background, photo background changer, background replacement, free background changer, no signup background editor, ai background changer, online background changer, image background editor, custom background tool, replace background, background customization",
   openGraph: {
-    title: 'Change Image Background | AI Background Replacement',
-    description: 'Transform your image backgrounds instantly with UnderlayX AI.',
-    images: ['/shirtafter.jpg'],
-  }
+    title:
+      "Free Background Changer | Change & Customize Image Background Online",
+    description:
+      "Change and customize image backgrounds instantly with our free AI tool. Professional background replacement and customization. No signup required!",
+    images: ["/shirtafter.jpg"],
+    type: "website",
+    url: "https://www.underlayx.com/change-background",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Free Background Changer | Customize Background | UnderlayX AI",
+    description:
+      "Change and customize image backgrounds instantly. Free AI tool, no signup required.",
+    images: ["/shirtafter.jpg"],
+  },
+  alternates: {
+    canonical: "https://www.underlayx.com/change-background",
+  },
 };
 
-export default function Layout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return children;
+export default function Layout({ children }: { children: React.ReactNode }) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Background Changer | UnderlayX AI",
+    description:
+      "Free AI-powered background changer tool. Change and customize image backgrounds instantly. No signup required.",
+    url: "https://www.underlayx.com/change-background",
+    applicationCategory: "DesignApplication",
+    operatingSystem: "Any",
+    permissions: "no registration required",
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "USD",
+      description: "Free to use, no signup required",
+    },
+    featureList: [
+      "Change image backgrounds",
+      "Customize background colors",
+      "AI-powered background replacement",
+      "Professional background editing",
+      "Natural blending effects",
+      "Free to use",
+      "No signup required",
+    ],
+    screenshot: "https://www.underlayx.com/shirtafter.jpg",
+    softwareVersion: "1.0",
+    releaseNotes: "Free AI-powered background changer and customization tool",
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      {children}
+    </>
+  );
 }

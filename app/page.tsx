@@ -28,18 +28,18 @@ import {
 
 const tools = [
   { Icon: ImageOff, name: "Remove Background" },
-  { Icon: Layers, name: "Customize Background" },
-  { Icon: Adjustments, name: "Tune Image" },
-  { Icon: Overlay, name: "Overlay Images" },
-  { Icon: Type, name: "Add Text Behind" },
+  { Icon: Layers, name: "Change Background" },
+  { Icon: Paint, name: "Customize Background" },
+  { Icon: Type, name: "Text Behind Image" },
+  { Icon: Shapes, name: "Shapes Behind Image" },
+  { Icon: Copy, name: "Clone Image AI" },
   { Icon: Sticker, name: "Add Logo Behind" },
-  { Icon: Shapes, name: "Add Shapes" },
-  { Icon: Copy, name: "Image Clone" },
+  { Icon: Overlay, name: "Overlay Images" },
+  { Icon: Adjustments, name: "Tune Image" },
   { Icon: Wand, name: "AI Detection" },
   { Icon: Filter, name: "Apply Effects" },
   { Icon: Download, name: "Export HD" },
   { Icon: Eye, name: "Toggle Overlays" },
-  { Icon: Paint, name: "Object Outline" },
   { Icon: ImageIcon, name: "Image Enhance" },
 ];
 
@@ -174,14 +174,18 @@ export default function Home() {
                 className="text-center mb-8"
               >
                 <h1 className="text-4xl md:text-7xl font-bold mb-6 text-gray-900 dark:text-white">
-                  One Powerful Tool for{" "}
+                  Free AI Image Editor for{" "}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-600">
-                    Effortless Image Editing
+                    Professional Results
                   </span>
                 </h1>
                 <p className="text-xl text-gray-700 dark:text-gray-400 max-w-3xl mx-auto">
-                  Everything you need to remove backgrounds, edit photos, and
-                  magically place text and logos behind objects—fast and easy.
+                  Remove backgrounds, add text behind images, customize
+                  backgrounds, and create stunning effects.
+                  <span className="font-semibold text-purple-600 dark:text-purple-400">
+                    {" "}
+                    Completely free, no signup required.
+                  </span>
                 </p>
               </motion.div>
 
