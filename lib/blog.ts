@@ -1,6 +1,69 @@
 import path from "node:path";
 
 export const blogPosts = {
+  'google-ai-image-generation-guide': {
+    slug: 'google-ai-image-generation-guide',
+    title: 'How to Generate Stunning Images with Google\'s AI: The Ultimate Guide',
+    description: 'Master the art of AI image generation with Google One\'s Nano Banana AI. Learn expert tips, best practices, and create amazing visuals with ease.',
+    content: `
+      <p>Are you ready to dive into the exciting world of AI-powered image generation? Google One's Nano Banana AI is revolutionizing how we create visual content, making it possible for anyone to bring their creative visions to life. In this comprehensive guide, we'll explore everything you need to know to start generating incredible images.</p>
+
+      <p><strong>What is Google One's Nano Banana AI?</strong></p>
+      <p>Google One's Nano Banana AI is an innovative feature that allows users to create unique images from text descriptions. Leveraging advanced artificial intelligence, it interprets your prompts and generates corresponding visuals, opening up a world of creative possibilities.</p>
+
+      <p><strong>Getting Started: Accessing Nano Banana AI</strong></p>
+      <p>To begin your creative journey:</p>
+      <ul>
+        <li>Subscribe to Google One to access the AI features</li>
+        <li>Navigate to the AI tools section in your Google One interface</li>
+        <li>Look for the dedicated image generation area</li>
+      </ul>
+
+      <p><strong>Crafting the Perfect Prompt: The Key to Great Images</strong></p>
+      <p>The magic of AI image generation lies in the prompt—the text description you provide. The more detailed and specific your prompt, the better the AI can understand and fulfill your request.</p>
+      <ul>
+        <li>Be Descriptive: Instead of "a dog," try "a fluffy golden retriever puppy playing in a field of sunflowers."</li>
+        <li>Specify Style: Want a particular aesthetic? Add "in the style of Van Gogh," "photorealistic," or "cartoon illustration."</li>
+        <li>Include Details: Think about colors, lighting, emotions, and objects.</li>
+      </ul>
+
+      <p><strong>Step-by-Step Image Generation</strong></p>
+      <ol>
+        <li>Enter Your Prompt: Locate the text input box and type in your detailed description</li>
+        <li>Generate Image: Click the "Generate Image" button</li>
+        <li>Review and Refine: Review the results and adjust your prompt if needed</li>
+      </ol>
+
+      <p><strong>Example Prompts and Results</strong></p>
+      <p>Let's look at some examples to inspire your own creations:</p>
+
+      <p><img src="/lion.png" alt="AI-generated majestic lion at sunrise" className="w-full rounded-lg mb-4" /></p>
+      <p>Prompt: "A majestic lion standing proudly on a savanna at sunrise, with golden light illuminating its mane. Digital painting."</p>
+
+      <p><img src="/wizard.png" alt="AI-generated wizard casting spell" className="w-full rounded-lg mb-4" /></p>
+      <p>Prompt: "An ancient wizard casting a spell in a mystical library filled with glowing books and arcane symbols. Fantasy art."</p>
+
+      <p><strong>Where to Generate AI Images</strong></p>
+      <ul>
+        <li><strong>Google Gemini:</strong> <a href="https://gemini.google.com" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">Click here to access Gemini</a> - Generate and edit images directly within the Gemini app. <span class="text-gray-400">(Link: gemini.google.com)</span></li>
+        <li><strong>Google AI Studio:</strong> <a href="https://aistudio.google.com" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline">Click here to access AI Studio</a> - A free, web-based tool for developers and users to prototype and build with Google's generative AI models. <span class="text-gray-400">(Link: aistudio.google.com)</span></li>
+      </ul>
+
+      <p><strong>Pro Tips for Better Results</strong></p>
+      <ul>
+        <li>Use specific adjectives to describe textures and materials</li>
+        <li>Experiment with different artistic styles</li>
+        <li>Include lighting and atmosphere details</li>
+        <li>Try different perspectives and compositions</li>
+      </ul>
+
+      <p><strong>Conclusion</strong></p>
+      <p>With Google One's Nano Banana AI, creating stunning visuals is no longer limited to professional artists. Whether you're a content creator, marketer, or just someone who loves to explore creativity, this powerful tool opens up endless possibilities. Start experimenting with your prompts today and watch your ideas come to life!</p>
+    `,
+    date: '2025-08-29',
+    category: 'Tutorial',
+    path: '/custom-editor'
+  },
   'ai-background-customization': {
     slug: 'ai-background-customization',
     title: 'AI-Powered Background Customization and Replacement: A Complete Guide',
