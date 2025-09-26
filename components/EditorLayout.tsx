@@ -122,12 +122,13 @@ export function EditorLayout({
       });
 
       // Show support dialog if conditions are met
-      if (shouldShowSupportDialog()) {
-        // Small delay to let the toast show first
-        setTimeout(() => {
-          setShowSupportDialog(true);
-        }, 500);
-      }
+      // COMMENTED OUT: Ko-fi support dialog after download
+      // if (shouldShowSupportDialog()) {
+      //   // Small delay to let the toast show first
+      //   setTimeout(() => {
+      //     setShowSupportDialog(true);
+      //   }, 500);
+      // }
     } catch (error) {
       toast({
         variant: "destructive",
@@ -164,7 +165,7 @@ export function EditorLayout({
           <div className="flex items-center gap-2 sm:gap-4">
             {" "}
             {/* Reduced gap for mobile */}
-            <KofiButton onClick={() => setShowKofiPayment(true)} />
+            <KofiButton />
             {image.original && (
               <>
                 <button

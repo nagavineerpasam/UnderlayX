@@ -2,43 +2,52 @@ export const Features = () => {
   const features = [
     {
       title: "Clone Objects in Images",
-      description: "Easily clone objects within your image and create multiple versions without altering the background.",
-      icon: "🔄"
+      description:
+        "Easily clone objects within your image and create multiple versions without altering the background.",
+      icon: "🔄",
     },
     {
       title: "Place Logos or Images Behind Main Image",
-      description: "Effortlessly insert logos, product images, or other graphics behind the main image to enhance the composition.",
-      icon: "🎯"
+      description:
+        "Effortlessly insert logos, product images, or other graphics behind the main image to enhance the composition.",
+      icon: "🎯",
     },
     {
       title: "Change Backgrounds & Move Objects",
-      description: "Seamlessly change the background of your images or reposition objects to achieve the perfect look.",
-      icon: "🎨"
+      description:
+        "Seamlessly change the background of your images or reposition objects to achieve the perfect look.",
+      icon: "🎨",
     },
     {
       title: "Remove Backgrounds",
-      description: "Quickly remove the background of your images with precision for a clean, professional look.",
-      icon: "✂️"
+      description:
+        "Quickly remove the background of your images with precision for a clean, professional look.",
+      icon: "✂️",
     },
     {
       title: "Add Text Behind Images",
-      description: "Place text behind images to create depth and a unique, polished visual effect.",
-      icon: "✍️"
+      description:
+        "Place text behind images to create depth and a unique, polished visual effect.",
+      icon: "✍️",
     },
     {
       title: "Add Shapes Behind Images",
-      description: "Insert shapes behind objects for added dimension and creative flair.",
-      icon: "🔷"
-    }
+      description:
+        "Insert shapes behind objects for added dimension and creative flair.",
+      icon: "🔷",
+    },
   ];
 
   return (
     <section className="py-16 md:py-24">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white text-center mb-16">
-          Everything You Need for <span className="text-purple-700 dark:text-purple-400">Professional Designs</span>
+          Everything You Need for{" "}
+          <span className="text-purple-700 dark:text-purple-400">
+            Professional Designs
+          </span>
         </h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {features.map((feature, index) => (
             <div

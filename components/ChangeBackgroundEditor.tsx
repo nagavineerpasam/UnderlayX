@@ -1,34 +1,34 @@
-'use client';
+"use client";
 
-import { useEditor } from '@/hooks/useEditor';
-import { Button } from '@/components/ui/button';
-import { Slider } from '@/components/ui/slider';
-import { Upload } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
-import { useState, useEffect } from 'react';
-import { uploadFile } from '@/lib/upload'; // Add this import
-import { useToast } from '@/hooks/use-toast'; // Add this import
+import { useEditor } from "@/hooks/useEditor";
+import { Button } from "@/components/ui/button";
+import { Slider } from "@/components/ui/slider";
+import { Upload } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { useState, useEffect } from "react";
+import { uploadFile } from "@/lib/upload"; // Add this import
+import { useToast } from "@/hooks/use-toast"; // Add this import
 
 const PRESET_COLORS = [
-  '#000000', // Black
-  '#FFFFFF', // White
-  '#FF0000', // Red
-  '#00FF00', // Green
-  '#0000FF', // Blue
-  '#FFA500', // Orange
-  '#800080', // Purple
-  '#FFC0CB', // Pink
-  '#4A90E2', // Sky Blue
-  '#50E3C2', // Mint
-  '#F5A623', // Gold
-  '#D0021B', // Dark Red
+  "#000000", // Black
+  "#FFFFFF", // White
+  "#FF0000", // Red
+  "#00FF00", // Green
+  "#0000FF", // Blue
+  "#FFA500", // Orange
+  "#800080", // Purple
+  "#FFC0CB", // Pink
+  "#4A90E2", // Sky Blue
+  "#50E3C2", // Mint
+  "#F5A623", // Gold
+  "#D0021B", // Dark Red
 ];
 
 export function ChangeBackgroundEditor() {
-  const { 
-    changeBackground, 
-    resetBackground, 
+  const {
+    changeBackground,
+    resetBackground,
     hasChangedBackground,
     foregroundPosition,
     updateForegroundPosition,
@@ -42,17 +42,17 @@ export function ChangeBackgroundEditor() {
     updateBackgroundOpacity,
   } = useEditor();
 
-  const [hexValue, setHexValue] = useState(backgroundColor || '');
+  const [hexValue, setHexValue] = useState(backgroundColor || "");
   const { toast } = useToast();
 
   // Update hex value when backgroundColor changes
   useEffect(() => {
-    setHexValue(backgroundColor || '');
+    setHexValue(backgroundColor || "");
   }, [backgroundColor]);
 
   const handleColorSelect = (color: string | null) => {
     setBackgroundColor(color);
-    setHexValue(color || '');
+    setHexValue(color || "");
   };
 
   const handleHexInput = (value: string) => {
@@ -73,25 +73,25 @@ export function ChangeBackgroundEditor() {
     try {
       await changeBackground(); // Remove the arguments as we'll handle file upload inside changeBackground
     } catch (error) {
-      console.error('Error uploading background:', error);
+      console.error("Error uploading background:", error);
       toast({
         variant: "destructive",
         title: "Failed to upload background",
-        description: "Please try again with a different image."
+        description: "Please try again with a different image.",
       });
     }
   };
 
   // Modify the getDisplayMode function to separate image and color modes
   const getDisplayMode = () => {
-    if (hasChangedBackground && image.background) return 'IMAGE_MODE';
-    return 'COLOR_MODE'; // Always show color options
+    if (hasChangedBackground && image.background) return "IMAGE_MODE";
+    return "COLOR_MODE"; // Always show color options
   };
 
   return (
     <div className="space-y-6">
       {/* Color Picker Section - Always visible unless in IMAGE_MODE */}
-      {getDisplayMode() !== 'IMAGE_MODE' && (
+      {getDisplayMode() !== "IMAGE_MODE" && (
         <div className="space-y-4">
           <div className="space-y-2">
             <label className="text-sm font-medium">Custom Color</label>
@@ -125,7 +125,7 @@ export function ChangeBackgroundEditor() {
                   className={cn(
                     "w-8 h-8 rounded-md border-2 transition-all",
                     backgroundColor === color
-                      ? "border-blue-500 scale-110" 
+                      ? "border-blue-500 scale-110"
                       : "border-gray-200 dark:border-gray-700 hover:scale-105"
                   )}
                   style={{ backgroundColor: color }}
@@ -145,13 +145,15 @@ export function ChangeBackgroundEditor() {
               <div className="w-full border-t border-gray-200 dark:border-gray-700" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white dark:bg-zinc-950 px-2 text-gray-500">or</span>
+              <span className="bg-white dark:bg-zinc-950 px-2 text-gray-500">
+                or
+              </span>
             </div>
           </div>
 
           <div>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-              Upload an image to use as background
+              🖼️ Want something more exciting? Upload your own background image!
             </p>
             <Button
               onClick={handleBackgroundUpload}
@@ -160,7 +162,9 @@ export function ChangeBackgroundEditor() {
               disabled={isProcessing}
             >
               <Upload className="w-4 h-4 mr-2" />
-              {isProcessing ? 'Processing...' : 'Upload Background Image'}
+              {isProcessing
+                ? "✨ Working magic..."
+                : "📷 Upload Your Background"}
             </Button>
           </div>
         </>
@@ -183,7 +187,9 @@ export function ChangeBackgroundEditor() {
 
           {/* Foreground Size Control */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Foreground Size</label>
+            <label className="text-sm font-medium">
+              📏 Make Your Image Bigger/Smaller
+            </label>
             <Slider
               value={[foregroundSize]}
               onValueChange={([value]) => updateForegroundSize(value)}
@@ -195,10 +201,12 @@ export function ChangeBackgroundEditor() {
 
           {/* Position controls */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">Horizontal Position</label>
+            <label className="text-sm font-medium">↔️ Move Left/Right</label>
             <Slider
               value={[foregroundPosition.x]}
-              onValueChange={([value]) => updateForegroundPosition({ x: value, y: foregroundPosition.y })}
+              onValueChange={([value]) =>
+                updateForegroundPosition({ x: value, y: foregroundPosition.y })
+              }
               min={-100}
               max={100}
               step={1}
@@ -206,10 +214,12 @@ export function ChangeBackgroundEditor() {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Vertical Position</label>
+            <label className="text-sm font-medium">↕️ Move Up/Down</label>
             <Slider
               value={[foregroundPosition.y]}
-              onValueChange={([value]) => updateForegroundPosition({ x: foregroundPosition.x, y: value })}
+              onValueChange={([value]) =>
+                updateForegroundPosition({ x: foregroundPosition.x, y: value })
+              }
               min={-100}
               max={100}
               step={1}
@@ -223,7 +233,7 @@ export function ChangeBackgroundEditor() {
               variant="outline"
               className="w-full"
             >
-              Reset Background
+              🔄 Start Over
             </Button>
           </div>
         </div>

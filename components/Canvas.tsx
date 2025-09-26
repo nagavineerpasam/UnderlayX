@@ -85,7 +85,7 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
   const handleFileProcess = async (file: File) => {
     try {
       setIsProcessing(true);
-      setProcessingMessage("Analyzing your image, please wait...");
+      setProcessingMessage("✨ Our AI is working its magic on your photo...");
 
       // Pass authentication status and userId to handleImageUpload
       await handleImageUpload(file, {
@@ -167,7 +167,7 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
 
       // Set processing state immediately
       setIsProcessing(true);
-      setProcessingMessage("Preparing to process your image...");
+      setProcessingMessage("🚀 Getting ready to make your photo amazing...");
 
       try {
         // Check if it's HEIC/HEIF first

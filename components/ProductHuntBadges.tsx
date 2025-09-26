@@ -1,9 +1,8 @@
-'use client';
-
+"use client";
 
 const BADGE_DIMENSIONS = {
   width: 250,
-  height: 54 // Standard height for Product Hunt badges
+  height: 54, // Standard height for Product Hunt badges
 };
 
 export const ProductHuntBadges = () => {
@@ -12,13 +11,14 @@ export const ProductHuntBadges = () => {
       {/* Achievement Heading */}
       <div className="text-center mb-12">
         <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-          Recognized by{' '}
+          Recognized by{" "}
           <span className="inline-flex md:inline">
             <span className="text-purple-400">Product Hunt</span>
           </span>
         </h2>
         <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-          Proud to be ranked among the top products in Marketing and Design tools, trusted by creators worldwide
+          Proud to be ranked among the top products in Marketing and Design
+          tools, trusted by creators worldwide
         </p>
       </div>
 
@@ -27,22 +27,22 @@ export const ProductHuntBadges = () => {
         {[
           {
             href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx",
-            src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=44"
+            src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=44",
           },
           {
             href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-badge&utm_medium=badge&utm_souce=badge-underlayx",
-            src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=739682&theme=light&period=daily"
+            src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-badge.svg?post_id=739682&theme=light&period=daily",
           },
           {
             href: "https://www.producthunt.com/posts/underlayx?embed=true&utm_source=badge-top-post-topic-badge&utm_medium=badge&utm_souce=badge-underlayx",
-            src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=164"
-          }
+            src: "https://api.producthunt.com/widgets/embed-image/v1/top-post-topic-badge.svg?post_id=739682&theme=light&period=weekly&topic_id=164",
+          },
         ].map((badge, index) => (
-          <a 
+          <a
             key={index}
             href={badge.href}
-            target="_blank" 
-            rel="noopener noreferrer" 
+            target="_blank"
+            rel="noopener noreferrer"
             className="w-full sm:w-auto"
           >
             <img

@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Slider } from '@/components/ui/slider';
-import { useEditor } from '@/hooks/useEditor';
-import { Button } from '@/components/ui/button';
-import { RotateCcw } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useState } from "react";
+import { Slider } from "@/components/ui/slider";
+import { useEditor } from "@/hooks/useEditor";
+import { Button } from "@/components/ui/button";
+import { RotateCcw } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-type TabType = 'foreground' | 'background';
+type TabType = "foreground" | "background";
 
 const defaultEnhancements = {
   brightness: 100,
@@ -18,12 +18,12 @@ const defaultEnhancements = {
   highlights: 0,
   shadows: 0,
   sharpness: 0,
-  blur: 0,    // Add default value
-  blacks: 0   // Add default value
+  blur: 0, // Add default value
+  blacks: 0, // Add default value
 } as const;
 
 export function TuneImageEditor() {
-  const [activeTab, setActiveTab] = useState<TabType>('background');
+  const [activeTab, setActiveTab] = useState<TabType>("background");
   const {
     foregroundEnhancements,
     backgroundEnhancements,
@@ -37,8 +37,12 @@ export function TuneImageEditor() {
   };
 
   const renderEnhancementControls = (type: TabType) => {
-    const enhancements = type === 'foreground' ? foregroundEnhancements : backgroundEnhancements;
-    const updateEnhancements = type === 'foreground' ? updateForegroundEnhancements : updateBackgroundEnhancements;
+    const enhancements =
+      type === "foreground" ? foregroundEnhancements : backgroundEnhancements;
+    const updateEnhancements =
+      type === "foreground"
+        ? updateForegroundEnhancements
+        : updateBackgroundEnhancements;
 
     return (
       <div className="space-y-2">
@@ -56,7 +60,9 @@ export function TuneImageEditor() {
             max={200}
             step={1}
           />
-          <div className="text-xs text-gray-500">{enhancements.brightness}%</div>
+          <div className="text-xs text-gray-500">
+            {enhancements.brightness}%
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -90,7 +96,9 @@ export function TuneImageEditor() {
             max={200}
             step={1}
           />
-          <div className="text-xs text-gray-500">{enhancements.saturation}%</div>
+          <div className="text-xs text-gray-500">
+            {enhancements.saturation}%
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -124,7 +132,9 @@ export function TuneImageEditor() {
             max={20}
             step={0.1}
           />
-          <div className="text-xs text-gray-500">{(enhancements.blur || 0).toFixed(1)}px</div>
+          <div className="text-xs text-gray-500">
+            {(enhancements.blur || 0).toFixed(1)}px
+          </div>
         </div>
 
         <div className="space-y-2">
@@ -141,7 +151,9 @@ export function TuneImageEditor() {
             max={100}
             step={1}
           />
-          <div className="text-xs text-gray-500">{enhancements.blacks || 0}%</div>
+          <div className="text-xs text-gray-500">
+            {enhancements.blacks || 0}%
+          </div>
         </div>
       </div>
     );
@@ -151,7 +163,12 @@ export function TuneImageEditor() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-medium">Image Adjustments</h3>
-        <Button variant="ghost" size="sm" onClick={handleReset} className="h-8 px-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleReset}
+          className="h-8 px-2"
+        >
           <RotateCcw className="w-4 h-4 mr-1" />
           Reset
         </Button>
@@ -159,32 +176,30 @@ export function TuneImageEditor() {
 
       <div className="flex space-x-2 border-b dark:border-white/10">
         <button
-          onClick={() => setActiveTab('background')}
+          onClick={() => setActiveTab("background")}
           className={cn(
-            'px-4 py-2 text-sm font-medium transition-colors',
-            activeTab === 'background'
-              ? 'border-b-2 border-purple-600 text-purple-600'
-              : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
+            "px-4 py-2 text-sm font-medium transition-colors",
+            activeTab === "background"
+              ? "border-b-2 border-purple-600 text-purple-600"
+              : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
           )}
         >
           Background
         </button>
         <button
-          onClick={() => setActiveTab('foreground')}
+          onClick={() => setActiveTab("foreground")}
           className={cn(
-            'px-4 py-2 text-sm font-medium transition-colors',
-            activeTab === 'foreground'
-              ? 'border-b-2 border-purple-600 text-purple-600'
-              : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100'
+            "px-4 py-2 text-sm font-medium transition-colors",
+            activeTab === "foreground"
+              ? "border-b-2 border-purple-600 text-purple-600"
+              : "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
           )}
         >
           Foreground
         </button>
       </div>
 
-      <div className="pt-2">
-        {renderEnhancementControls(activeTab)}
-      </div>
+      <div className="pt-2">{renderEnhancementControls(activeTab)}</div>
     </div>
   );
 }
