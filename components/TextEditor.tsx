@@ -126,7 +126,7 @@ export function TextEditor() {
                   "bg-gray-50 dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-900 dark:text-white",
                   "text-base sm:text-base"
                 )}
-                placeholder="Enter text..."
+                placeholder="Type something awesome..."
                 autoComplete="off"
                 spellCheck="false"
                 style={{ fontSize: "16px" }}
@@ -185,7 +185,7 @@ export function TextEditor() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className="text-sm text-gray-600 dark:text-gray-400">
-                      Front
+                      In Front
                     </span>
                     <Switch
                       id={`text-placement-${textSet.id}`}
@@ -198,7 +198,7 @@ export function TextEditor() {
                       className="data-[state=checked]:bg-purple-600"
                     />
                     <span className="text-sm text-gray-600 dark:text-gray-400">
-                      Behind
+                      ✨ Behind Object
                     </span>
                   </div>
                 </div>

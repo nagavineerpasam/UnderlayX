@@ -101,19 +101,19 @@ export function SideNavigation({
     if (!image.original) {
       switch (activeTab) {
         case "text":
-          return "Please upload an image first to add text behind objects";
+          return "Ready to put text behind objects? Upload your photo to start! 📸";
         case "shapes":
-          return "Please upload an image first to add shapes behind objects";
+          return "Let's add some cool shapes behind objects! Upload your image first 🎨";
         case "remove-background":
-          return "Please upload an image first to remove the background";
+          return "Time to cut out that background! Drop your photo here to begin ✂️";
         case "change-background":
-          return "Please upload an image first to change the background";
+          return "Ready for a background makeover? Upload your image to get started 🌟";
         case "clone-image":
-          return "Please upload an image first to use the clone feature";
+          return "Let's create some magic! Upload your photo to start cloning ✨";
         case "draw":
-          return "Please upload an image first to use the draw feature";
+          return "Ready to get creative? Upload your image to start drawing 🎨";
         default:
-          return "Please upload an image first";
+          return "Upload your photo to start creating something amazing! 🚀";
       }
     }
     return null;
