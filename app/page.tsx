@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { FeatureShowcase } from "@/components/FeatureShowcase";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import {
   ImageOff,
   Layers,
@@ -193,97 +193,115 @@ const useCases = [
 const FeatureCard = ({
   tool: { Icon, name, emoji, vibe, gradient, popular },
   index,
-}) => (
-  <motion.div
-    initial={{ opacity: 0, scale: 0.8, rotate: -5 }}
-    whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
-    transition={{
-      duration: 0.5,
-      delay: index * 0.1,
-      type: "spring",
-      bounce: 0.4,
-    }}
-    viewport={{ once: true }}
-    className="group relative"
-  >
-    {/* Popular badge */}
-    {popular && (
-      <div className="absolute -top-2 -right-2 z-20">
-        <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-black px-2 py-1 rounded-full shadow-lg animate-pulse">
-          🔥 HOT
-        </div>
-      </div>
-    )}
+}) => {
+  const shouldReduceMotion = useReducedMotion();
 
-    {/* Glow effect */}
-    <div
-      className={`absolute -inset-1 bg-gradient-to-r ${gradient} rounded-2xl blur opacity-0 group-hover:opacity-60 transition-all duration-500`}
-    />
-
-    <div
-      className="relative flex flex-col items-center p-4 bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-2xl
-        transform transition-all duration-300 
-        hover:scale-110 hover:-rotate-2
-        border border-white/50 dark:border-gray-700/50
-        shadow-lg hover:shadow-2xl
-        cursor-pointer overflow-hidden
-        h-32 justify-between"
+  return (
+    <motion.div
+      initial={
+        shouldReduceMotion
+          ? { opacity: 0 }
+          : { opacity: 0, scale: 0.8, rotate: -5 }
+      }
+      whileInView={
+        shouldReduceMotion
+          ? { opacity: 1 }
+          : { opacity: 1, scale: 1, rotate: 0 }
+      }
+      transition={
+        shouldReduceMotion
+          ? { duration: 0.3 }
+          : {
+              duration: 0.5,
+              delay: index * 0.05, // Reduced delay
+              type: "spring",
+              bounce: 0.4,
+            }
+      }
+      viewport={{ once: true, margin: "-10%" }}
+      className="group relative will-change-transform"
     >
-      {/* Background pattern */}
-      <div className="absolute inset-0 opacity-5 group-hover:opacity-20 transition-opacity">
-        <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
-      </div>
+      {/* Popular badge */}
+      {popular && (
+        <div className="absolute -top-2 -right-2 z-20">
+          <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-black px-2 py-1 rounded-full shadow-lg animate-pulse">
+            🔥 HOT
+          </div>
+        </div>
+      )}
 
-      {/* Icon container */}
+      {/* Glow effect - optimized */}
       <div
-        className={`relative w-12 h-12 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center mb-3 group-hover:scale-125 group-hover:rotate-12 transition-all duration-300 shadow-lg`}
+        className={`absolute -inset-1 bg-gradient-to-r ${gradient} rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-300`}
+        style={{ filter: "blur(8px)" }}
+      />
+
+      <div
+        className="relative flex flex-col items-center p-4 bg-white/90 dark:bg-gray-900/90 rounded-2xl
+        transform transition-transform duration-200 
+        hover:scale-105
+        border border-white/50 dark:border-gray-700/50
+        shadow-lg hover:shadow-xl
+        cursor-pointer overflow-hidden
+        h-32 justify-between will-change-transform"
       >
-        <Icon className="w-6 h-6 text-white drop-shadow-sm" />
-
-        {/* Emoji overlay on hover */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20 rounded-xl">
-          <span className="text-xl animate-bounce">{emoji}</span>
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-5 group-hover:opacity-20 transition-opacity">
+          <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
         </div>
-      </div>
 
-      {/* Text content - fixed height container */}
-      <div className="flex flex-col items-center justify-center flex-1 text-center">
-        <span className="text-xs font-bold text-gray-900 dark:text-white leading-tight mb-1 min-h-[2.5rem] flex items-center">
-          {name}
-        </span>
-
-        {/* Vibe text - appears on hover */}
-        <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 absolute bottom-2">
-          <span
-            className={`text-xs font-black bg-gradient-to-r ${gradient} bg-clip-text text-transparent whitespace-nowrap`}
-          >
-            {vibe}
-          </span>
-        </div>
-      </div>
-
-      {/* Sparkle effects */}
-      <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="w-1 h-1 bg-yellow-400 rounded-full animate-ping" />
-      </div>
-      <div className="absolute bottom-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">
-        <div className="w-1 h-1 bg-pink-400 rounded-full animate-ping" />
-      </div>
-
-      {/* Hover ripple effect */}
-      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-20 transition-all duration-500">
+        {/* Icon container - optimized */}
         <div
-          className={`absolute inset-0 bg-gradient-to-r ${gradient} rounded-2xl animate-ping`}
-        />
+          className={`relative w-12 h-12 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200 shadow-lg will-change-transform`}
+        >
+          <Icon className="w-6 h-6 text-white drop-shadow-sm" />
+
+          {/* Emoji overlay on hover */}
+          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20 rounded-xl">
+            <span className="text-xl animate-bounce">{emoji}</span>
+          </div>
+        </div>
+
+        {/* Text content - fixed height container */}
+        <div className="flex flex-col items-center justify-center flex-1 text-center">
+          <span className="text-xs font-bold text-gray-900 dark:text-white leading-tight mb-1 min-h-[2.5rem] flex items-center">
+            {name}
+          </span>
+
+          {/* Vibe text - appears on hover */}
+          <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 absolute bottom-2">
+            <span
+              className={`text-xs font-black bg-gradient-to-r ${gradient} bg-clip-text text-transparent whitespace-nowrap`}
+            >
+              {vibe}
+            </span>
+          </div>
+        </div>
+
+        {/* Sparkle effects */}
+        <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="w-1 h-1 bg-yellow-400 rounded-full animate-ping" />
+        </div>
+        <div className="absolute bottom-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">
+          <div className="w-1 h-1 bg-pink-400 rounded-full animate-ping" />
+        </div>
+
+        {/* Hover ripple effect */}
+        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-20 transition-all duration-500">
+          <div
+            className={`absolute inset-0 bg-gradient-to-r ${gradient} rounded-2xl animate-ping`}
+          />
+        </div>
       </div>
-    </div>
-  </motion.div>
-);
+    </motion.div>
+  );
+};
 
 export default function Home() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   const section = searchParams.get("section");
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     if (section === "pricing") {
@@ -300,10 +318,20 @@ export default function Home() {
       role="region"
       aria-label="Home page content"
     >
-      {/* Background with subtle pattern */}
-      <div className="fixed inset-0 z-0" aria-hidden="true">
+      {/* Background with subtle pattern - optimized */}
+      <div
+        className="fixed inset-0 z-0"
+        aria-hidden="true"
+        style={{ contain: "layout style paint" }}
+      >
         <div className="absolute inset-0 bg-white dark:bg-[#0A0A0A]" />
-        <div className="absolute inset-0 opacity-5 dark:opacity-10 bg-[radial-gradient(#8b5cf6_1px,transparent_1px)] [background-size:20px_20px]" />
+        <div
+          className="absolute inset-0 opacity-5 dark:opacity-10"
+          style={{
+            backgroundImage: "radial-gradient(#8b5cf6 1px, transparent 1px)",
+            backgroundSize: "20px 20px",
+          }}
+        />
       </div>
 
       {/* Sticky Navbar */}
@@ -320,21 +348,24 @@ export default function Home() {
             <div className="relative max-w-7xl mx-auto px-4 pt-24 pb-20">
               {/* Top Label */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
+                transition={{ duration: shouldReduceMotion ? 0.2 : 0.5 }}
                 className="text-center mb-4"
               >
-                <span className="inline-block px-4 py-1.5 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-full text-sm font-medium text-gray-800 dark:text-gray-300 backdrop-blur-sm border border-gray-200 dark:border-white/10">
+                <span className="inline-block px-4 py-1.5 bg-purple-500/10 rounded-full text-sm font-medium text-gray-800 dark:text-gray-300 border border-gray-200 dark:border-white/10">
                   🔥 The Secret Tool Every Creator Needs
                 </span>
               </motion.div>
 
               {/* Main Headline */}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
+                transition={{
+                  duration: shouldReduceMotion ? 0.2 : 0.5,
+                  delay: shouldReduceMotion ? 0 : 0.1,
+                }}
                 className="text-center mb-8"
               >
                 <h1 className="text-4xl md:text-7xl font-bold mb-6 text-gray-900 dark:text-white">
@@ -371,8 +402,8 @@ export default function Home() {
 
               {/* Viral Feature Grid */}
               <div className="relative">
-                {/* Background effects */}
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-pink-500/5 to-blue-500/5 rounded-3xl blur-xl" />
+                {/* Background effects - simplified */}
+                <div className="absolute inset-0 rounded-3xl" />
 
                 {/* Desktop Grid */}
                 <div className="relative hidden md:block">
@@ -410,7 +441,7 @@ export default function Home() {
                     transition={{ duration: 0.5, delay: 0.2 }}
                     className="text-center mb-6"
                   >
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-sm rounded-full border border-purple-500/20 mb-3">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/20 rounded-full border border-purple-500/20 mb-3">
                       <span className="text-xs font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                         🛠️ SWIPE FOR TOOLS
                       </span>
@@ -525,10 +556,13 @@ export default function Home() {
                   viewport={{ once: true }}
                   className="relative"
                 >
-                  {/* Glow effect around showcase */}
-                  <div className="absolute -inset-4 bg-gradient-to-r from-pink-500/20 via-purple-500/20 to-blue-500/20 rounded-3xl blur-2xl opacity-60 animate-pulse" />
+                  {/* Glow effect around showcase - optimized */}
+                  <div
+                    className="absolute -inset-4 bg-pink-500/20 rounded-3xl opacity-30"
+                    style={{ filter: "blur(16px)" }}
+                  />
 
-                  <div className="relative bg-white/10 dark:bg-gray-900/10 backdrop-blur-xl rounded-3xl p-6 md:p-8 border border-white/20 dark:border-gray-700/20 shadow-2xl">
+                  <div className="relative bg-white/90 dark:bg-gray-900/90 rounded-3xl p-6 md:p-8 border border-white/20 dark:border-gray-700/20 shadow-2xl">
                     <FeatureShowcase />
 
                     {/* Floating indicators */}
@@ -701,7 +735,7 @@ export default function Home() {
                           </div>
                         </div>
 
-                        <div className="relative bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-3xl p-8 border border-white/50 dark:border-gray-700/50 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 text-center">
+                        <div className="relative bg-white/90 dark:bg-gray-900/90 rounded-3xl p-8 border border-white/50 dark:border-gray-700/50 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-102 text-center will-change-transform">
                           {/* Icon section */}
                           <div
                             className={`relative w-24 h-24 bg-gradient-to-br ${step.bgGradient} rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:rotate-12 transition-transform duration-500`}
@@ -858,7 +892,7 @@ export default function Home() {
                     {/* Glowing border effect */}
                     <div className="absolute -inset-1 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-3xl blur-lg opacity-30 group-hover:opacity-60 transition-all duration-500" />
 
-                    <div className="relative bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-white/50 dark:border-gray-700/50 shadow-2xl">
+                    <div className="relative bg-white/95 dark:bg-gray-900/95 rounded-3xl p-8 md:p-12 border border-white/50 dark:border-gray-700/50 shadow-2xl">
                       <div className="flex flex-col lg:flex-row gap-12 items-center">
                         {/* Left side - Text content */}
                         <div className="lg:w-1/2 space-y-8">
@@ -970,7 +1004,7 @@ export default function Home() {
                                   className={`absolute -inset-0.5 bg-gradient-to-r ${feature.color} rounded-2xl blur opacity-0 group-hover:opacity-30 transition-all duration-300`}
                                 />
 
-                                <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-6 rounded-2xl border border-white/50 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 hover:scale-105 hover:shadow-xl cursor-pointer">
+                                <div className="relative bg-white/85 dark:bg-gray-800/85 p-6 rounded-2xl border border-white/50 dark:border-gray-700/50 hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 hover:scale-102 hover:shadow-xl cursor-pointer will-change-transform">
                                   <div className="flex items-start gap-4">
                                     <div className="text-4xl group-hover:scale-125 transition-transform duration-300 group-hover:rotate-12">
                                       {feature.emoji}
@@ -1008,7 +1042,7 @@ export default function Home() {
                     {/* Dynamic glow effect */}
                     <div className="absolute -inset-2 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-3xl blur-2xl opacity-20 animate-pulse" />
 
-                    <div className="relative bg-gradient-to-br from-cyan-50/90 to-blue-50/90 dark:from-cyan-900/20 dark:to-blue-900/20 backdrop-blur-xl rounded-3xl p-8 md:p-12 border border-cyan-200/50 dark:border-cyan-700/30 shadow-2xl">
+                    <div className="relative bg-gradient-to-br from-cyan-50/95 to-blue-50/95 dark:from-cyan-900/30 dark:to-blue-900/30 rounded-3xl p-8 md:p-12 border border-cyan-200/50 dark:border-cyan-700/30 shadow-2xl">
                       <div className="flex flex-col lg:flex-row-reverse gap-12 items-center">
                         {/* Left side - Content */}
                         <div className="lg:w-1/2 space-y-8">
@@ -1140,7 +1174,7 @@ export default function Home() {
                                       className={`absolute -inset-1 bg-gradient-to-r ${step.color} rounded-2xl blur opacity-0 group-hover:opacity-40 transition-all duration-300`}
                                     />
 
-                                    <div className="relative flex items-center gap-4 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl border border-gray-200/50 dark:border-gray-600/50 hover:bg-white dark:hover:bg-gray-800 transition-all duration-300 hover:scale-102 cursor-pointer">
+                                    <div className="relative flex items-center gap-4 p-4 bg-white/90 dark:bg-gray-800/90 rounded-2xl border border-gray-200/50 dark:border-gray-600/50 hover:bg-white dark:hover:bg-gray-800 transition-all duration-200 hover:scale-101 cursor-pointer will-change-transform">
                                       <div
                                         className={`w-12 h-12 bg-gradient-to-r ${step.color} rounded-2xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform`}
                                       >
@@ -1270,7 +1304,7 @@ export default function Home() {
                           className={`absolute -inset-1 bg-gradient-to-r ${creator.gradient} rounded-3xl blur-lg opacity-0 group-hover:opacity-30 transition-all duration-500`}
                         />
 
-                        <div className="relative overflow-hidden rounded-3xl bg-white/90 dark:bg-gray-900/90 backdrop-blur-xl border border-white/50 dark:border-gray-700/50 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:scale-105 h-full flex flex-col">
+                        <div className="relative overflow-hidden rounded-3xl bg-white/95 dark:bg-gray-900/95 border border-white/50 dark:border-gray-700/50 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-102 h-full flex flex-col will-change-transform">
                           {/* Header with emoji and stats */}
                           <div
                             className={`relative h-48 bg-gradient-to-br ${creator.bgGradient} flex flex-col items-center justify-center overflow-hidden`}

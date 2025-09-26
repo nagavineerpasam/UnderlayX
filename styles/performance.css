@@ -1,0 +1,113 @@
+/* Performance optimizations for landing page */
+
+/* Reduce paint operations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* Optimize animations with hardware acceleration */
+.hw-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Contain layout to prevent style recalculations */
+.contain-layout {
+  contain: layout style paint;
+}
+
+/* Optimize complex gradients for better performance */
+.gradient-optimized {
+  background-attachment: fixed;
+  will-change: transform;
+}
+
+/* Reduce repaints on scroll */
+.scroll-optimized {
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+/* Optimize blur effects */
+.blur-optimized {
+  filter: blur(8px);
+  will-change: filter;
+}
+
+/* Prevent layout thrashing on hover */
+.hover-optimized {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Optimize text rendering */
+.text-optimized {
+  text-rendering: optimizeSpeed;
+  font-smooth: never;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  
+  .animate-pulse,
+  .animate-bounce,
+  .animate-ping {
+    animation: none !important;
+  }
+}
+
+/* Optimize for low-end devices */
+@media (max-width: 768px) {
+  .expensive-effect {
+    display: none;
+  }
+  
+  .backdrop-blur-xl,
+  .backdrop-blur-sm {
+    backdrop-filter: none;
+    background-color: rgba(255, 255, 255, 0.9);
+  }
+  
+  .dark .backdrop-blur-xl,
+  .dark .backdrop-blur-sm {
+    background-color: rgba(0, 0, 0, 0.9);
+  }
+}
+
+/* Optimize scrolling performance */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Use transform instead of changing layout properties */
+.scale-hover:hover {
+  transform: scale(1.02) translateZ(0);
+}
+
+/* Optimize for 60fps animations */
+@keyframes optimized-fade-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.fade-in-optimized {
+  animation: optimized-fade-in 0.3s ease-out;
+}
