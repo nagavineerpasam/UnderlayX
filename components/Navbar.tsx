@@ -97,32 +97,6 @@ export function Navbar() {
     fetchUser();
   }, []);
 
-  useEffect(() => {
-    async function fetchSubscriptionInfo() {
-      if (user) {
-        try {
-          const { data, error } = await supabase
-            .from("profiles")
-            .select("expires_at, free_generations_used")
-            .eq("id", user.id)
-            .single();
-
-          if (error) throw error;
-
-          setGenerationInfo({
-            expires_at: data?.expires_at,
-            free_generations_used: data?.free_generations_used || 0,
-          });
-        } catch (error) {
-          toast({ variant: "destructive", title: "Something went wrong" });
-          console.error("Error fetching subscription info:", error);
-        }
-      }
-    }
-
-    fetchSubscriptionInfo();
-  }, [user]);
-
   const handlePricingClick = (e: React.MouseEvent) => {
     e.preventDefault();
     const pricingSection = document.getElementById("pricing");
@@ -309,7 +283,7 @@ export function Navbar() {
                           src={user.user_metadata.avatar_url}
                           alt="User avatar"
                           sizes="32px"
-                          className="cursor-pointer hover:opacity-80 transition-opacity object-cover"
+                          className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
                           onError={(e) => {
                             e.currentTarget.style.display = "none";
                             e.currentTarget.parentElement
@@ -420,16 +394,26 @@ export function Navbar() {
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-white">
                     <div className="relative w-10 h-10 rounded-full overflow-hidden">
-                      <img
-                        src={
-                          user.user_metadata.avatar_url ||
-                          `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.email}`
-                        }
-                        alt="User avatar"
-                        width={40}
-                        height={40}
-                        className="rounded-full object-cover"
-                      />
+                      {user.user_metadata.avatar_url ? (
+                        <img
+                          src={user.user_metadata.avatar_url}
+                          alt="User avatar"
+                          width={40}
+                          height={40}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.style.display = "none";
+                            e.currentTarget.parentElement
+                              ?.querySelector(".avatar-fallback")
+                              ?.classList.remove("hidden");
+                          }}
+                        />
+                      ) : (
+                        <AvatarFallback email={user.email || ""} />
+                      )}
+                      <div className="avatar-fallback hidden">
+                        <AvatarFallback email={user.email || ""} />
+                      </div>
                     </div>
                     <div className="flex flex-col">
                       <span className="font-medium">{user.email}</span>

@@ -9,12 +9,10 @@ import { ConfirmDialog } from "./ConfirmDialog";
 import { useState, useRef, useEffect } from "react"; // Add useRef, useCallback, useEffect
 import { useAuth } from "@/hooks/useAuth";
 import { AuthDialog } from "./AuthDialog";
-import { cn, isSubscriptionActive } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useEditorPanel } from "@/contexts/EditorPanelContext";
 import { useIsMobile } from "@/hooks/useIsMobile"; // Add this import
-import { incrementGenerationCount } from "@/lib/supabase-utils";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabaseClient";
 
 interface CanvasProps {
   shouldAutoUpload?: boolean;
@@ -46,31 +44,10 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
   const fileInputRef = useRef<HTMLInputElement>(null); // Add this ref
   const [hasTriedAutoUpload, setHasTriedAutoUpload] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [showTokenDialog, setShowTokenDialog] = useState(false);
   const { user } = useAuth();
   const { isPanelOpen } = useEditorPanel();
   const isMobile = useIsMobile(); // Add this hook
   const { toast } = useToast();
-
-  // Add state for subscription status
-  const [expiresAt, setExpiresAt] = useState<string | null>(null);
-
-  // Add effect to fetch subscription status
-  useEffect(() => {
-    async function fetchSubscriptionStatus() {
-      if (user) {
-        const { data } = await supabase
-          .from("profiles")
-          .select("expires_at")
-          .eq("id", user.id)
-          .single();
-
-        setExpiresAt(data?.expires_at || null);
-      }
-    }
-
-    fetchSubscriptionStatus();
-  }, [user]);
 
   // Add this function inside the Canvas component
   const preloadFonts = useCallback(async (fontFamily: string) => {
@@ -87,16 +64,7 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
       setIsProcessing(true);
       setProcessingMessage("✨ Our AI is working its magic on your photo...");
 
-      // Pass authentication status and userId to handleImageUpload
-      await handleImageUpload(file, {
-        isAuthenticated: !!user,
-        userId: user?.id,
-      });
-
-      // Only increment count for authenticated users
-      if (user) {
-        await incrementGenerationCount(user);
-      }
+      await handleImageUpload(file);
     } catch (error) {
       let errorMessage = "Something went wrong. Please try again.";
       if (error instanceof Error) {
@@ -119,6 +87,14 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
 
   const handleConvertConfirm = async () => {
     if (!pendingFile) return;
+
+    // Check if user is authenticated before processing converted file
+    if (!user) {
+      setShowConvertDialog(false);
+      setShowAuthDialog(true);
+      setPendingFile(null);
+      return;
+    }
 
     try {
       setShowConvertDialog(false);
@@ -149,6 +125,13 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
 
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
+      // Check if user is authenticated before processing file
+      if (!user) {
+        setShowAuthDialog(true);
+        e.target.value = ""; // Clear the file input
+        return;
+      }
+
       const file = e.target.files[0];
       e.target.value = "";
 
@@ -208,6 +191,12 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
     e.preventDefault();
     e.stopPropagation();
 
+    // Check if user is authenticated before processing file
+    if (!user) {
+      setShowAuthDialog(true);
+      return;
+    }
+
     const file = e.dataTransfer.files[0];
     const fileType = file.type.toLowerCase();
     const fileName = file.name.toLowerCase();
@@ -240,28 +229,6 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
 
   const getLoadingMessage = () => {
     if (isProcessing) {
-      if (!user || !expiresAt || !isSubscriptionActive(expiresAt)) {
-        return (
-          <div className="flex flex-col items-center gap-3">
-            <div className="flex items-center gap-2">
-              <p className="text-white text-sm font-bold">
-                {processingMessage || "Analyzing with Basic AI ✨"}
-              </p>
-            </div>
-            {/* <div className="flex flex-col items-center bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-              <p className="text-white/90 text-xs">
-                💫 Upgrade to Pro for 2x faster processing & HD quality
-              </p>
-              <button
-                onClick={handleUpgradeClick}
-                className="mt-2 px-3 py-1 text-xs font-medium text-white bg-purple-500/30 hover:bg-purple-500/40 rounded-full transition-colors"
-              >
-                Upgrade Now
-              </button>
-            </div> */}
-          </div>
-        );
-      }
       return (
         <div className="flex items-center gap-2">
           <span className="animate-pulse">✨</span>
@@ -363,7 +330,9 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
                   <p className="text-gray-600 dark:text-gray-400 text-center">
                     {isConverting
                       ? "Converting image..."
-                      : "Upload an image to get started"}
+                      : user
+                      ? "Upload an image to get started"
+                      : "Sign in to upload and edit images"}
                   </p>
                   <label
                     htmlFor="canvas-upload"
@@ -406,7 +375,9 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Drag and drop an image here or click to select a file
+                    {user
+                      ? "Drag and drop an image here or click to select a file"
+                      : "Sign in to upload and edit images"}
                   </p>
                 </label>
               )}

@@ -6,7 +6,6 @@ import { Slider } from "@/components/ui/slider";
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "./ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { incrementGenerationCount } from "@/lib/supabase-utils";
 import { useToast } from "@/hooks/use-toast";
 import { removeBackground } from "@imgly/background-removal"; // Add this import
 
@@ -127,10 +126,6 @@ export function ImageEditor() {
         processedUrl,
         isProcessing: false,
       });
-
-      if (user) {
-        await incrementGenerationCount(user);
-      }
     } catch (error) {
       console.error("Error removing background:", error);
       updatePendingImage(pendingImage.id, { isProcessing: false });
