@@ -84,28 +84,6 @@ export function EditorLayout({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    async function fetchUserInfo() {
-      if (user) {
-        try {
-          const { data, error } = await supabase
-            .from("profiles")
-            .select("expires_at, free_generations_used")
-            .eq("id", user.id)
-            .single();
-
-          if (data) {
-            setUserInfo(data);
-          }
-        } catch (error) {
-          console.error("Error fetching user info:", error);
-        }
-      }
-    }
-
-    fetchUserInfo();
-  }, [user]); // Remove showUserMenu dependency, only fetch when user changes
-
   // Unified state check for all button actions
   const isActionDisabled = isProcessing || isConverting || isDownloading;
 
@@ -240,7 +218,7 @@ export function EditorLayout({
                             src={user.user_metadata.avatar_url}
                             alt="User avatar"
                             sizes="32px"
-                            className="cursor-pointer hover:opacity-80 transition-opacity object-cover w-full h-full"
+                            className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
                             onError={(e) => {
                               e.currentTarget.style.display = "none";
                               e.currentTarget.parentElement
@@ -256,9 +234,9 @@ export function EditorLayout({
                         </div>
                       </div>
                     </div>
-                    <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400">
+                    {/* <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400">
                       Account
-                    </span>
+                    </span> */}
                   </button>
 
                   {showUserMenu && (

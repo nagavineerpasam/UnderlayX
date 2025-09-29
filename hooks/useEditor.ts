@@ -151,7 +151,6 @@ interface EditorState {
   backgroundColor: string | null;
   foregroundSize: number;  // Add this line
   pendingImages: PendingImage[];  // Add this line
-  isProSubscriptionActive: boolean | null;  // Add this line
   drawings: DrawingPath[];
   isDrawingMode: boolean;
   drawingTool: 'pencil';  // Remove eraser option
@@ -174,7 +173,7 @@ interface EditorActions {
   updateTextSet: (id: number, updates: Partial<TextSet>) => void;
   removeTextSet: (id: number) => void;
   duplicateTextSet: (id: number) => void;
-  handleImageUpload: (file: File, state?: { isConverting?: boolean; isProcessing?: boolean; isAuthenticated?: boolean; userId?: string }) => Promise<void>;
+  handleImageUpload: (file: File, state?: { isConverting?: boolean; isProcessing?: boolean}) => Promise<void>;
   downloadImage: (isAuthenticated: boolean) => Promise<void>;  // Remove quality parameter
   resetEditor: (clearImage?: boolean) => void;
   addShapeSet: (type: string) => void;
@@ -435,7 +434,6 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
   backgroundColor: null,
   foregroundSize: 100,  // Default size is 100%
   pendingImages: [],  // Initialize the new state
-  isProSubscriptionActive: null,  // Add this line
   drawings: [],
   isDrawingMode: false,
   drawingTool: 'pencil',  // Remove eraser option
@@ -627,7 +625,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     };
   }),
 
-  handleImageUpload: async (file: File, state?: { isConverting?: boolean; isProcessing?: boolean; isAuthenticated?: boolean; userId?: string }) => {
+  handleImageUpload: async (file: File, state?: { isConverting?: boolean; isProcessing?: boolean}) => {
     // Reset relevant state first
     set(state => ({
       ...state,
@@ -675,7 +673,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
 
       set({ isProcessing: true });
 
-      // Use client-side background removal for all users
+      // Use client-side background removal
       let foregroundUrl;
       
       try {
@@ -719,7 +717,7 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
     }
   },
 
-  downloadImage: async (isAuthenticated: boolean) => {
+  downloadImage: async () => {
     try {
       const state = get();
       if (state.isDownloading) return; // Prevent multiple downloads
@@ -1270,7 +1268,6 @@ export const useEditor = create<EditorState & EditorActions>()((set, get) => ({
         foreground: null
       } : state.image,
       loadedFonts: new Set(),
-      isProSubscriptionActive: null,  // Add this line
       drawings: [],
       isDrawingMode: false,
       drawingTool: 'pencil',  // Remove eraser option
