@@ -20,7 +20,7 @@ import { User } from "@supabase/supabase-js";
 import { AuthDialog } from "./AuthDialog";
 import { supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/hooks/use-toast";
-import { isSubscriptionActive } from "@/lib/utils";
+import { getSubscriptionStatus } from "@/lib/subscription";
 import { AvatarFallback } from "./AvatarFallback";
 import { KofiButton } from "./KofiButton"; // Add KofiButton import
 import { ThemeToggle } from "@/components/ThemeToggle"; // Add ThemeToggle import
@@ -35,10 +35,13 @@ interface NavigationItem {
   onClick?: (e: React.MouseEvent) => void;
 }
 
-// Remove UserInfo interface as it's not needed
-interface GenerationInfo {
-  expires_at: string | null;
-  free_generations_used: number;
+interface UserProfile {
+  id: string;
+  email: string;
+  avatar_url: string;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  subscription_status: string | null;
 }
 
 export function Navbar() {
@@ -49,9 +52,12 @@ export function Navbar() {
   const [isLoading, setIsLoading] = useState(true);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [generationInfo, setGenerationInfo] = useState<GenerationInfo | null>(
-    null
-  );
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState({
+    isActive: false,
+    daysRemaining: 0,
+    message: "No subscription found",
+  });
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -82,11 +88,49 @@ export function Navbar() {
           data: { user },
         } = await supabase.auth.getUser();
         setUser(user);
+
+        if (user) {
+          // Fetch user profile with subscription info
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("*")
+            .eq("id", user.id)
+            .single();
+
+          if (profile) {
+            setUserProfile(profile);
+            const status = getSubscriptionStatus(profile);
+            setSubscriptionStatus(status);
+          }
+        }
+
         // Set up auth state change listener
         const {
           data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event, session) => {
+        } = supabase.auth.onAuthStateChange(async (_event, session) => {
           setUser(session?.user ?? null);
+
+          if (session?.user) {
+            // Fetch user profile with subscription info
+            const { data: profile } = await supabase
+              .from("profiles")
+              .select("*")
+              .eq("id", session.user.id)
+              .single();
+
+            if (profile) {
+              setUserProfile(profile);
+              const status = getSubscriptionStatus(profile);
+              setSubscriptionStatus(status);
+            }
+          } else {
+            setUserProfile(null);
+            setSubscriptionStatus({
+              isActive: false,
+              daysRemaining: 0,
+              message: "No subscription found",
+            });
+          }
         });
         return () => subscription.unsubscribe();
       } finally {
@@ -271,13 +315,18 @@ export function Navbar() {
                   className="relative flex items-center z-20" // Added z-20 to ensure button stays above
                 >
                   <div className="relative">
-                    {generationInfo?.expires_at &&
-                      isSubscriptionActive(generationInfo.expires_at) && (
-                        <div className="absolute -top-2 -translate-y-0.5 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium leading-none whitespace-nowrap z-30">
-                          Pro
-                        </div>
-                      )}
-                    <div className="w-8 h-8 relative rounded-full overflow-hidden ring-2 ring-white/10">
+                    {subscriptionStatus.isActive && (
+                      <div className="absolute -top-2 -translate-y-0.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium leading-none whitespace-nowrap z-30 shadow-lg">
+                        Pro
+                      </div>
+                    )}
+                    <div
+                      className={`w-8 h-8 relative rounded-full overflow-hidden ring-2 ${
+                        subscriptionStatus.isActive
+                          ? "ring-purple-500 shadow-lg shadow-purple-500/30"
+                          : "ring-white/10"
+                      }`}
+                    >
                       {user.user_metadata.avatar_url ? (
                         <img
                           src={user.user_metadata.avatar_url}
@@ -307,24 +356,35 @@ export function Navbar() {
                       <div className="text-gray-700 dark:text-gray-300 truncate">
                         {user.email}
                       </div>
-                      {generationInfo && (
+                      {userProfile && (
                         <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                          {generationInfo.expires_at &&
-                          isSubscriptionActive(generationInfo.expires_at) ? (
+                          {subscriptionStatus.isActive ? (
                             <>
-                              <div className="text-purple-600 font-medium">
-                                Pro Plan Active
+                              <div className="text-purple-600 font-medium flex items-center gap-1">
+                                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                Pro Subscriber
                               </div>
-                              <div>
-                                Expires:{" "}
-                                {new Date(
-                                  generationInfo.expires_at
-                                ).toLocaleDateString()}
+                              <div className="text-gray-500 dark:text-gray-400">
+                                {subscriptionStatus.message}
                               </div>
+                              {userProfile.current_period_end && (
+                                <div className="text-gray-500 dark:text-gray-400">
+                                  Expires:{" "}
+                                  {new Date(
+                                    userProfile.current_period_end
+                                  ).toLocaleDateString()}
+                                </div>
+                              )}
                             </>
                           ) : (
                             <>
-                              <div>Free Plan</div>
+                              <div className="text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                Free Plan
+                              </div>
+                              <div className="text-gray-500 dark:text-gray-400">
+                                {subscriptionStatus.message}
+                              </div>
                             </>
                           )}
                         </div>
@@ -420,33 +480,44 @@ export function Navbar() {
                     </div>
                   </div>
 
-                  {/* User Generation Info for Mobile */}
-                  {generationInfo && (
+                  {/* User Subscription Info for Mobile */}
+                  {userProfile && (
                     <div className="bg-white/5 rounded-lg p-3 text-sm text-gray-300">
                       <div className="flex justify-between items-center mb-2">
                         <span>Status:</span>
-                        <span className="font-medium">
-                          {generationInfo.expires_at &&
-                          isSubscriptionActive(generationInfo.expires_at)
-                            ? "Pro Plan Active"
+                        <span
+                          className={`font-medium flex items-center gap-1 ${
+                            subscriptionStatus.isActive
+                              ? "text-purple-400"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              subscriptionStatus.isActive
+                                ? "bg-purple-400"
+                                : "bg-gray-400"
+                            }`}
+                          ></div>
+                          {subscriptionStatus.isActive
+                            ? "Pro Subscriber"
                             : "Free Plan"}
                         </span>
                       </div>
-                      {generationInfo.expires_at &&
-                      isSubscriptionActive(generationInfo.expires_at) ? (
-                        <div className="flex justify-between items-center mb-2">
-                          <span>Expires:</span>
-                          <span className="font-medium">
-                            {new Date(
-                              generationInfo.expires_at
-                            ).toLocaleDateString()}
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="flex justify-between items-center">
-                          <span>Free generations left:</span>
-                        </div>
-                      )}
+                      <div className="text-xs text-gray-400 mb-1">
+                        {subscriptionStatus.message}
+                      </div>
+                      {userProfile.current_period_end &&
+                        subscriptionStatus.isActive && (
+                          <div className="flex justify-between items-center">
+                            <span>Expires:</span>
+                            <span className="font-medium">
+                              {new Date(
+                                userProfile.current_period_end
+                              ).toLocaleDateString()}
+                            </span>
+                          </div>
+                        )}
                     </div>
                   )}
                 </div>

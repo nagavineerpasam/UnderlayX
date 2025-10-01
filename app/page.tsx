@@ -213,7 +213,7 @@ const FeatureCard = ({
           ? { duration: 0.3 }
           : {
               duration: 0.5,
-              delay: index * 0.05, // Reduced delay
+              delay: index * 0.05,
               type: "spring",
               bounce: 0.4,
             }
@@ -223,43 +223,25 @@ const FeatureCard = ({
     >
       {/* Popular badge */}
       {popular && (
-        <div className="absolute -top-2 -right-2 z-20">
-          <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-black px-2 py-1 rounded-full shadow-lg animate-pulse">
+        <div className="absolute -top-1 -right-1 z-20">
+          <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-black px-2 py-1 rounded-full shadow-lg">
             🔥 HOT
           </div>
         </div>
       )}
 
-      {/* Glow effect - optimized */}
-      <div
-        className={`absolute -inset-1 bg-gradient-to-r ${gradient} rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-300`}
-        style={{ filter: "blur(8px)" }}
-      />
-
       <div
         className="relative flex flex-col items-center p-4 bg-white/90 dark:bg-gray-900/90 rounded-2xl
-        transform transition-transform duration-200 
-        hover:scale-105
         border border-white/50 dark:border-gray-700/50
-        shadow-lg hover:shadow-xl
+        shadow-md hover:shadow-lg
         cursor-pointer overflow-hidden
-        h-32 justify-between will-change-transform"
+        h-32 justify-between transition-shadow duration-200"
       >
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-5 group-hover:opacity-20 transition-opacity">
-          <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
-        </div>
-
-        {/* Icon container - optimized */}
+        {/* Icon container - simplified */}
         <div
-          className={`relative w-12 h-12 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200 shadow-lg will-change-transform`}
+          className={`w-12 h-12 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center mb-3 shadow-md`}
         >
           <Icon className="w-6 h-6 text-white drop-shadow-sm" />
-
-          {/* Emoji overlay on hover */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20 rounded-xl">
-            <span className="text-xl animate-bounce">{emoji}</span>
-          </div>
         </div>
 
         {/* Text content - fixed height container */}
@@ -267,30 +249,6 @@ const FeatureCard = ({
           <span className="text-xs font-bold text-gray-900 dark:text-white leading-tight mb-1 min-h-[2.5rem] flex items-center">
             {name}
           </span>
-
-          {/* Vibe text - appears on hover */}
-          <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 absolute bottom-2">
-            <span
-              className={`text-xs font-black bg-gradient-to-r ${gradient} bg-clip-text text-transparent whitespace-nowrap`}
-            >
-              {vibe}
-            </span>
-          </div>
-        </div>
-
-        {/* Sparkle effects */}
-        <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="w-1 h-1 bg-yellow-400 rounded-full animate-ping" />
-        </div>
-        <div className="absolute bottom-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">
-          <div className="w-1 h-1 bg-pink-400 rounded-full animate-ping" />
-        </div>
-
-        {/* Hover ripple effect */}
-        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-20 transition-all duration-500">
-          <div
-            className={`absolute inset-0 bg-gradient-to-r ${gradient} rounded-2xl animate-ping`}
-          />
         </div>
       </div>
     </motion.div>
@@ -345,7 +303,7 @@ export default function Home() {
           <section className="relative overflow-hidden border-b border-gray-200 dark:border-white/10">
             <div className="absolute inset-0 bg-gradient-to-b from-purple-500/10 to-transparent dark:from-purple-500/20" />
 
-            <div className="relative max-w-7xl mx-auto px-4 pt-24 pb-20">
+            <div className="relative max-w-7xl mx-auto px-4 pt-24 pb-20 md:pt-24">
               {/* Top Label */}
               <motion.div
                 initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
@@ -377,10 +335,6 @@ export default function Home() {
                 <p className="text-xl text-gray-700 dark:text-gray-400 max-w-3xl mx-auto">
                   Put text and graphics behind people in your photos. It's the
                   secret sauce content creators use to get millions of views.
-                  <span className="font-semibold text-purple-600 dark:text-purple-400">
-                    {" "}
-                    Free forever, no signup needed.
-                  </span>
                 </p>
               </motion.div>
 
@@ -433,15 +387,15 @@ export default function Home() {
                 </div>
 
                 {/* Mobile Carousel */}
-                <div className="md:hidden">
+                <div className="md:hidden mt-32">
                   {/* Mobile header */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.2 }}
-                    className="text-center mb-6"
+                    className="text-center mb-12"
                   >
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/20 rounded-full border border-purple-500/20 mb-3">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/20 rounded-full border border-purple-500/20 mb-4">
                       <span className="text-xs font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                         🛠️ SWIPE FOR TOOLS
                       </span>
@@ -451,22 +405,18 @@ export default function Home() {
                     </h3>
                   </motion.div>
 
-                  {/* Horizontal scroll with enhanced styling */}
-                  <div className="relative">
-                    {/* Gradient overlays for scroll indication */}
-                    <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-10 pointer-events-none" />
-                    <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-10 pointer-events-none" />
-
-                    <div className="flex overflow-x-auto gap-4 pb-6 scrollbar-hide px-2">
+                  {/* Horizontal scroll with clean edges */}
+                  <div className="relative px-4">
+                    <div className="flex overflow-x-auto gap-4 pb-6 scrollbar-hide">
                       {tools.map((tool, index) => (
-                        <div key={index} className="flex-none w-28">
+                        <div key={index} className="flex-none w-36">
                           <FeatureCard tool={tool} index={index} />
                         </div>
                       ))}
                     </div>
 
                     {/* Scroll indicator */}
-                    <div className="flex justify-center mt-2">
+                    <div className="flex justify-center mt-4">
                       <div className="flex gap-1">
                         {[...Array(3)].map((_, i) => (
                           <div
@@ -479,21 +429,6 @@ export default function Home() {
                     </div>
                   </div>
                 </div>
-
-                {/* Bottom CTA for tools */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.8 }}
-                  className="text-center mt-8"
-                >
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    <span className="font-bold text-purple-600 dark:text-purple-400">
-                      Hover over tools
-                    </span>{" "}
-                    to see the vibe! 👆
-                  </p>
-                </motion.div>
               </div>
             </div>
           </section>

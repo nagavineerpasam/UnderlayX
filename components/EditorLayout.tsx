@@ -11,7 +11,7 @@ import { AuthDialog } from "@/components/AuthDialog";
 import { useState, useRef, useEffect } from "react";
 import { useEditorPanel } from "@/contexts/EditorPanelContext";
 import { supabase } from "@/lib/supabaseClient";
-import { isSubscriptionActive } from "@/lib/utils";
+import { getSubscriptionStatus } from "@/lib/subscription";
 import { KofiButton } from "./KofiButton";
 import { SupportDialog, shouldShowSupportDialog } from "./SupportDialog";
 import { useToast } from "@/hooks/use-toast";
@@ -31,20 +31,16 @@ interface EditorLayoutProps {
     | "overlay-only"; // Add overlay-only
 }
 
-interface UserInfo {
-  expires_at: string | null;
-  free_generations_used: number;
+interface UserProfile {
+  id: string;
+  email: string;
+  avatar_url: string;
+  current_period_start: string | null;
+  current_period_end: string | null;
+  subscription_status: string | null;
 }
 
-// Add the AvatarFallback component at the top level
-const AvatarFallback = ({ email }: { email: string }) => {
-  const initials = email.slice(0, 2).toUpperCase();
-  return (
-    <div className="w-full h-full bg-gray-500 flex items-center justify-center">
-      <span className="text-white text-sm font-medium">{initials}</span>
-    </div>
-  );
-};
+import { AvatarFallback } from "./AvatarFallback";
 
 export function EditorLayout({
   SideNavComponent,
@@ -64,7 +60,12 @@ export function EditorLayout({
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const { isPanelOpen } = useEditorPanel();
-  const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [subscriptionStatus, setSubscriptionStatus] = useState({
+    isActive: false,
+    daysRemaining: 0,
+    message: "No subscription found",
+  });
   const [showSupportDialog, setShowSupportDialog] = useState(false);
   const [showKofiPayment, setShowKofiPayment] = useState(false);
   const { toast } = useToast();
@@ -83,6 +84,39 @@ export function EditorLayout({
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  // Fetch user profile and subscription status
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!user) {
+        setUserProfile(null);
+        setSubscriptionStatus({
+          isActive: false,
+          daysRemaining: 0,
+          message: "No subscription found",
+        });
+        return;
+      }
+
+      try {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .single();
+
+        if (profile) {
+          setUserProfile(profile);
+          const status = getSubscriptionStatus(profile);
+          setSubscriptionStatus(status);
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, [user]);
 
   // Unified state check for all button actions
   const isActionDisabled = isProcessing || isConverting || isDownloading;
@@ -204,15 +238,18 @@ export function EditorLayout({
                     className="relative flex flex-col items-center px-1 sm:px-2 z-20"
                   >
                     <div className="relative">
-                      {" "}
-                      {/* Kept for badge space */}
-                      {userInfo?.expires_at &&
-                        isSubscriptionActive(userInfo.expires_at) && (
-                          <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 bg-purple-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium leading-none whitespace-nowrap z-30">
-                            Pro
-                          </div>
-                        )}
-                      <div className="w-8 h-8 relative rounded-full overflow-hidden ring-2 ring-white/10">
+                      {subscriptionStatus.isActive && (
+                        <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium leading-none whitespace-nowrap z-30 shadow-lg">
+                          Pro
+                        </div>
+                      )}
+                      <div
+                        className={`w-8 h-8 relative rounded-full overflow-hidden ring-2 ${
+                          subscriptionStatus.isActive
+                            ? "ring-purple-500 shadow-lg shadow-purple-500/30"
+                            : "ring-white/10"
+                        }`}
+                      >
                         {user.user_metadata.avatar_url ? (
                           <img
                             src={user.user_metadata.avatar_url}
@@ -245,24 +282,35 @@ export function EditorLayout({
                         <div className="text-gray-700 dark:text-gray-300 truncate">
                           {user.email}
                         </div>
-                        {userInfo && (
-                          <div className="mt-2 text-xs text-gray-600 dark:text-gray-400">
-                            {userInfo.expires_at &&
-                            isSubscriptionActive(userInfo.expires_at) ? (
+                        {userProfile && (
+                          <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 space-y-1">
+                            {subscriptionStatus.isActive ? (
                               <>
-                                <div className="text-purple-600 font-medium">
-                                  Pro Plan Active
+                                <div className="text-purple-600 font-medium flex items-center gap-1">
+                                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                                  Pro Subscriber
                                 </div>
-                                <div>
-                                  Expires:{" "}
-                                  {new Date(
-                                    userInfo.expires_at
-                                  ).toLocaleDateString()}
+                                <div className="text-gray-500 dark:text-gray-400">
+                                  {subscriptionStatus.message}
                                 </div>
+                                {userProfile.current_period_end && (
+                                  <div className="text-gray-500 dark:text-gray-400">
+                                    Expires:{" "}
+                                    {new Date(
+                                      userProfile.current_period_end
+                                    ).toLocaleDateString()}
+                                  </div>
+                                )}
                               </>
                             ) : (
                               <>
-                                <div>Free Plan</div>
+                                <div className="text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                                  Free Plan
+                                </div>
+                                <div className="text-gray-500 dark:text-gray-400">
+                                  {subscriptionStatus.message}
+                                </div>
                               </>
                             )}
                           </div>
