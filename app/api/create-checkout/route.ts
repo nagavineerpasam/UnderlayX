@@ -37,9 +37,8 @@ export async function POST(request: NextRequest) {
     console.log("Checkout created:", result);
 
     // Return the checkout URL
-    // add these to url: x-vercel-set-bypass-cookie=true&x-vercel-protection-bypass=YOUR_TOKEN
     return NextResponse.json({
-      checkoutUrl: `${result.url}?x-vercel-set-bypass-cookie=true&x-vercel-protection-bypass=${process.env.VERCEL_AUTOMATION_BYPASS_SECRET}`,
+      checkoutUrl: result.url,
       checkoutId: result.id,
     });
   } catch (error) {
