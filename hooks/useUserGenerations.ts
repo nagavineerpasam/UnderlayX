@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabaseClient";
 
 export function useUserGenerations() {
   const { user } = useAuth();
-  const [userSubscription, setUserSubscription] = useState<UserPurchase | null>(null);
+  const [userSubscription, setUserSubscription] = useState<UserProfile | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [subscriptionStatus, setSubscriptionStatus] = useState({
@@ -32,25 +32,13 @@ export function useUserGenerations() {
       }
 
       try {
-        // Get user profile with subscription info
-        const { data: profile, error: profileError } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-
-        if (profileError) {
-          console.error("Error fetching user profile:", profileError);
-        } else {
-          setUserProfile(profile);
-        }
-
-        // Get active subscription
+        // Get active subscription (now returns profile data directly)
         const subscription = await getUserActiveSubscription(user.id);
         setUserSubscription(subscription);
+        setUserProfile(subscription); // Same data, so set both
 
         // Calculate subscription status
-        const status = getSubscriptionStatus(profile);
+        const status = getSubscriptionStatus(subscription);
         setSubscriptionStatus(status);
       } catch (error) {
         console.error("Error fetching user subscription:", error);
@@ -67,16 +55,41 @@ export function useUserGenerations() {
     };
 
     fetchUserSubscription();
+
+    // Set up real-time subscription to profile changes
+    if (user) {
+      const channel = supabase
+        .channel('profile-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'profiles',
+            filter: `id=eq.${user.id}`
+          },
+          (payload) => {
+            // Update local state with new profile data
+            const updatedProfile = payload.new as UserProfile;
+            setUserProfile(updatedProfile);
+            setUserSubscription(updatedProfile);
+            
+            // Recalculate subscription status
+            const status = getSubscriptionStatus(updatedProfile);
+            setSubscriptionStatus(status);
+          }
+        )
+        .subscribe();
+
+      // Cleanup subscription on unmount
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
   }, [user]);
 
   const canGenerate = () => {
     return subscriptionStatus.isActive;
-  };
-
-  const incrementGeneration = async () => {
-    // For subscription model, we don't need to track individual generations
-    // Just check if subscription is active
-    return canGenerate();
   };
 
   const getPaymentUrl = () => {
@@ -90,7 +103,6 @@ export function useUserGenerations() {
     subscriptionStatus,
     isLoading,
     canGenerate,
-    incrementGeneration,
     getPaymentUrl,
     // Keep these for backward compatibility but they're not used in subscription model
     userGeneration: null,

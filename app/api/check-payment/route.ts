@@ -3,6 +3,7 @@ import { Polar } from "@polar-sh/sdk";
 
 const polar = new Polar({
   accessToken: process.env.POLAR_ACCESS_TOKEN ?? "",
+  server: process.env.POLAR_SERVER as "sandbox" | "production",
 });
 
 export async function GET(request: NextRequest) {
@@ -20,12 +21,6 @@ export async function GET(request: NextRequest) {
     // Get checkout details from Polar
     const result = await polar.checkouts.get({
       id: checkoutId,
-    });
-
-    console.log(`Payment check for checkout ${checkoutId}:`, {
-      status: result.status,
-      id: result.id,
-      createdAt: result.createdAt,
     });
 
     // Return the checkout status and details

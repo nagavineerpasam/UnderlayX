@@ -25,8 +25,7 @@ interface PaymentStatus {
 export default function ConfirmationPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const checkoutId =
-    searchParams.get("checkoutId") || searchParams.get("checkout_id");
+  const checkoutId = searchParams.get("checkout_id");
   const { user } = useAuth();
   const [isAnimating, setIsAnimating] = useState(true);
   const [paymentStatus, setPaymentStatus] = useState<PaymentStatus | null>(
@@ -156,7 +155,7 @@ export default function ConfirmationPage() {
             </p>
             {checkoutId && (
               <p className="text-sm text-gray-500 dark:text-gray-500">
-                Order ID: {checkoutId}
+                Checkout ID: {checkoutId}
               </p>
             )}
           </div>
@@ -222,7 +221,7 @@ export default function ConfirmationPage() {
           </p>
           {checkoutId && (
             <p className="text-sm text-gray-500 dark:text-gray-500">
-              Order ID: {checkoutId}
+              Checkout ID: {checkoutId}
             </p>
           )}
         </div>

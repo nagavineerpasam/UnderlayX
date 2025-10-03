@@ -51,28 +51,30 @@ const features = [
 
 interface FeatureShowcaseProps {
   compact?: boolean;
-  limited?: boolean;  // Add this prop
+  limited?: boolean; // Add this prop
 }
 
-export function FeatureShowcase({ compact = false, limited = false }: FeatureShowcaseProps) {
+export function FeatureShowcase({
+  compact = false,
+  limited = false,
+}: FeatureShowcaseProps) {
   // Only take first 3 features if limited is true
   const displayFeatures = limited ? features.slice(0, 3) : features;
 
   return (
-    <section 
-      className={cn(
-        "py-1",
-        !compact && "py-8 px-4"
-      )} 
+    <section
+      className={cn("py-1", !compact && "py-8 px-4")}
       aria-label="Feature examples"
     >
       <div className={cn("mx-auto", !compact && "max-w-7xl")}>
-        <div className={cn(
-          "grid gap-3",
-          compact 
-            ? "grid-cols-3" // Always 3 columns for compact mode
-            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        )}>
+        <div
+          className={cn(
+            "grid gap-3",
+            compact
+              ? "grid-cols-3" // Always 3 columns for compact mode
+              : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          )}
+        >
           {displayFeatures.map((feature, index) => (
             <ComparisonSlider
               key={index}
@@ -96,7 +98,7 @@ function ComparisonSlider({
   beforeAlt,
   afterAlt,
   title,
-  compact = false
+  compact = false,
 }) {
   const [isResizing, setIsResizing] = useState(false);
   const [position, setPosition] = useState(50);
@@ -138,12 +140,15 @@ function ComparisonSlider({
   }, [isResizing]);
 
   return (
-    <div className="space-y-1"> {/* Reduced spacing */}
+    <div className="space-y-1">
+      {" "}
+      {/* Reduced spacing */}
       <div
         ref={containerRef}
         className={cn(
-          "relative w-full rounded-md overflow-hidden cursor-col-resize select-none", // Even smaller rounded corners
-          compact ? "aspect-[3/2]" // Changed aspect ratio to be wider than tall
+          "relative w-full rounded-md overflow-hidden cursor-col-resize select-none", // Removed border
+          compact
+            ? "aspect-[3/2]" // Changed aspect ratio to be wider than tall
             : "aspect-[3/4]"
         )}
         onMouseDown={(e) => {
@@ -214,11 +219,14 @@ function ComparisonSlider({
           </div>
         </div>
       </div>
-      <p className={cn(
-        "text-center text-gray-900 dark:text-gray-400 font-medium",
-        compact ? "text-[8px] truncate" // Even smaller text and ensure it doesn't wrap
-          : "text-sm"
-      )}>
+      <p
+        className={cn(
+          "text-center text-gray-900 dark:text-gray-400 font-medium",
+          compact
+            ? "text-[8px] truncate" // Even smaller text and ensure it doesn't wrap
+            : "text-sm"
+        )}
+      >
         {title}
       </p>
     </div>

@@ -14,14 +14,13 @@ import {
   Github,
   Images,
   Pencil,
-} from "lucide-react"; // Add Github, Images, and Pencil import
+} from "lucide-react"; // Add Github, Images, Pencil, and XCircle import
 import { cn } from "@/lib/utils";
 import { User } from "@supabase/supabase-js";
 import { AuthDialog } from "./AuthDialog";
+import { UserMenu } from "./UserMenu";
 import { supabase } from "@/lib/supabaseClient";
 import { useToast } from "@/hooks/use-toast";
-import { getSubscriptionStatus } from "@/lib/subscription";
-import { AvatarFallback } from "./AvatarFallback";
 import { KofiButton } from "./KofiButton"; // Add KofiButton import
 import { ThemeToggle } from "@/components/ThemeToggle"; // Add ThemeToggle import
 
@@ -35,15 +34,6 @@ interface NavigationItem {
   onClick?: (e: React.MouseEvent) => void;
 }
 
-interface UserProfile {
-  id: string;
-  email: string;
-  avatar_url: string;
-  current_period_start: string | null;
-  current_period_end: string | null;
-  subscription_status: string | null;
-}
-
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -51,14 +41,6 @@ export function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [subscriptionStatus, setSubscriptionStatus] = useState({
-    isActive: false,
-    daysRemaining: 0,
-    message: "No subscription found",
-  });
-  const userMenuRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -68,12 +50,6 @@ export function Navbar() {
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
-      }
-      if (
-        userMenuRef.current &&
-        !userMenuRef.current.contains(event.target as Node)
-      ) {
-        setShowUserMenu(false);
       }
     };
 
@@ -89,48 +65,11 @@ export function Navbar() {
         } = await supabase.auth.getUser();
         setUser(user);
 
-        if (user) {
-          // Fetch user profile with subscription info
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", user.id)
-            .single();
-
-          if (profile) {
-            setUserProfile(profile);
-            const status = getSubscriptionStatus(profile);
-            setSubscriptionStatus(status);
-          }
-        }
-
         // Set up auth state change listener
         const {
           data: { subscription },
         } = supabase.auth.onAuthStateChange(async (_event, session) => {
           setUser(session?.user ?? null);
-
-          if (session?.user) {
-            // Fetch user profile with subscription info
-            const { data: profile } = await supabase
-              .from("profiles")
-              .select("*")
-              .eq("id", session.user.id)
-              .single();
-
-            if (profile) {
-              setUserProfile(profile);
-              const status = getSubscriptionStatus(profile);
-              setSubscriptionStatus(status);
-            }
-          } else {
-            setUserProfile(null);
-            setSubscriptionStatus({
-              isActive: false,
-              daysRemaining: 0,
-              message: "No subscription found",
-            });
-          }
         });
         return () => subscription.unsubscribe();
       } finally {
@@ -140,6 +79,10 @@ export function Navbar() {
 
     fetchUser();
   }, []);
+
+  const fetchUserProfile = async () => {
+    // This function is now handled by the UserMenu component
+  };
 
   const handlePricingClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -309,90 +252,7 @@ export function Navbar() {
                 <Loader2 className="w-4 h-4 text-white/50 animate-spin" />
               </div>
             ) : user ? (
-              <div className="relative" ref={userMenuRef}>
-                <button
-                  onClick={() => setShowUserMenu(!showUserMenu)}
-                  className="relative flex items-center z-20" // Added z-20 to ensure button stays above
-                >
-                  <div className="relative">
-                    {subscriptionStatus.isActive && (
-                      <div className="absolute -top-2 -translate-y-0.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium leading-none whitespace-nowrap z-30 shadow-lg">
-                        Pro
-                      </div>
-                    )}
-                    <div
-                      className={`w-8 h-8 relative rounded-full overflow-hidden ring-2 ${
-                        subscriptionStatus.isActive
-                          ? "ring-purple-500 shadow-lg shadow-purple-500/30"
-                          : "ring-white/10"
-                      }`}
-                    >
-                      {user.user_metadata.avatar_url ? (
-                        <img
-                          src={user.user_metadata.avatar_url}
-                          alt="User avatar"
-                          sizes="32px"
-                          className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
-                            e.currentTarget.parentElement
-                              ?.querySelector(".avatar-fallback")
-                              ?.classList.remove("hidden");
-                          }}
-                        />
-                      ) : (
-                        <AvatarFallback email={user.email || ""} />
-                      )}
-                      <div className="avatar-fallback hidden">
-                        <AvatarFallback email={user.email || ""} />
-                      </div>
-                    </div>
-                  </div>
-                </button>
-
-                {showUserMenu && (
-                  <div className="absolute right-0 mt-2 w-60 py-2 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-white/10 z-50">
-                    <div className="px-4 py-2 text-sm border-b border-gray-200 dark:border-white/10">
-                      <div className="text-gray-700 dark:text-gray-300 truncate">
-                        {user.email}
-                      </div>
-                      {userProfile && (
-                        <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                          {subscriptionStatus.isActive ? (
-                            <>
-                              <div className="text-purple-600 font-medium flex items-center gap-1">
-                                <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                                Pro Subscriber
-                              </div>
-                              <div className="text-gray-500 dark:text-gray-400">
-                                {subscriptionStatus.message}
-                              </div>
-                              {userProfile.current_period_end && (
-                                <div className="text-gray-500 dark:text-gray-400">
-                                  Expires:{" "}
-                                  {new Date(
-                                    userProfile.current_period_end
-                                  ).toLocaleDateString()}
-                                </div>
-                              )}
-                            </>
-                          ) : (
-                            <>
-                              <div className="text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                                <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                                Free Plan
-                              </div>
-                              <div className="text-gray-500 dark:text-gray-400">
-                                {subscriptionStatus.message}
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <UserMenu user={user} onProfileUpdate={fetchUserProfile} />
             ) : (
               <button
                 onClick={() => setShowAuthDialog(true)}
@@ -453,73 +313,11 @@ export function Navbar() {
               ) : user ? (
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 text-white">
-                    <div className="relative w-10 h-10 rounded-full overflow-hidden">
-                      {user.user_metadata.avatar_url ? (
-                        <img
-                          src={user.user_metadata.avatar_url}
-                          alt="User avatar"
-                          width={40}
-                          height={40}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
-                            e.currentTarget.parentElement
-                              ?.querySelector(".avatar-fallback")
-                              ?.classList.remove("hidden");
-                          }}
-                        />
-                      ) : (
-                        <AvatarFallback email={user.email || ""} />
-                      )}
-                      <div className="avatar-fallback hidden">
-                        <AvatarFallback email={user.email || ""} />
-                      </div>
-                    </div>
+                    <UserMenu user={user} onProfileUpdate={fetchUserProfile} />
                     <div className="flex flex-col">
                       <span className="font-medium">{user.email}</span>
                     </div>
                   </div>
-
-                  {/* User Subscription Info for Mobile */}
-                  {userProfile && (
-                    <div className="bg-white/5 rounded-lg p-3 text-sm text-gray-300">
-                      <div className="flex justify-between items-center mb-2">
-                        <span>Status:</span>
-                        <span
-                          className={`font-medium flex items-center gap-1 ${
-                            subscriptionStatus.isActive
-                              ? "text-purple-400"
-                              : "text-gray-400"
-                          }`}
-                        >
-                          <div
-                            className={`w-2 h-2 rounded-full ${
-                              subscriptionStatus.isActive
-                                ? "bg-purple-400"
-                                : "bg-gray-400"
-                            }`}
-                          ></div>
-                          {subscriptionStatus.isActive
-                            ? "Pro Subscriber"
-                            : "Free Plan"}
-                        </span>
-                      </div>
-                      <div className="text-xs text-gray-400 mb-1">
-                        {subscriptionStatus.message}
-                      </div>
-                      {userProfile.current_period_end &&
-                        subscriptionStatus.isActive && (
-                          <div className="flex justify-between items-center">
-                            <span>Expires:</span>
-                            <span className="font-medium">
-                              {new Date(
-                                userProfile.current_period_end
-                              ).toLocaleDateString()}
-                            </span>
-                          </div>
-                        )}
-                    </div>
-                  )}
                 </div>
               ) : (
                 <button

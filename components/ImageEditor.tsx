@@ -113,7 +113,6 @@ export function ImageEditor() {
       updatePendingImage(pendingImage.id, { isProcessing: true });
 
       // Use client-side background removal for all users
-      console.log("Using client-side background removal");
       const imageUrl = URL.createObjectURL(pendingImage.file);
       const imageBlob = await removeBackground(imageUrl);
       const processedUrl = URL.createObjectURL(imageBlob);

@@ -1,31 +1,20 @@
 import { supabase } from './supabaseClient';
 import { UserPurchase, UserProfile } from '@/types';
-
-// Constants
-const SUBSCRIPTION_AMOUNT = 3; // $3 per month
-
-export async function getUserActiveSubscription(userId: string): Promise<UserPurchase | null> {
+export async function getUserActiveSubscription(userId: string): Promise<UserProfile | null> {
   try {
     const { data, error } = await supabase
-      .from('user_purchase')
+      .from('profiles')
       .select('*')
-      .eq('user_id', userId)
+      .eq('id', userId)
       .eq('subscription_status', 'active')
-      .order('purchase_date', { ascending: false })
-      .limit(1)
-      .single();
+      .maybeSingle();
     
     if (error) {
-      if (error.code === 'PGRST116') {
-        // No rows found
-        return null;
-      }
-      throw error;
+      return null;
     }
     
     return data;
   } catch (error) {
-    console.error('Error fetching user active subscription:', error);
     return null;
   }
 }
@@ -33,24 +22,33 @@ export async function getUserActiveSubscription(userId: string): Promise<UserPur
 export async function createUserPurchase(
   userId: string,
   amountPaid: number,
-  checkoutId: string,
   currentPeriodStart: string,
   currentPeriodEnd: string,
   subscriptionStatus: string,
+  polarCustomerId: string,
+  subscriptionId: string,
   metadata?: any
 ): Promise<UserPurchase> {
   try {
-    // Create new purchase record
-    const { data, error } = await supabase
+    // Create admin client for server-side operations
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    // Create new purchase record using admin client to bypass RLS
+    const { data, error } = await supabaseAdmin
       .from('user_purchase')
       .insert({
         user_id: userId,
         amount_paid: amountPaid,
         purchase_date: new Date().toISOString(),
-        checkout_id: checkoutId,
         current_period_start: currentPeriodStart,
         current_period_end: currentPeriodEnd,
         subscription_status: subscriptionStatus,
+        polar_customer_id: polarCustomerId,
+        subscription_id: subscriptionId,
         metadata: metadata || null,
       })
       .select()
@@ -59,7 +57,7 @@ export async function createUserPurchase(
     if (error) throw error;
 
     // Update user profile with subscription period info
-    const profileUpdated = await updateUserProfileSubscription(userId, currentPeriodStart, currentPeriodEnd, subscriptionStatus);
+    const profileUpdated = await updateUserProfileSubscription(userId, currentPeriodStart, currentPeriodEnd, subscriptionStatus, polarCustomerId, subscriptionId);
     
     if (!profileUpdated) {
       throw new Error('Failed to update user profile with subscription info');
@@ -76,77 +74,96 @@ export async function updateUserProfileSubscription(
   userId: string,
   currentPeriodStart: string,
   currentPeriodEnd: string,
-  subscriptionStatus: string
+  subscriptionStatus: string,
+  polarCustomerId: string,
+  subscriptionId: string
 ): Promise<boolean> {
   try {
-    const { error } = await supabase
+    // Create admin client for server-side operations
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    const { error } = await supabaseAdmin
       .from('profiles')
       .update({
         current_period_start: currentPeriodStart,
         current_period_end: currentPeriodEnd,
         subscription_status: subscriptionStatus,
+        polar_customer_id: polarCustomerId,
+        subscription_id: subscriptionId,
       })
       .eq('id', userId);
 
     if (error) throw error;
     return true;
   } catch (error) {
-    console.error('Error updating user profile subscription:', error);
     return false;
   }
 }
 
 export async function cancelUserSubscription(
   userId: string,
-  checkoutId: string,
-  cancellationReason?: string,
-  cancellationComment?: string
-): Promise<void> {
+  amountPaid: number,
+  currentPeriodStart: string | null,
+  currentPeriodEnd: string | null,
+  subscriptionStatus: string,
+  polarCustomerId: string,
+  subscriptionId: string,
+  metadata?: any
+): Promise<UserPurchase> {
   try {
-    // Update the subscription status to cancelled
-    const { error } = await supabase
+    // Create admin client for server-side operations
+    const { createClient } = await import('@supabase/supabase-js');
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    );
+
+    // Create a new entry in user_purchase table to record the cancellation action
+    const { data: userPurchase, error } = await supabaseAdmin
       .from('user_purchase')
-      .update({
-        subscription_status: 'cancelled',
-        metadata: {
-          cancellation_reason: cancellationReason,
-          cancellation_comment: cancellationComment,
-          cancelled_at: new Date().toISOString(),
-        }
+      .insert({
+        user_id: userId,
+        amount_paid: amountPaid,
+        purchase_date: new Date().toISOString(),
+        current_period_start: currentPeriodStart,
+        current_period_end: currentPeriodEnd,
+        subscription_status: subscriptionStatus,
+        polar_customer_id: polarCustomerId,
+        subscription_id: subscriptionId,
+        metadata: metadata // Store the complete Polar payload
       })
-      .eq('user_id', userId)
-      .eq('checkout_id', checkoutId);
+      .select()
+      .single();
 
     if (error) throw error;
 
-    // Update user profile to remove subscription info
-    const { error: profileError } = await supabase
+    // Update user profile to reflect cancellation
+    const { error: profileError } = await supabaseAdmin
       .from('profiles')
       .update({
         current_period_start: null,
         current_period_end: null,
-        subscription_status: 'cancelled',
+        subscription_status: subscriptionStatus,
       })
       .eq('id', userId);
 
     if (profileError) throw profileError;
+
+    return userPurchase;
   } catch (error) {
-    console.error('Error cancelling user subscription:', error);
     throw error; // Re-throw the error so webhook knows it failed
   }
 }
 
-export function isSubscriptionActive(subscription: UserPurchase | null): boolean {
-  if (!subscription || !subscription.current_period_end) return false;
+export function isSubscriptionActive(subscription: UserProfile | null): boolean {
+  if (!subscription) return false;
   
-  const now = new Date();
-  const periodEnd = new Date(subscription.current_period_end);
-  
-  // Allow access if status is 'active' OR if cancelled but period hasn't ended yet
-  const isStatusValid = subscription.subscription_status === 'active' || 
-                       (subscription.subscription_status === 'canceled' && now < periodEnd);
-  
-  return isStatusValid && now < periodEnd;
+  // Simple check: only "active" status means subscribed
+  return subscription.subscription_status === 'active';
 }
 
 export function getSubscriptionStatus(userProfile: UserProfile | null): {
@@ -154,57 +171,32 @@ export function getSubscriptionStatus(userProfile: UserProfile | null): {
   daysRemaining: number;
   message: string;
 } {
-  if (!userProfile || !userProfile.current_period_end) {
+  if (!userProfile) {
     return {
       isActive: false,
       daysRemaining: 0,
-      message: "No active subscription found"
+      message: "No subscription found"
     };
   }
 
-  const now = new Date();
-  const periodEnd = new Date(userProfile.current_period_end);
-  const daysRemaining = Math.ceil((periodEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
-  // Check if period has ended
-  if (now >= periodEnd) {
+  // Simple check: only "active" status means subscribed
+  if (userProfile.subscription_status === 'active') {
     return {
-      isActive: false,
-      daysRemaining: 0,
-      message: "Your subscription has expired"
+      isActive: true,
+      daysRemaining: 0, // No longer tracking days
+      message: "Subscription active"
     };
   }
 
-  // Check subscription status
-  const validStatuses = ['active', 'trialing'];
-  const isStatusValid = userProfile.subscription_status && validStatuses.includes(userProfile.subscription_status);
-  
-  if (!isStatusValid) {
-    // If cancelled but period hasn't ended, show cancellation message
-    if (userProfile.subscription_status === 'canceled') {
-      return {
-        isActive: true, // Still allow access until period ends
-        daysRemaining: Math.max(0, daysRemaining),
-        message: `Your subscription is cancelled but active until ${periodEnd.toLocaleDateString()}`
-      };
-    }
-    
-    return {
-      isActive: false,
-      daysRemaining: 0,
-      message: "Your subscription is inactive"
-    };
-  }
-
+  // All other statuses mean not subscribed
   return {
-    isActive: true,
-    daysRemaining: Math.max(0, daysRemaining),
-    message: "Subscription active"
+    isActive: false,
+    daysRemaining: 0,
+    message: "Subscription inactive"
   };
 }
 
 export function getPaymentUrl(userId: string, userEmail: string): string {
-  console.log(userId, userEmail);
   const productId = process.env.NEXT_PUBLIC_POLAR_PRODUCT_ID || "123";
   return `/checkout?products=${productId}&customerEmail=${userEmail}&customerExternalId=${userId}`;
 }

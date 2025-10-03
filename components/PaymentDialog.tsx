@@ -128,14 +128,12 @@ export function PaymentDialog({
 
           {/* Creator contact */}
           <div className="text-center text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-4">
-            <p className="mb-2">Any questions? DM me here:</p>
+            <p className="mb-2">Any questions? Write me here:</p>
             <a
-              href="https://x.com/Vineer5"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="mailto:dailifyofficial@gmail.com"
               className="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300 font-medium transition-colors"
             >
-              @Vineer5
+              dailifyofficial@gmail.com
             </a>
           </div>
         </div>

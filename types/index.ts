@@ -5,6 +5,8 @@ export interface UserProfile {
   current_period_start: string | null;
   current_period_end: string | null;
   subscription_status: string | null;
+  polar_customer_id: string | null;
+  subscription_id: string | null;
 }
 
 export interface UserPurchase {
@@ -12,10 +14,11 @@ export interface UserPurchase {
   user_id: string;
   amount_paid: number;
   purchase_date: string;
-  checkout_id: string | null;
   current_period_start: string | null;
   current_period_end: string | null;
   subscription_status: string | null;
+  polar_customer_id: string | null;
+  subscription_id: string | null;
   metadata: any | null;
 }
 

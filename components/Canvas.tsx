@@ -48,12 +48,8 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
   const [hasTriedAutoUpload, setHasTriedAutoUpload] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const { user } = useAuth();
-  const {
-    subscriptionStatus,
-    canGenerate,
-    incrementGeneration,
-    getPaymentUrl,
-  } = useUserGenerations();
+  const { subscriptionStatus, canGenerate, getPaymentUrl } =
+    useUserGenerations();
   const { isPanelOpen } = useEditorPanel();
   const isMobile = useIsMobile(); // Add this hook
   const { toast } = useToast();
@@ -78,13 +74,7 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
     try {
       setIsProcessing(true);
       setProcessingMessage("✨ Our AI is working its magic on your photo...");
-
       await handleImageUpload(file);
-
-      // Increment generation count after successful processing
-      if (user) {
-        await incrementGeneration();
-      }
     } catch (error) {
       let errorMessage = "Something went wrong. Please try again.";
       if (error instanceof Error) {

@@ -10,13 +10,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { AuthDialog } from "@/components/AuthDialog";
 import { useState, useRef, useEffect } from "react";
 import { useEditorPanel } from "@/contexts/EditorPanelContext";
-import { supabase } from "@/lib/supabaseClient";
-import { getSubscriptionStatus } from "@/lib/subscription";
 import { KofiButton } from "./KofiButton";
 import { SupportDialog, shouldShowSupportDialog } from "./SupportDialog";
 import { useToast } from "@/hooks/use-toast";
 import { KofiFloatingWidget } from "./KofiFloatingWidget";
 import { KofiPaymentDialog } from "./KofiPaymentDialog";
+import { UserMenu } from "./UserMenu";
 
 interface EditorLayoutProps {
   SideNavComponent: React.ComponentType<{ mobile?: boolean }>;
@@ -30,17 +29,6 @@ interface EditorLayoutProps {
     | "clone-image-only"
     | "overlay-only"; // Add overlay-only
 }
-
-interface UserProfile {
-  id: string;
-  email: string;
-  avatar_url: string;
-  current_period_start: string | null;
-  current_period_end: string | null;
-  subscription_status: string | null;
-}
-
-import { AvatarFallback } from "./AvatarFallback";
 
 export function EditorLayout({
   SideNavComponent,
@@ -57,66 +45,14 @@ export function EditorLayout({
   const isMobile = useIsMobile();
   const { user, isLoading } = useAuth();
   const [showAuthDialog, setShowAuthDialog] = useState(false);
-  const [showUserMenu, setShowUserMenu] = useState(false);
-  const userMenuRef = useRef<HTMLDivElement>(null);
   const { isPanelOpen } = useEditorPanel();
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [subscriptionStatus, setSubscriptionStatus] = useState({
-    isActive: false,
-    daysRemaining: 0,
-    message: "No subscription found",
-  });
   const [showSupportDialog, setShowSupportDialog] = useState(false);
   const [showKofiPayment, setShowKofiPayment] = useState(false);
   const { toast } = useToast();
 
-  // Add click outside handler
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (
-        userMenuRef.current &&
-        !userMenuRef.current.contains(event.target as Node)
-      ) {
-        setShowUserMenu(false);
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Fetch user profile and subscription status
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      if (!user) {
-        setUserProfile(null);
-        setSubscriptionStatus({
-          isActive: false,
-          daysRemaining: 0,
-          message: "No subscription found",
-        });
-        return;
-      }
-
-      try {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("id", user.id)
-          .single();
-
-        if (profile) {
-          setUserProfile(profile);
-          const status = getSubscriptionStatus(profile);
-          setSubscriptionStatus(status);
-        }
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
-    };
-
-    fetchUserProfile();
-  }, [user]);
+  const fetchUserProfile = async () => {
+    // This function is now handled by the UserMenu component
+  };
 
   // Unified state check for all button actions
   const isActionDisabled = isProcessing || isConverting || isDownloading;
@@ -129,7 +65,7 @@ export function EditorLayout({
       // Show success toast
       toast({
         title: "Image downloaded! 🎉",
-        description: "Your amazing creation has been saved successfully.",
+        description: "Your amazing creation has been downloaded successfully.",
         duration: 3000,
       });
 
@@ -232,93 +168,7 @@ export function EditorLayout({
                   <Loader2 className="w-4 h-4 text-gray-400 animate-spin" />
                 </div>
               ) : user ? (
-                <div className="relative" ref={userMenuRef}>
-                  <button
-                    onClick={() => setShowUserMenu(!showUserMenu)}
-                    className="relative flex flex-col items-center px-1 sm:px-2 z-20"
-                  >
-                    <div className="relative">
-                      {subscriptionStatus.isActive && (
-                        <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-medium leading-none whitespace-nowrap z-30 shadow-lg">
-                          Pro
-                        </div>
-                      )}
-                      <div
-                        className={`w-8 h-8 relative rounded-full overflow-hidden ring-2 ${
-                          subscriptionStatus.isActive
-                            ? "ring-purple-500 shadow-lg shadow-purple-500/30"
-                            : "ring-white/10"
-                        }`}
-                      >
-                        {user.user_metadata.avatar_url ? (
-                          <img
-                            src={user.user_metadata.avatar_url}
-                            alt="User avatar"
-                            sizes="32px"
-                            className="w-full h-full object-cover cursor-pointer hover:opacity-80 transition-opacity"
-                            onError={(e) => {
-                              e.currentTarget.style.display = "none";
-                              e.currentTarget.parentElement
-                                ?.querySelector(".avatar-fallback")
-                                ?.classList.remove("hidden");
-                            }}
-                          />
-                        ) : (
-                          <AvatarFallback email={user.email || ""} />
-                        )}
-                        <div className="avatar-fallback hidden">
-                          <AvatarFallback email={user.email || ""} />
-                        </div>
-                      </div>
-                    </div>
-                    {/* <span className="text-[10px] sm:text-xs mt-0.5 text-gray-600 dark:text-gray-400">
-                      Account
-                    </span> */}
-                  </button>
-
-                  {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-60 py-2 bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-gray-200 dark:border-white/10 z-50">
-                      <div className="px-4 py-2 text-sm border-b border-gray-200 dark:border-white/10">
-                        <div className="text-gray-700 dark:text-gray-300 truncate">
-                          {user.email}
-                        </div>
-                        {userProfile && (
-                          <div className="mt-2 text-xs text-gray-600 dark:text-gray-400 space-y-1">
-                            {subscriptionStatus.isActive ? (
-                              <>
-                                <div className="text-purple-600 font-medium flex items-center gap-1">
-                                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                                  Pro Subscriber
-                                </div>
-                                <div className="text-gray-500 dark:text-gray-400">
-                                  {subscriptionStatus.message}
-                                </div>
-                                {userProfile.current_period_end && (
-                                  <div className="text-gray-500 dark:text-gray-400">
-                                    Expires:{" "}
-                                    {new Date(
-                                      userProfile.current_period_end
-                                    ).toLocaleDateString()}
-                                  </div>
-                                )}
-                              </>
-                            ) : (
-                              <>
-                                <div className="text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                                  <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                                  Free Plan
-                                </div>
-                                <div className="text-gray-500 dark:text-gray-400">
-                                  {subscriptionStatus.message}
-                                </div>
-                              </>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                <UserMenu user={user} onProfileUpdate={fetchUserProfile} />
               ) : (
                 <button
                   onClick={() => setShowAuthDialog(true)}
