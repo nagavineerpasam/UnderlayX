@@ -133,10 +133,42 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
     }
   };
 
-  const handlePayment = () => {
-    const paymentUrl = getPaymentUrl();
-    if (paymentUrl) {
-      window.location.href = paymentUrl;
+  const handlePayment = async () => {
+    if (!user) return;
+
+    try {
+      const response = await fetch("/api/create-checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          userEmail: user.email,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create checkout");
+      }
+
+      const data = await response.json();
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    } catch (error) {
+      console.error("Error creating checkout:", error);
+      // Show error toast
+      toast({
+        variant: "destructive",
+        title: "Payment Error",
+        description: "Failed to create checkout. Please try again.",
+      });
+      // Fallback to old method if API fails
+      const paymentUrl = getPaymentUrl();
+      if (paymentUrl) {
+        window.location.href = paymentUrl;
+      }
     }
   };
 

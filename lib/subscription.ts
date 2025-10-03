@@ -196,6 +196,8 @@ export function getSubscriptionStatus(userProfile: UserProfile | null): {
   };
 }
 
+// Legacy function - now using API endpoint /api/create-checkout instead
+// Keeping for fallback compatibility
 export function getPaymentUrl(userId: string, userEmail: string): string {
   const productId = process.env.NEXT_PUBLIC_POLAR_PRODUCT_ID || "123";
   return `/checkout?products=${productId}&customerEmail=${userEmail}&customerExternalId=${userId}`;

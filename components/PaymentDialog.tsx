@@ -13,7 +13,7 @@ import { useState } from "react";
 interface PaymentDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  onPayment: () => void;
+  onPayment: () => Promise<void>;
   subscriptionStatus: {
     isActive: boolean;
     daysRemaining: number;
@@ -32,14 +32,14 @@ export function PaymentDialog({
   const handlePayment = async () => {
     setIsProcessing(true);
     try {
-      onPayment();
+      await onPayment();
     } finally {
       setIsProcessing(false);
     }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={isProcessing ? undefined : onClose}>
       <DialogContent className="sm:max-w-md bg-white dark:bg-zinc-900 border border-gray-200 dark:border-gray-700">
         <DialogHeader className="text-center">
           <DialogTitle className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -103,7 +103,7 @@ export function PaymentDialog({
               {isProcessing ? (
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Processing...
+                  Redirecting to payment...
                 </div>
               ) : (
                 "Subscribe Now - $3/month"

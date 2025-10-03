@@ -4,6 +4,7 @@ import { createUserPurchase, cancelUserSubscription } from "@/lib/subscription";
 export const POST = Webhooks({
   webhookSecret: process.env.POLAR_WEBHOOK_SECRET!,
   onSubscriptionActive: async (payload) => {
+    console.log("Subscription active:", payload);
     try {
       // Access the subscription data from the payload
       const subscription = payload.data;
