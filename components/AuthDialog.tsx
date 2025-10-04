@@ -24,6 +24,9 @@ export function AuthDialog({ isOpen, onClose, returnUrl }: AuthDialogProps) {
   const handleSignIn = async () => {
     try {
       setIsLoading(true);
+      const redirectUrl = returnUrl
+        ? `${window.location.origin}${returnUrl}`
+        : `${window.location.origin}/custom-editor`;
       await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
@@ -31,7 +34,7 @@ export function AuthDialog({ isOpen, onClose, returnUrl }: AuthDialogProps) {
             access_type: "offline",
             prompt: "consent",
           },
-          redirectTo: "https://underlayx.com",
+          redirectTo: redirectUrl,
         },
       });
     } catch (error) {

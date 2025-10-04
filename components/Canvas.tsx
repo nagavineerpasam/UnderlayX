@@ -6,8 +6,10 @@ import { Upload } from "lucide-react";
 import { CanvasPreview } from "./CanvasPreview";
 import { convertHeicToJpeg } from "@/lib/image-utils";
 import { ConfirmDialog } from "./ConfirmDialog";
+import { PaymentDialog } from "./PaymentDialog";
 import { useState, useRef, useEffect } from "react"; // Add useRef, useCallback, useEffect
 import { useAuth } from "@/hooks/useAuth";
+import { useUserGenerations } from "@/hooks/useUserGenerations";
 import { AuthDialog } from "./AuthDialog";
 import { cn } from "@/lib/utils";
 import { useEditorPanel } from "@/contexts/EditorPanelContext";
@@ -41,10 +43,13 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
   } = useEditor();
   const [pendingFile, setPendingFile] = useState<File | null>(null);
   const [showConvertDialog, setShowConvertDialog] = useState(false);
+  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null); // Add this ref
   const [hasTriedAutoUpload, setHasTriedAutoUpload] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const { user } = useAuth();
+  const { subscriptionStatus, canGenerate, getPaymentUrl } =
+    useUserGenerations();
   const { isPanelOpen } = useEditorPanel();
   const isMobile = useIsMobile(); // Add this hook
   const { toast } = useToast();
@@ -60,10 +65,15 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
   }, []);
 
   const handleFileProcess = async (file: File) => {
+    // Check if user can generate (has active subscription)
+    // if (user && !canGenerate()) {
+    //   setShowPaymentDialog(true);
+    //   return;
+    // }
+
     try {
       setIsProcessing(true);
       setProcessingMessage("✨ Our AI is working its magic on your photo...");
-
       await handleImageUpload(file);
     } catch (error) {
       let errorMessage = "Something went wrong. Please try again.";
@@ -123,6 +133,45 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
     }
   };
 
+  const handlePayment = async () => {
+    if (!user) return;
+
+    try {
+      const response = await fetch("/api/create-checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: user.id,
+          userEmail: user.email,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create checkout");
+      }
+
+      const data = await response.json();
+      if (data.checkoutUrl) {
+        window.location.href = data.checkoutUrl;
+      }
+    } catch (error) {
+      console.error("Error creating checkout:", error);
+      // Show error toast
+      toast({
+        variant: "destructive",
+        title: "Payment Error",
+        description: "Failed to create checkout. Please try again.",
+      });
+      // Fallback to old method if API fails
+      const paymentUrl = getPaymentUrl();
+      if (paymentUrl) {
+        window.location.href = paymentUrl;
+      }
+    }
+  };
+
   const onFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files?.[0]) {
       // Check if user is authenticated before processing file
@@ -139,7 +188,7 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
         "image/jpeg",
         "image/png",
         "image.webp",
-        "image.webp",
+        "image/webp",
         "image.heic",
         "image/heic",
         "image.heif",
@@ -321,7 +370,7 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
                 id="canvas-upload"
                 type="file"
                 onChange={onFileChange}
-                accept="image/jpeg,image/png,image.webp,image.heic,image.heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
+                accept="image/jpeg,image/png,image.webp,image/webp,image.heic,image.heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
                 className="hidden"
                 disabled={isConverting || isProcessing}
               />
@@ -421,6 +470,13 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
       <AuthDialog
         isOpen={showAuthDialog}
         onClose={() => setShowAuthDialog(false)}
+      />
+
+      <PaymentDialog
+        isOpen={showPaymentDialog}
+        onClose={() => setShowPaymentDialog(false)}
+        onPayment={handlePayment}
+        subscriptionStatus={subscriptionStatus}
       />
     </>
   );

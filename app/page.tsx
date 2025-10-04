@@ -198,99 +198,37 @@ const FeatureCard = ({
 
   return (
     <motion.div
-      initial={
-        shouldReduceMotion
-          ? { opacity: 0 }
-          : { opacity: 0, scale: 0.8, rotate: -5 }
-      }
-      whileInView={
-        shouldReduceMotion
-          ? { opacity: 1 }
-          : { opacity: 1, scale: 1, rotate: 0 }
-      }
+      initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
+      whileInView={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
       transition={
         shouldReduceMotion
           ? { duration: 0.3 }
           : {
               duration: 0.5,
-              delay: index * 0.05, // Reduced delay
-              type: "spring",
-              bounce: 0.4,
+              delay: index * 0.05,
             }
       }
       viewport={{ once: true, margin: "-10%" }}
       className="group relative will-change-transform"
     >
-      {/* Popular badge */}
-      {popular && (
-        <div className="absolute -top-2 -right-2 z-20">
-          <div className="bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-black px-2 py-1 rounded-full shadow-lg animate-pulse">
-            🔥 HOT
-          </div>
-        </div>
-      )}
-
-      {/* Glow effect - optimized */}
       <div
-        className={`absolute -inset-1 bg-gradient-to-r ${gradient} rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-300`}
-        style={{ filter: "blur(8px)" }}
-      />
-
-      <div
-        className="relative flex flex-col items-center p-4 bg-white/90 dark:bg-gray-900/90 rounded-2xl
-        transform transition-transform duration-200 
-        hover:scale-105
-        border border-white/50 dark:border-gray-700/50
-        shadow-lg hover:shadow-xl
+        className="relative flex flex-col items-center p-6 bg-white dark:bg-gray-900 rounded-xl
+        border border-gray-200 dark:border-gray-700
+        hover:border-purple-300 dark:hover:border-purple-600
+        hover:shadow-lg
         cursor-pointer overflow-hidden
-        h-32 justify-between will-change-transform"
+        h-36 justify-center transition-all duration-300"
       >
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-5 group-hover:opacity-20 transition-opacity">
-          <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
+        {/* Clean icon container */}
+        <div className="w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-100 dark:group-hover:bg-purple-900/30 transition-colors duration-300">
+          <Icon className="w-6 h-6 text-gray-600 dark:text-gray-400 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors duration-300" />
         </div>
 
-        {/* Icon container - optimized */}
-        <div
-          className={`relative w-12 h-12 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200 shadow-lg will-change-transform`}
-        >
-          <Icon className="w-6 h-6 text-white drop-shadow-sm" />
-
-          {/* Emoji overlay on hover */}
-          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/20 rounded-xl">
-            <span className="text-xl animate-bounce">{emoji}</span>
-          </div>
-        </div>
-
-        {/* Text content - fixed height container */}
-        <div className="flex flex-col items-center justify-center flex-1 text-center">
-          <span className="text-xs font-bold text-gray-900 dark:text-white leading-tight mb-1 min-h-[2.5rem] flex items-center">
+        {/* Clean text content */}
+        <div className="text-center">
+          <span className="text-sm font-medium text-gray-900 dark:text-white leading-tight">
             {name}
           </span>
-
-          {/* Vibe text - appears on hover */}
-          <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 absolute bottom-2">
-            <span
-              className={`text-xs font-black bg-gradient-to-r ${gradient} bg-clip-text text-transparent whitespace-nowrap`}
-            >
-              {vibe}
-            </span>
-          </div>
-        </div>
-
-        {/* Sparkle effects */}
-        <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          <div className="w-1 h-1 bg-yellow-400 rounded-full animate-ping" />
-        </div>
-        <div className="absolute bottom-1 left-1 opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200">
-          <div className="w-1 h-1 bg-pink-400 rounded-full animate-ping" />
-        </div>
-
-        {/* Hover ripple effect */}
-        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-20 transition-all duration-500">
-          <div
-            className={`absolute inset-0 bg-gradient-to-r ${gradient} rounded-2xl animate-ping`}
-          />
         </div>
       </div>
     </motion.div>
@@ -343,167 +281,157 @@ export default function Home() {
       <div ref={scrollRef} className="relative z-10 flex-grow">
         <main className="w-full" role="main" aria-label="Main content">
           <section className="relative overflow-hidden border-b border-gray-200 dark:border-white/10">
-            <div className="absolute inset-0 bg-gradient-to-b from-purple-500/10 to-transparent dark:from-purple-500/20" />
-
-            <div className="relative max-w-7xl mx-auto px-4 pt-24 pb-20">
-              {/* Top Label */}
+            <div className="relative max-w-6xl mx-auto px-4 pt-32 pb-24 md:pt-40">
+              {/* Minimalistic Top Label */}
               <motion.div
                 initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: shouldReduceMotion ? 0.2 : 0.5 }}
-                className="text-center mb-4"
+                transition={{ duration: shouldReduceMotion ? 0.2 : 0.6 }}
+                className="text-center mb-8"
               >
-                <span className="inline-block px-4 py-1.5 bg-purple-500/10 rounded-full text-sm font-medium text-gray-800 dark:text-gray-300 border border-gray-200 dark:border-white/10">
-                  🔥 The Secret Tool Every Creator Needs
+                <span className="inline-block px-6 py-2 bg-gray-100 dark:bg-gray-800 rounded-full text-sm font-medium text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-gray-700">
+                  The Secret Tool Every Creator Needs
                 </span>
               </motion.div>
 
-              {/* Main Headline */}
+              {/* Clean Main Headline */}
               <motion.div
-                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
+                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{
-                  duration: shouldReduceMotion ? 0.2 : 0.5,
-                  delay: shouldReduceMotion ? 0 : 0.1,
+                  duration: shouldReduceMotion ? 0.2 : 0.8,
+                  delay: shouldReduceMotion ? 0 : 0.2,
                 }}
-                className="text-center mb-8"
+                className="text-center mb-12"
               >
-                <h1 className="text-4xl md:text-7xl font-bold mb-6 text-gray-900 dark:text-white">
-                  Make Your Photos{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 dark:from-purple-400 dark:to-pink-600">
-                    Go Viral
+                <h1 className="text-5xl md:text-8xl font-black mb-8 text-gray-900 dark:text-white leading-tight">
+                  Make Your Photos <br />
+                  <span className="relative inline-block">
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 dark:from-purple-400 dark:via-pink-400 dark:to-purple-400">
+                      "Go Viral"
+                    </span>
+                    {/* Curved underline */}
+                    <svg
+                      className="absolute -bottom-2 left-0 w-full h-3 text-purple-600 dark:text-purple-400"
+                      viewBox="0 0 200 12"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M10 8C50 2 150 2 190 8"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        fill="none"
+                        strokeLinecap="round"
+                      />
+                    </svg>
                   </span>
                 </h1>
-                <p className="text-xl text-gray-700 dark:text-gray-400 max-w-3xl mx-auto">
-                  Put text and graphics behind people in your photos. It's the
-                  secret sauce content creators use to get millions of views.
-                  <span className="font-semibold text-purple-600 dark:text-purple-400">
+                <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-400 max-w-4xl mx-auto font-light leading-relaxed">
+                  Customize backgrounds, clone yourself, and put text behind
+                  people - turn boring photos into
+                  <span className="font-bold bg-gradient-to-r from-pink-500 to-purple-500 bg-clip-text text-transparent">
                     {" "}
-                    Free forever, no signup needed.
+                    VIRAL MASTERPIECES
                   </span>
+                  !
                 </p>
               </motion.div>
 
-              {/* CTA Button */}
+              {/* CTA Buttons */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="text-center mb-16"
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="text-center mb-20"
               >
-                <Link
-                  href="/custom-editor"
-                  className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white rounded-full text-lg font-semibold transition-all duration-300 shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30"
-                >
-                  Start Creating Magic ✨
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Link>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <button
+                    onClick={() => {
+                      const examplesSection =
+                        document.getElementById("examples");
+                      if (examplesSection) {
+                        examplesSection.scrollIntoView({ behavior: "smooth" });
+                      }
+                    }}
+                    className="inline-flex items-center px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-300 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-500 rounded-full text-lg font-medium transition-all duration-300 shadow-sm hover:shadow-md"
+                  >
+                    See Examples
+                    <Eye className="ml-3 w-5 h-5" />
+                  </button>
+                  <Link
+                    href="/custom-editor"
+                    className="inline-flex items-center px-10 py-4 bg-gradient-to-r from-purple-600 via-purple-700 to-pink-600 hover:from-pink-600 hover:via-purple-700 hover:to-pink-600 text-white rounded-full text-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl"
+                  >
+                    Start Creating Magic
+                    <ArrowRight className="ml-3 w-5 h-5" />
+                  </Link>
+                </div>
               </motion.div>
 
-              {/* Viral Feature Grid */}
+              {/* Clean Tools Grid */}
               <div className="relative">
-                {/* Background effects - simplified */}
-                <div className="absolute inset-0 rounded-3xl" />
-
                 {/* Desktop Grid */}
                 <div className="relative hidden md:block">
-                  {/* Header for grid */}
+                  {/* Clean header for grid */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="text-center mb-8"
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                    className="text-center mb-12"
                   >
-                    <h3 className="text-2xl md:text-3xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
-                      50+ VIRAL TOOLS AT YOUR FINGERTIPS! 🔥
+                    <h3 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                      50+ Powerful Tools
                     </h3>
+                    <p className="text-lg text-gray-600 dark:text-gray-400">
+                      Everything you need to create viral content
+                    </p>
                   </motion.div>
 
-                  {/* Masonry-style grid */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 max-w-6xl mx-auto">
+                  {/* Clean grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-6 max-w-6xl mx-auto">
                     {tools.map((tool, index) => (
                       <FeatureCard key={index} tool={tool} index={index} />
                     ))}
                   </div>
-
-                  {/* Grid decorations */}
-                  <div className="absolute -top-4 -left-4 w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full opacity-30 animate-pulse" />
-                  <div className="absolute -bottom-4 -right-4 w-6 h-6 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full opacity-40 animate-pulse delay-1000" />
-                  <div className="absolute top-1/2 -left-2 w-4 h-4 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-full opacity-35 animate-ping" />
                 </div>
 
                 {/* Mobile Carousel */}
-                <div className="md:hidden">
-                  {/* Mobile header */}
+                <div className="md:hidden mt-20">
+                  {/* Clean mobile header */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="text-center mb-6"
+                    transition={{ duration: 0.6, delay: 0.6 }}
+                    className="text-center mb-12"
                   >
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-purple-500/20 rounded-full border border-purple-500/20 mb-3">
-                      <span className="text-xs font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                        🛠️ SWIPE FOR TOOLS
-                      </span>
-                    </div>
-                    <h3 className="text-xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
-                      50+ VIRAL TOOLS! 🔥
+                    <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                      50+ Powerful Tools
                     </h3>
+                    <p className="text-base text-gray-600 dark:text-gray-400">
+                      Swipe to explore all features
+                    </p>
                   </motion.div>
 
-                  {/* Horizontal scroll with enhanced styling */}
-                  <div className="relative">
-                    {/* Gradient overlays for scroll indication */}
-                    <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white dark:from-gray-900 to-transparent z-10 pointer-events-none" />
-                    <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white dark:from-gray-900 to-transparent z-10 pointer-events-none" />
-
-                    <div className="flex overflow-x-auto gap-4 pb-6 scrollbar-hide px-2">
+                  {/* Clean horizontal scroll */}
+                  <div className="relative px-4">
+                    <div className="flex overflow-x-auto gap-4 pb-6 scrollbar-hide">
                       {tools.map((tool, index) => (
-                        <div key={index} className="flex-none w-28">
+                        <div key={index} className="flex-none w-36">
                           <FeatureCard tool={tool} index={index} />
                         </div>
                       ))}
                     </div>
-
-                    {/* Scroll indicator */}
-                    <div className="flex justify-center mt-2">
-                      <div className="flex gap-1">
-                        {[...Array(3)].map((_, i) => (
-                          <div
-                            key={i}
-                            className="w-1 h-1 bg-purple-500/30 rounded-full animate-pulse"
-                            style={{ animationDelay: `${i * 200}ms` }}
-                          />
-                        ))}
-                      </div>
-                    </div>
                   </div>
                 </div>
-
-                {/* Bottom CTA for tools */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.8 }}
-                  className="text-center mt-8"
-                >
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    <span className="font-bold text-purple-600 dark:text-purple-400">
-                      Hover over tools
-                    </span>{" "}
-                    to see the vibe! 👆
-                  </p>
-                </motion.div>
               </div>
             </div>
           </section>
 
           {/* VIRAL Before/After Section - TikTok Style */}
           <section id="examples" className="w-full relative overflow-hidden">
-            {/* Dynamic background with multiple gradients */}
-            <div className="absolute inset-0 bg-gradient-to-br from-pink-500/10 via-purple-500/5 to-blue-500/10 dark:from-pink-400/20 dark:via-purple-400/10 dark:to-blue-400/20" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_25%,rgba(236,72,153,0.15)_0%,transparent_50%)] animate-pulse" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_75%,rgba(59,130,246,0.15)_0%,transparent_50%)] animate-pulse delay-1000" />
+            {/* Clean white background */}
+            <div className="absolute inset-0 bg-white dark:bg-[#0A0A0A]" />
 
             <div className="relative z-10 px-4 py-20 md:py-32">
               <div className="max-w-7xl mx-auto">
@@ -528,9 +456,8 @@ export default function Home() {
                   </div>
 
                   <h2 className="text-4xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight">
-                    <span className="text-gray-900 dark:text-white">Holy</span>{" "}
                     <span className="bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
-                      SH*T
+                      NO WAY
                     </span>
                     <span className="text-gray-900 dark:text-white">,</span>
                     <br />
@@ -548,37 +475,10 @@ export default function Home() {
                   </p>
                 </motion.div>
 
-                {/* Enhanced FeatureShowcase with wrapper */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.7, delay: 0.2 }}
-                  viewport={{ once: true }}
-                  className="relative"
-                >
-                  {/* Glow effect around showcase - optimized */}
-                  <div
-                    className="absolute -inset-4 bg-pink-500/20 rounded-3xl opacity-30"
-                    style={{ filter: "blur(16px)" }}
-                  />
-
-                  <div className="relative bg-white/90 dark:bg-gray-900/90 rounded-3xl p-6 md:p-8 border border-white/20 dark:border-gray-700/20 shadow-2xl">
-                    <FeatureShowcase />
-
-                    {/* Floating indicators */}
-                    <div className="absolute -top-2 -right-2 animate-bounce">
-                      <div className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-black px-3 py-1 rounded-full shadow-lg">
-                        👀 WATCH THIS!
-                      </div>
-                    </div>
-
-                    <div className="absolute -bottom-2 -left-2 animate-bounce delay-500">
-                      <div className="bg-gradient-to-r from-green-400 to-blue-500 text-white text-xs font-black px-3 py-1 rounded-full shadow-lg">
-                        🔥 INSANE!
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
+                {/* Minimal FeatureShowcase */}
+                <div className="relative bg-white dark:bg-gray-900 rounded-lg p-6 md:p-8 border-gray-200 dark:border-gray-700">
+                  <FeatureShowcase />
+                </div>
 
                 {/* Viral reaction section */}
                 <motion.div
@@ -591,11 +491,11 @@ export default function Home() {
                   {/* Main CTA */}
                   <div className="relative inline-block">
                     {/* Button glow effect */}
-                    <div className="absolute -inset-3 bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 rounded-3xl blur-xl opacity-50 animate-pulse" />
+                    <div className="absolute -inset-3 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 rounded-3xl blur-xl opacity-50 animate-pulse" />
 
                     <Link
                       href="/custom-editor"
-                      className="relative group inline-flex items-center gap-4 px-12 py-6 bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 hover:from-red-600 hover:via-pink-600 hover:to-purple-600 text-white rounded-3xl text-2xl font-black transition-all duration-300 shadow-2xl shadow-pink-500/25 hover:shadow-3xl hover:shadow-pink-500/40 hover:scale-110"
+                      className="relative group inline-flex items-center gap-4 px-12 py-6 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 hover:from-purple-700 hover:via-pink-600 hover:to-purple-700 text-white rounded-3xl text-2xl font-black transition-all duration-300 shadow-2xl shadow-pink-500/25 hover:shadow-3xl hover:shadow-pink-500/40 hover:scale-110"
                     >
                       <span>Create Your First VIRAL Photo!</span>
                       <div className="flex items-center gap-2">
@@ -619,11 +519,8 @@ export default function Home() {
 
           {/* How It Works Section - Viral Redesign */}
           <section className="w-full relative overflow-hidden">
-            {/* Dynamic animated background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/5 via-orange-500/5 to-red-500/5 dark:from-yellow-400/10 dark:via-orange-400/10 dark:to-red-400/10" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(251,191,36,0.1)_0%,transparent_50%)] animate-pulse" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(239,68,68,0.1)_0%,transparent_50%)] animate-pulse delay-1000" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(249,115,22,0.05)_0%,transparent_70%)]" />
+            {/* Clean white background */}
+            <div className="absolute inset-0 bg-white dark:bg-[#0A0A0A]" />
 
             <div className="relative z-10 px-4 py-20 md:py-32">
               <div className="max-w-7xl mx-auto">
@@ -789,11 +686,11 @@ export default function Home() {
                 >
                   <div className="relative inline-block">
                     {/* Button glow effect */}
-                    <div className="absolute -inset-3 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 rounded-3xl blur-xl opacity-50 animate-pulse" />
+                    <div className="absolute -inset-3 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 rounded-3xl blur-xl opacity-50 animate-pulse" />
 
                     <Link
                       href="/custom-editor"
-                      className="relative group inline-flex items-center gap-4 px-12 py-6 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 hover:from-yellow-500 hover:via-orange-600 hover:to-red-600 text-white rounded-3xl text-2xl font-black transition-all duration-300 shadow-2xl shadow-orange-500/25 hover:shadow-3xl hover:shadow-orange-500/40 hover:scale-110"
+                      className="relative group inline-flex items-center gap-4 px-12 py-6 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 hover:from-purple-700 hover:via-pink-600 hover:to-purple-700 text-white rounded-3xl text-2xl font-black transition-all duration-300 shadow-2xl shadow-pink-500/25 hover:shadow-3xl hover:shadow-pink-500/40 hover:scale-110"
                     >
                       <span>Let's Make Some MAGIC!</span>
                       <div className="flex items-center gap-2">
@@ -818,10 +715,8 @@ export default function Home() {
 
           {/* Viral Secret Weapon Section - Redesigned for Gen-Z */}
           <section className="w-full relative overflow-hidden">
-            {/* Animated background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-900/10 via-pink-900/5 to-blue-900/10 dark:from-purple-500/20 dark:via-pink-500/10 dark:to-blue-500/20" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,rgba(139,92,246,0.1)_0%,transparent_50%)] animate-pulse" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_60%,rgba(236,72,153,0.1)_0%,transparent_50%)] animate-pulse delay-1000" />
+            {/* Clean white background */}
+            <div className="absolute inset-0 bg-white dark:bg-[#0A0A0A]" />
 
             <div className="relative z-10 px-4 py-20 md:py-32">
               <div className="max-w-7xl mx-auto">
@@ -1359,11 +1254,11 @@ export default function Home() {
                   >
                     <div className="relative inline-block">
                       {/* Button glow effect */}
-                      <div className="absolute -inset-2 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 rounded-3xl blur-xl opacity-50 animate-pulse" />
+                      <div className="absolute -inset-2 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 rounded-3xl blur-xl opacity-50 animate-pulse" />
 
                       <Link
                         href="/custom-editor"
-                        className="relative group inline-flex items-center gap-4 px-12 py-6 bg-gradient-to-r from-pink-500 via-purple-500 to-blue-500 hover:from-pink-600 hover:via-purple-600 hover:to-blue-600 text-white rounded-3xl text-2xl font-black transition-all duration-300 shadow-2xl shadow-purple-500/25 hover:shadow-3xl hover:shadow-purple-500/40 hover:scale-110"
+                        className="relative group inline-flex items-center gap-4 px-12 py-6 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 hover:from-purple-700 hover:via-pink-600 hover:to-purple-700 text-white rounded-3xl text-2xl font-black transition-all duration-300 shadow-2xl shadow-pink-500/25 hover:shadow-3xl hover:shadow-pink-500/40 hover:scale-110"
                       >
                         <span>I'm Ready to Go VIRAL!</span>
                         <div className="flex items-center gap-2">
