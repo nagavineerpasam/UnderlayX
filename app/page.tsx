@@ -456,9 +456,8 @@ export default function Home() {
                   </div>
 
                   <h2 className="text-4xl md:text-6xl lg:text-7xl font-black mb-6 leading-tight">
-                    <span className="text-gray-900 dark:text-white">Holy</span>{" "}
                     <span className="bg-gradient-to-r from-red-500 via-pink-500 to-purple-500 bg-clip-text text-transparent">
-                      SH*T
+                      NO WAY
                     </span>
                     <span className="text-gray-900 dark:text-white">,</span>
                     <br />

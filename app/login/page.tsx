@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { AuthDialog } from '@/components/AuthDialog';
-import { supabase } from '@/lib/supabaseClient'; 
+import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { AuthDialog } from "@/components/AuthDialog";
+import { supabase } from "@/lib/supabaseClient";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,15 +12,18 @@ export default function LoginPage() {
   useEffect(() => {
     const handleAuth = async () => {
       // Check if we have a session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      const {
+        data: { session },
+        error: sessionError,
+      } = await supabase.auth.getSession();
       if (session) {
-        router.push('/');
+        router.push("/custom-editor");
         return;
       }
       // If no session but we have a code, we're in the OAuth callback
-      const code = searchParams.get('code');
+      const code = searchParams.get("code");
       if (code) {
-        router.push('/');
+        router.push("/custom-editor");
       }
     };
 
@@ -29,9 +32,10 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A]">
-      <AuthDialog 
+      <AuthDialog
         isOpen={true}
-        onClose={() => router.push('/')}
+        onClose={() => router.push("/custom-editor")}
+        returnUrl="/custom-editor"
       />
     </div>
   );

@@ -66,10 +66,10 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
 
   const handleFileProcess = async (file: File) => {
     // Check if user can generate (has active subscription)
-    if (user && !canGenerate()) {
-      setShowPaymentDialog(true);
-      return;
-    }
+    // if (user && !canGenerate()) {
+    //   setShowPaymentDialog(true);
+    //   return;
+    // }
 
     try {
       setIsProcessing(true);
@@ -188,7 +188,7 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
         "image/jpeg",
         "image/png",
         "image.webp",
-        "image.webp",
+        "image/webp",
         "image.heic",
         "image/heic",
         "image.heif",
@@ -370,7 +370,7 @@ export function Canvas({ shouldAutoUpload, mode = "full" }: CanvasProps) {
                 id="canvas-upload"
                 type="file"
                 onChange={onFileChange}
-                accept="image/jpeg,image/png,image.webp,image.heic,image.heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
+                accept="image/jpeg,image/png,image.webp,image/webp,image.heic,image.heif,.heic,.heif,.jpg,.jpeg,.png,.webp"
                 className="hidden"
                 disabled={isConverting || isProcessing}
               />
