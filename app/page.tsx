@@ -101,6 +101,14 @@ const tools = [
     popular: false,
   },
   {
+    Icon: Filter,
+    name: "Photo Editor",
+    emoji: "📸",
+    vibe: "EDIT LIKE PRO!",
+    gradient: "from-purple-600 to-pink-600",
+    popular: true,
+  },
+  {
     Icon: Wand,
     name: "AI Magic",
     emoji: "✨",
@@ -196,6 +204,14 @@ const FeatureCard = ({
 }) => {
   const shouldReduceMotion = useReducedMotion();
 
+  const handleClick = () => {
+    if (name === "Photo Editor") {
+      window.location.href = "/photo-editor";
+    } else {
+      window.location.href = "/custom-editor";
+    }
+  };
+
   return (
     <motion.div
       initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
@@ -212,6 +228,7 @@ const FeatureCard = ({
       className="group relative will-change-transform"
     >
       <div
+        onClick={handleClick}
         className="relative flex flex-col items-center p-6 bg-white dark:bg-gray-900 rounded-xl
         border border-gray-200 dark:border-gray-700
         hover:border-purple-300 dark:hover:border-purple-600

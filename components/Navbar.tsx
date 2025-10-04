@@ -14,6 +14,7 @@ import {
   Github,
   Images,
   Pencil,
+  Sliders,
 } from "lucide-react"; // Add Github, Images, Pencil, and XCircle import
 import { cn } from "@/lib/utils";
 import { User } from "@supabase/supabase-js";
@@ -95,6 +96,12 @@ export function Navbar() {
 
   const navigationItems: NavigationItem[] = [
     {
+      href: "/photo-editor",
+      icon: Sliders,
+      title: "Photo Editor",
+      description: "Enhance images with filters and adjustments",
+    },
+    {
       href: "/overlay-image", // Add new route
       icon: Images,
       title: "Smart Image Overlay",
@@ -166,7 +173,7 @@ export function Navbar() {
     ));
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[100] bg-white dark:bg-[#1a0b2e] border-b border-gray-200 dark:border-white/10">
+    <nav className="fixed top-0 left-0 right-0 z-[100] bg-white dark:bg-black border-b border-gray-200 dark:border-white/10">
       <div className="container mx-auto px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link
