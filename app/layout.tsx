@@ -8,14 +8,14 @@ export const metadata = {
   title:
     "Free AI Image Editor | Remove Background, Text Behind Image, Customize Background | UnderlayX AI",
   description:
-    "Free AI-powered image editor - no signup required! Remove backgrounds, add text behind images, customize backgrounds, clone objects, and create stunning visual effects. Professional image editing made simple.",
+    "Free AI-powered image editor. Remove backgrounds, add text behind images, customize backgrounds, clone objects, and create stunning visual effects. Professional image editing made simple.",
   metadataBase: new URL("https://www.underlayx.com"),
   openGraph: {
     type: "website",
     url: "https://www.underlayx.com",
-    title: "Free AI Image Editor | No Signup Required | UnderlayX AI",
+    title: "Free AI Image Editor | UnderlayX AI",
     description:
-      "Transform your images with our free AI editor. Remove backgrounds, add text behind images, customize backgrounds, and more. No signup required - start editing now!",
+      "Transform your images with our free AI editor. Remove backgrounds, add text behind images, customize backgrounds, and more. Start editing now!",
     images: ["/og-image.png"],
   },
   twitter: {
@@ -23,7 +23,7 @@ export const metadata = {
     title:
       "Free AI Image Editor | Remove Background, Text Behind Image | UnderlayX AI",
     description:
-      "Free AI image editor with no signup required. Remove backgrounds, add text behind images, customize backgrounds, and create stunning effects instantly!",
+      "Free AI image editor. Remove backgrounds, add text behind images, customize backgrounds, and create stunning effects instantly.",
     creator: "@underlayx",
     images: ["/og-image.png"],
     site: "@underlayx",

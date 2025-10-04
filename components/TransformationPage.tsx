@@ -143,9 +143,6 @@ export function TransformationPage({
           >
             Create now
           </button>
-          <p className={`${textColorMuted} text-sm animate-pulse`}>
-            ✨ Completely free, no signup required ✨
-          </p>
         </div>
 
         {/* Before/After Images */}
@@ -241,15 +238,6 @@ export function TransformationPage({
                 </h3>
                 <p className={`${textColorMuted} text-sm`}>
                   Process images in seconds with our optimized AI algorithms
-                </p>
-              </div>
-            </div>
-            <div className="flex items-start gap-3">
-              <Shield className="w-6 h-6 text-purple-600 mt-1" />
-              <div className="text-left">
-                <h3 className={`font-semibold ${textColor} mb-1`}>100% Free</h3>
-                <p className={`${textColorMuted} text-sm`}>
-                  No subscriptions, no hidden fees, no signup required
                 </p>
               </div>
             </div>
