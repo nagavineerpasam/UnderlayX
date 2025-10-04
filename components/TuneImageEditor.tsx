@@ -20,7 +20,7 @@ const defaultEnhancements = {
   sharpness: 0,
   blur: 0, // Add default value
   blacks: 0, // Add default value
-} as const;
+};
 
 export function TuneImageEditor() {
   const [activeTab, setActiveTab] = useState<TabType>("background");
@@ -67,6 +67,8 @@ export function TuneImageEditor() {
               handleUpdate({
                 ...displayEnhancements,
                 brightness: value,
+                blur: displayEnhancements.blur ?? 0,
+                blacks: displayEnhancements.blacks ?? 0,
               })
             }
             min={0}
@@ -88,6 +90,8 @@ export function TuneImageEditor() {
               handleUpdate({
                 ...displayEnhancements,
                 contrast: value,
+                blur: displayEnhancements.blur ?? 0,
+                blacks: displayEnhancements.blacks ?? 0,
               })
             }
             min={0}
@@ -109,6 +113,8 @@ export function TuneImageEditor() {
               handleUpdate({
                 ...displayEnhancements,
                 saturation: value,
+                blur: displayEnhancements.blur ?? 0,
+                blacks: displayEnhancements.blacks ?? 0,
               })
             }
             min={0}
@@ -130,6 +136,8 @@ export function TuneImageEditor() {
               handleUpdate({
                 ...displayEnhancements,
                 fade: value,
+                blur: displayEnhancements.blur ?? 0,
+                blacks: displayEnhancements.blacks ?? 0,
               })
             }
             min={0}
@@ -151,6 +159,7 @@ export function TuneImageEditor() {
               handleUpdate({
                 ...displayEnhancements,
                 blur: value,
+                blacks: displayEnhancements.blacks ?? 0,
               })
             }
             min={0}
@@ -172,6 +181,7 @@ export function TuneImageEditor() {
               handleUpdate({
                 ...displayEnhancements,
                 blacks: value,
+                blur: displayEnhancements.blur ?? 0,
               })
             }
             min={0}
