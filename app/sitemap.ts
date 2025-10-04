@@ -64,6 +64,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      url: `${baseUrl}/photo-editor`,
+      lastModified: staticDate,
+      changeFrequency: 'daily' as ChangeFrequency,
+      priority: 1,
+    },
+    {
       url: `${baseUrl}/faq`,
       lastModified: staticDate,
       changeFrequency: 'daily' as ChangeFrequency,
